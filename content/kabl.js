@@ -1,5 +1,5 @@
-const TPSS_CONTRACTID="@arantius.com/tpss;1";
-const TPSS_CID=Components.ID('{cabe6b3f-578c-480f-a2f0-68bc4b7a1142}');
+const KABL_CONTRACTID="@arantius.com/kabl;1";
+const KABL_CID=Components.ID('{cabe6b3f-578c-480f-a2f0-68bc4b7a1142}');
 
 const CONTENTPOLICY_CONTRACTID="@mozilla.org/layout/content-policy;1";
 const CONTENTPOLICY_DESCRIPTION="Content policy service";
@@ -8,7 +8,7 @@ const CONTENTPOLICY_DESCRIPTION="Content policy service";
 
 var gPref=Components.classes['@mozilla.org/preferences-service;1']
 	.getService(Components.interfaces.nsIPrefService)
-	.getBranch('extensions.tpss.');
+	.getBranch('extensions.kabl.');
 var gTpssEnabled=gPref.getBoolPref('enabled');
 
 // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ //
@@ -65,7 +65,7 @@ var policy={
 				// if they aren't the same domain, REJECT!
 				if (cHost!=rHost) {
 					dump(
-						'TPSS denied: '+contentLocation.spec+'\n'+
+						'KABL denied: '+contentLocation.spec+'\n'+
 						'from page:   '+requestOrigin.spec+'\n'
 					);
 					return Components.interfaces.nsIContentPolicy.REJECT_REQUEST;
@@ -122,7 +122,7 @@ var factory={
 // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ //
 
 // Initialization and registration
-if (typeof(Components.classes[TPSS_CONTRACTID]) == 'undefined') {
+if (typeof(Components.classes[KABL_CONTRACTID]) == 'undefined') {
 	// Component registration
 	var compMgr=Components.manager
 		.QueryInterface(Components.interfaces.nsIComponentRegistrar);
@@ -132,7 +132,7 @@ if (typeof(Components.classes[TPSS_CONTRACTID]) == 'undefined') {
 		cid, CONTENTPOLICY_DESCRIPTION, CONTENTPOLICY_CONTRACTID, factory
 	);
 	compMgr.registerFactory(
-		TPSS_CID, CONTENTPOLICY_DESCRIPTION, TPSS_CONTRACTID, factory
+		KABL_CID, CONTENTPOLICY_DESCRIPTION, KABL_CONTRACTID, factory
 	);
 }
 

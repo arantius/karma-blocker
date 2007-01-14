@@ -1,0 +1,25 @@
+<?xml version='1.0'?>
+<overlay id='uppity-overlay' xmlns='http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul'>
+
+<script type='application/x-javascript' src='chrome://kabl/content/kabl-overlay.js'></script>
+
+<statusbar id='status-bar'>
+	<statusbarpanel id='status-bar-kabl' insertafter='livemark-button'>
+		<image id='status-bar-kabl-image' width='16' height='16'
+			src='chrome://kabl/skin/kabl-on.png'
+			onclick="kabl.toggle();"
+		/>
+	</statusbarpanel>
+</statusbar>
+
+<!--
+<keyset id="mainKeyset">
+	<key id='kabl-key-shortcut'
+		modifiers='ctrl alt'
+		keycode='S'
+		oncommand='kabl.toggle();'
+	/>
+</keyset>
+-->
+
+</overlay>

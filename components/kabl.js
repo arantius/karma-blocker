@@ -1,5 +1,5 @@
-const _TPSS_CONTRACTID="@arantius.com/tpss;1";
-const _TPSS_CID=Components.ID('{cabe6b3f-578c-480f-a2f0-68bc4b7a1142}');
+const _KABL_CONTRACTID="@arantius.com/kabl;1";
+const _KABL_CID=Components.ID('{cabe6b3f-578c-480f-a2f0-68bc4b7a1142}');
 
 const CATMAN_CONTRACTID="@mozilla.org/categorymanager;1";
 const JSLOADER_CONTRACTID="@mozilla.org/moz/jssubscript-loader;1";
@@ -14,14 +14,14 @@ var module={
 			Components.interfaces.nsIComponentRegistrar
 		);
 		compMgr.registerFactoryLocation(
-			_TPSS_CID, "TPSS content policy", _TPSS_CONTRACTID,
+			_KABL_CID, "KABL content policy", _KABL_CONTRACTID,
 			fileSpec, location, type
 		);
 
 		var catman=Components.classes[CATMAN_CONTRACTID]
 			.getService(Components.interfaces.nsICategoryManager);
 		catman.addCategoryEntry(
-			"content-policy", _TPSS_CONTRACTID, _TPSS_CONTRACTID, true, true
+			"content-policy", _KABL_CONTRACTID, _KABL_CONTRACTID, true, true
 		);
 	},
 
@@ -30,15 +30,15 @@ var module={
 			Components.interfaces.nsIComponentRegistrar
 		);
 
-		compMgr.unregisterFactoryLocation(_TPSS_CID, fileSpec);
+		compMgr.unregisterFactoryLocation(_KABL_CID, fileSpec);
 
 		var catman=Components.classes[CATMAN_CONTRACTID]
 			.getService(Components.interfaces.nsICategoryManager);
-		catman.deleteCategoryEntry("content-policy", _TPSS_CONTRACTID, true);
+		catman.deleteCategoryEntry("content-policy", _KABL_CONTRACTID, true);
 	},
 
 	getClassObject:function(compMgr, cid, iid) {
-		if (!cid.equals(_TPSS_CID)) {
+		if (!cid.equals(_KABL_CID)) {
 			throw Components.results.NS_ERROR_NO_INTERFACE;
 		}
 
@@ -49,7 +49,7 @@ var module={
 		if (!this.factoryLoaded) {
 			var loader=Components.classes[JSLOADER_CONTRACTID]
 				.getService(Components.interfaces.mozIJSSubScriptLoader);
-			loader.loadSubScript('chrome://tpss/content/tpss.js');
+			loader.loadSubScript('chrome://kabl/content/kabl.js');
 			this.factoryLoaded=factory;
 		}
 
