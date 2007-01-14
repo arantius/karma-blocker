@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<RDF xmlns="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:em="http://www.mozilla.org/2004/em-rdf#">
+	<Description about="urn:mozilla:install-manifest">
+		<em:id>{f276d9de-07db-48ed-bec8-7c4332dc7ad0}</em:id>
+		<em:name>Third Party Script Stopper</em:name>
+		<em:version>0.1</em:version>
+		<em:description>Stop third-party (java)scripts from loading.</em:description>
+
+		<em:creator>Anthony Lieuallen</em:creator>
+
+		<em:iconURL>chrome://tpss/skin/tpss-on.png</em:iconURL>
+		<em:homepageURL>http://trac.arantius.com/Extensions/ThirdPartyScriptStopper</em:homepageURL>
+		<em:updateURL>http://arantius.com/misc/firefox-extensions/mine/updates.rdf</em:updateURL>
+
+		<em:targetApplication>
+			<Description>
+				<em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id>
+				<em:minVersion>2.0</em:minVersion>
+				<em:maxVersion>2.0.0.*</em:maxVersion>
+			</Description>
+		</em:targetApplication>
+	</Description>
+</RDF>

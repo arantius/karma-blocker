@@ -1,0 +1,4 @@
+content	tpss	content/
+skin	tpss	classic/1.0	skin/
+
+overlay	chrome://browser/content/browser.xul	chrome://tpss/content/tpss-overlay.xul
