@@ -1,1 +1,2 @@
-pref("extensions.kabl.enabled", true);
+pref('extensions.kabl.enabled', true);
+pref('extensions.kabl.rules', "[Settings]\nthreshold=10\ncutoff=100\n\n# Block scripts loaded from a third-party server\n[Group]\nmatch=all\nscore=100\nrule=$thirdParty==true\nrule=$originTag==script\n\n# Block some well known ads and trackers\n[Group]\nmatch=any\nscore=10\nrule=$url.host=='pagead2.googlesyndication.com'\nrule=$url.host=~'ad.\\.doubleclick\\.net'\nrule=$url.spec=='http://www.google-analytics.com/urchin.js'");
