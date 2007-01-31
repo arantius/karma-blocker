@@ -1,15 +1,28 @@
 <?xml version='1.0'?>
-<overlay id='uppity-overlay' xmlns='http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul'>
+<overlay id='kabl-overlay' xmlns='http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul'>
 
+<script type='application/x-javascript' src='chrome://kabl/content/kabl-pref.js'></script>
 <script type='application/x-javascript' src='chrome://kabl/content/kabl-overlay.js'></script>
 
 <statusbar id='status-bar'>
-	<statusbarpanel id='status-bar-kabl' insertafter='livemark-button'>
+	<statusbarpanel id='status-bar-kabl' insertafter='livemark-button'
+		oncommand='alert("foo");'
+	>
 		<image id='status-bar-kabl-image' width='16' height='16'
 			src='chrome://kabl/skin/kabl-on.png'
-			onclick="kabl.toggle();"
+			onclick="if (!event.button) gKabl.toggle();"
+			context='status-bar-kabl-context'
 		/>
 	</statusbarpanel>
+	<popup id='status-bar-kabl-context' position='before_end'>
+		<menuitem label='Toggle' accesskey='T'
+			oncommand='kabl.toggle();'
+			style='font-weight: bold;'
+		/>
+		<menuitem label='Configure...' accesskey='C'
+			oncommand='gKabl.openConfig();' 
+		/>
+	</popup>
 </statusbar>
 
 <!--

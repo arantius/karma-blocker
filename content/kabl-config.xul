@@ -13,6 +13,9 @@
 	ondialogaccept='return gKablConfigAccept();'
 	ondialogcancel='return true;'
 	ondialogextra2='loadInBrowser("http://trac.arantius.com/wiki/Extensions/KarmaBlocker");'
+
+	id='kabl-config-dialog'
+	persist="screenX screenY width height sizemode"
 >
 <script type='application/javascript' src='chrome://kabl/content/kabl-config.js'></script>
 <script type='application/javascript' src='chrome://kabl/content/kabl-pref.js'></script>
@@ -20,6 +23,6 @@
 <dialogheader title='Karma Blocker' description='Configuration'/>
 
 <checkbox id='enabled' label='Enabled' />
-<textbox id='rules' cols='80' rows='15' multiline='true' />
+<textbox id='rules' cols='80' rows='15' multiline='true' flex='1' />
 
 </dialog>

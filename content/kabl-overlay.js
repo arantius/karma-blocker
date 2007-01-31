@@ -1,29 +1,34 @@
-var kabl={
-	pref:null,
-	enabled:true,
+var gKabl={
+	openConfig:function() {
+//		window.openDialog(
+//			'chrome://kabl/content/kabl-config.xul',
+//			'kabl-config', 'resizable=yes,dependent=yes,close=no,dialog=no'
+//		);
+		var windowWatcher=Components
+			.classes["@mozilla.org/embedcomp/window-watcher;1"]
+			.getService(Components.interfaces.nsIWindowWatcher);
+		windowWatcher.openWindow(
+			null, 'chrome://kabl/content/kabl-config.xul', '_blank', 
+			'chrome,centerscreen,resizable,dialog=no', null
+		);
+	},
 
-	toggle:function () {
-		this.enabled=!this.enabled;
-		this.pref.setBoolPref('enabled', this.enabled);
-		this.setImage();
+	toggle:function() {
+		gKablEnabled=!gKablEnabled;
+		gKablPref.setBoolPref('enabled', gKablEnabled);
 	},
 
 	setImage:function() {
 		document.getElementById('status-bar-kabl-image').setAttribute(
 			'src',
-			'chrome://kabl/skin/kabl-'+(this.enabled?'on':'off')+'.png'
+			'chrome://kabl/skin/kabl-'+(gKablEnabled?'on':'off')+'.png'
 		);
 	},
 
 	onLoad:function() {
-		window.removeEventListener('DOMContentLoaded', kabl.onLoad, false);
-		kabl.setImage();
+		window.removeEventListener('DOMContentLoaded', gKabl.onLoad, false);
+		gKabl.setImage();
 	}
 };
 
-kabl.pref=Components.classes['@mozilla.org/preferences-service;1']
-	.getService(Components.interfaces.nsIPrefService)
-	.getBranch('extensions.kabl.');
-kabl.enabled=kabl.pref.getBoolPref('enabled');
-
-window.addEventListener('DOMContentLoaded', kabl.onLoad, false);
+window.addEventListener('DOMContentLoaded', gKabl.onLoad, false);
