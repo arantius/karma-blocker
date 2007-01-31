@@ -6,7 +6,7 @@ const JSLOADER_CONTRACTID="@mozilla.org/moz/jssubscript-loader;1";
 
 // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ //
 
-var module={
+var gKablModule={
 	factoryLoaded:false,
 
 	registerSelf:function(compMgr, fileSpec, location, type) {
@@ -50,10 +50,10 @@ var module={
 			var loader=Components.classes[JSLOADER_CONTRACTID]
 				.getService(Components.interfaces.mozIJSSubScriptLoader);
 			loader.loadSubScript('chrome://kabl/content/kabl.js');
-			this.factoryLoaded=factory;
+			this.factoryLoaded=true;
 		}
 
-		return factory;
+		return gKablFactory;
 	},
 
 	canUnload:function(compMgr) {
@@ -65,5 +65,5 @@ var module={
 
 // module initialisation
 function NSGetModule(comMgr, fileSpec) {
-	return module;
+	return gKablModule;
 }

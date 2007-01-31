@@ -6,14 +6,14 @@ const CONTENTPOLICY_DESCRIPTION="Content policy service";
 
 // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ //
 
-var gPref=Components.classes['@mozilla.org/preferences-service;1']
+var gKablPref=Components.classes['@mozilla.org/preferences-service;1']
 	.getService(Components.interfaces.nsIPrefService)
 	.getBranch('extensions.kabl.');
-var gTpssEnabled=gPref.getBoolPref('enabled');
+var gKablEnabled=gKablPref.getBoolPref('enabled');
 
 // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ //
 
-var policy={
+var gKablPolicy={
 	hostToTld:function(host) {
 		// this terribly simple method seems to work well enough
 		return host.replace(/.*\.(.*......)/, '$1')
@@ -23,7 +23,7 @@ var policy={
 	shouldLoad:function(
 		contentType, contentLocation, requestOrigin, requestingNode, mimeTypeGuess, extra
 	) {
-		if (!gTpssEnabled) {
+		if (!gKablEnabled) {
 			// when not enabled:  let it through
 			return Components.interfaces.nsIContentPolicy.ACCEPT;
 		}
@@ -98,11 +98,11 @@ var policy={
 // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ //
 
 // Factory object
-var factory={
+var gKablFactory={
 	// nsIFactory interface implementation
 	createInstance:function(outer, iid) {
 		if (outer!=null) throw Components.results.NS_ERROR_NO_AGGREGATION;
-		return policy;
+		return gKablPolicy;
 	},
 
 	// nsISupports interface implementation
@@ -123,26 +123,28 @@ var factory={
 
 // Initialization and registration
 if (typeof(Components.classes[KABL_CONTRACTID]) == 'undefined') {
-	// Component registration
-	var compMgr=Components.manager
-		.QueryInterface(Components.interfaces.nsIComponentRegistrar);
-	var cid=compMgr.contractIDToCID(CONTENTPOLICY_CONTRACTID);
+	(function() { // to keep from munging with scope
+		// Component registration
+		var compMgr=Components.manager
+			.QueryInterface(Components.interfaces.nsIComponentRegistrar);
+		var cid=compMgr.contractIDToCID(CONTENTPOLICY_CONTRACTID);
 
-	compMgr.registerFactory(
-		cid, CONTENTPOLICY_DESCRIPTION, CONTENTPOLICY_CONTRACTID, factory
-	);
-	compMgr.registerFactory(
-		KABL_CID, CONTENTPOLICY_DESCRIPTION, KABL_CONTRACTID, factory
-	);
+		compMgr.registerFactory(
+			cid, CONTENTPOLICY_DESCRIPTION, CONTENTPOLICY_CONTRACTID, gKablFactory
+		);
+		compMgr.registerFactory(
+			KABL_CID, CONTENTPOLICY_DESCRIPTION, KABL_CONTRACTID, gKablFactory
+		);
+	})();
 }
 
 // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ //
 
-var myPrefObserver={
+var gKablPrefObserver={
 	_branch:null,
 
 	register:function() {
-		this._branch=gPref;
+		this._branch=gKablPref;
 		this._branch.QueryInterface(Components.interfaces.nsIPrefBranch2);
 		this._branch.addObserver('', this, false);
 	},
@@ -158,8 +160,8 @@ var myPrefObserver={
 		// aData is the name of the pref that's been changed (relative to aSubject)
 		
 		if ('enabled'==aData) {
-			gTpssEnabled=gPref.getBoolPref('enabled');
+			gKablEnabled=gKablPref.getBoolPref('enabled');
 		}
 	}
 }
-myPrefObserver.register();
+gKablPrefObserver.register();
