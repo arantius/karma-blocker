@@ -18,3 +18,15 @@ function loadInBrowser(url) {
 		protocolService.loadUrl(url);
 	}
 }
+
+function gKablConfigOpen() {
+	document.getElementById('enabled').setAttribute('checked', gKablEnabled);
+	document.getElementById('rules').value=gKablRules;
+}
+
+function gKablConfigAccept() {
+	gKablEnabled=document.getElementById('enabled').checked;
+	gKablRules=document.getElementById('rules').value;
+
+	gKablSave();
+}
