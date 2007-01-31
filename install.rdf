@@ -11,6 +11,7 @@
 		<em:iconURL>chrome://kabl/skin/kabl-on.png</em:iconURL>
 		<em:homepageURL>http://trac.arantius.com/Extensions/KarmaBlocker</em:homepageURL>
 		<em:updateURL>http://arantius.com/misc/firefox-extensions/mine/updates.rdf</em:updateURL>
+		<em:optionsURL>chrome://kabl/content/kabl-config.xul</em:optionsURL>
 
 		<em:targetApplication>
 			<Description>

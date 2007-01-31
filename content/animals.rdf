@@ -1,0 +1,27 @@
+<RDF:RDF xmlns:RDF="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+         xmlns:ANIMALS="http://www.some-fictitious-zoo.com/rdf#">
+
+  <RDF:Seq about="http://www.some-fictitious-zoo.com/all-animals">
+    <RDF:li>
+       <RDF:Description about="http://www.some-fictitious-zoo.com/mammals/lion">
+         <ANIMALS:name>Lion</ANIMALS:name>
+         <ANIMALS:species>Panthera leo</ANIMALS:species>
+         <ANIMALS:class>Mammal</ANIMALS:class>
+       </RDF:Description>
+    </RDF:li>
+    <RDF:li>
+       <RDF:Description about="http://www.some-fictitious-zoo.com/arachnids/tarantula">
+         <ANIMALS:name>Tarantula</ANIMALS:name>
+         <ANIMALS:species>Avicularia avicularia</ANIMALS:species>
+         <ANIMALS:class>Arachnid</ANIMALS:class>
+       </RDF:Description>
+    </RDF:li>
+    <RDF:li>
+       <RDF:Description about="http://www.some-fictitious-zoo.com/mammals/hippopotamus">
+         <ANIMALS:name>Hippopotamus</ANIMALS:name>
+         <ANIMALS:species>Hippopotamus amphibius</ANIMALS:species>
+         <ANIMALS:class>Mammal</ANIMALS:class>
+       </RDF:Description>
+    </RDF:li>
+  </RDF:Seq>
+</RDF:RDF>

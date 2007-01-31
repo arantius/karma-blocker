@@ -49,7 +49,12 @@ var gKablModule={
 		if (!this.factoryLoaded) {
 			var loader=Components.classes[JSLOADER_CONTRACTID]
 				.getService(Components.interfaces.mozIJSSubScriptLoader);
+			
 			loader.loadSubScript('chrome://kabl/content/kabl.js');
+			loader.loadSubScript('chrome://kabl/content/kabl-pref.js');
+			loader.loadSubScript('chrome://kabl/content/kabl-prefobs.js');
+			loader.loadSubScript('chrome://kabl/content/kabl-policy.js');
+			
 			this.factoryLoaded=true;
 		}
 

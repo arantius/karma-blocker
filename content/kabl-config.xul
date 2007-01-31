@@ -1,0 +1,28 @@
+<?xml version='1.0'?>
+<?xml-stylesheet href='chrome://global/skin/global.css' type='text/css'?>
+<?xml-stylesheet href='chrome://kabl/skin/kabl-config.css' type='text/css'?>
+<dialog title='Karma Blocker - Configuration'
+	xmlns='http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul'
+	buttons='accept,cancel,extra2'
+	
+	buttonlabelaccept='Save'
+	buttonlabelcancel='Cancel'
+	buttonlabelextra2='Help'
+
+	ondialogextra2='loadInBrowser("http://trac.arantius.com/wiki/Extensions/KarmaBlocker");'
+>
+<!--
+	ondialogaccept='return doOK();'
+	ondialogcancel='return doCancel();'
+-->
+<script type='application/javascript' src='chrome://kabl/content/kabl-config.js'></script>
+<script type='application/javascript' src='chrome://kabl/content/kabl-pref.js'></script>
+
+<dialogheader title='Karma Blocker' description='Configuration'/>
+
+
+<textbox id='editor'
+	cols='80' rows='15' multiline='true'
+/>
+
+</dialog>
