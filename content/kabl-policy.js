@@ -19,9 +19,9 @@ var gKablPolicy={
 			return Components.interfaces.nsIContentPolicy.ACCEPT;
 		}
 
-		if ('http'!=contentLocation.scheme &&
+		if ('http' !=contentLocation.scheme &&
 			'https'!=contentLocation.scheme &&
-			'ftp'!=contentLocation.scheme
+			'ftp'  !=contentLocation.scheme
 		) {
 			// it's not a remote scheme, definitely let it through
 			return Components.interfaces.nsIContentPolicy.ACCEPT;
