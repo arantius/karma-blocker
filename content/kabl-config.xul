@@ -27,7 +27,7 @@
 <textbox id='rules' cols='80' rows='15' multiline='true' flex='1' />
 
 <hbox id='status_box' align='center'>
-	<button oncommand='gKablCheckConfig();' label='Status' />
+	<button oncommand='gKablCheckConfig();' label='Status' accesskey='S' />
 
 	<label id='status_unk' value='Click button to check...' hidden='false' />
 	<label id='status_ok' value='OK' hidden='true' />

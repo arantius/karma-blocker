@@ -38,12 +38,14 @@ for (key in gKablTokens) {
 
 // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ //
 
-function KablToken(type, val){
-    this.type=type;
-    this.val=val;
+function KablToken(type, val, cstart, cend) {
+	this.type=type;
+	this.val=val;
+	this.cstart=cstart;
+	this.cend=cend;
 }
 KablToken.prototype.toString = function() {
-    return "{ " + this.type + ", \"" + this.val + "\" }";
+	return "{ " + this.type + ", \"" + this.val + "\" }";
 }
 
 // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ //
@@ -84,7 +86,9 @@ function gKablParseRules(rules, checkOnly) {
 			case undefined:
 				break;
 			default:
-				rulesTok.push(new KablToken(tokType, match[0]));
+				rulesTok.push(new KablToken(
+					tokType, match[0], match.index, match.lastIndex
+				));
 			}
 		}
 

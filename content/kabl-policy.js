@@ -44,7 +44,7 @@ var gKablPolicy={
 					rHost=this.hostToTld(rHost);
 				}
 
-				// at this point, we know the request originated from a 
+				// at this point, we know the request originated from a
 				// <script> tag.  We have a host and a referring host,
 				// and we've trimmed them down to the "top" domain name.
 				// if they aren't the same domain, REJECT!
@@ -107,7 +107,7 @@ var gKablFactory={
 // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ //
 
 // Initialization and registration
-if (typeof(Components.classes[KABL_CONTRACTID]) == 'undefined') {
+if ('undefined'==typeof(Components.classes[KABL_CONTRACTID])) {
 	(function() { // to keep from munging with scope
 		// Component registration
 		var compMgr=Components.manager

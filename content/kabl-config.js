@@ -13,18 +13,24 @@ function gKablLoadInBrowser(url) {
 		}
 	} else {
 		var protocolService=Components
-			.classes["@mozilla.org/uriloader/external-protocol-service;1"]
-		.getService(Components.interfaces.nsIExternalProtocolService);
+			.classes['@mozilla.org/uriloader/external-protocol-service;1']
+			.getService(Components.interfaces.nsIExternalProtocolService);
 		protocolService.loadUrl(url);
 	}
 }
 
 function gKablConfigOpen() {
 	document.getElementById('enabled').setAttribute('checked', gKablEnabled);
-	document.getElementById('rules').value=gKablRules;
+
+	var textbox=document.getElementById('rules');
+	textbox.value=gKablRules;
+	textbox.selectionStart=0;
+	textbox.selectionEnd=0;
+	textbox.focus();
 }
 
 function gKablConfigAccept() {
+	// extract pref vals
 	gKablEnabled=document.getElementById('enabled').checked;
 	gKablRules=document.getElementById('rules').value;
 
@@ -39,12 +45,14 @@ function gKablCheckConfig() {
 	if (parsed instanceof Array) {
 		textbox.selectionStart=parseInt(parsed[0]);
 		textbox.selectionEnd=parseInt(parsed[1]);
-		textbox.focus();
 
 		gKablSetStatusLabel('err', parsed[2]);
 	} else {
 		gKablSetStatusLabel('ok');
 	}
+
+	// return the focus here for continued editing
+	textbox.focus();
 }
 
 function gKablSetStatusLabel(type, msg) {
