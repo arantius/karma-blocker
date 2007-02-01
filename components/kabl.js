@@ -54,6 +54,7 @@ var gKablModule={
 			loader.loadSubScript('chrome://kabl/content/kabl-pref.js');
 			loader.loadSubScript('chrome://kabl/content/kabl-prefobs.js');
 			loader.loadSubScript('chrome://kabl/content/kabl-policy.js');
+			loader.loadSubScript('chrome://kabl/content/kabl-parse.js');
 
 			this.factoryLoaded=true;
 		}

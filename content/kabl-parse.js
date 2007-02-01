@@ -107,3 +107,8 @@ function gKablParseRules(rules, checkOnly) {
 
 	return rulesObj;
 }
+
+// \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ //
+
+// set up initial parsed rules object
+var gKablRulesObj=gKablParseRules(gKablRules);

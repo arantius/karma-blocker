@@ -26,6 +26,8 @@ var gKablPolicy={
 			// it's not a remote scheme, definitely let it through
 			return Components.interfaces.nsIContentPolicy.ACCEPT;
 		}
+dump('rulesobj: '+gKablRulesObj+'\n');
+
 
 		if ('undefined'!=typeof requestingNode.tagName &&
 			'SCRIPT'==requestingNode.tagName

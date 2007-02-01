@@ -17,9 +17,9 @@
 	id='kabl-config-dialog'
 	persist="screenX screenY width height sizemode"
 >
-<script type='application/javascript' src='chrome://kabl/content/kabl-parse.js'></script>
 <script type='application/javascript' src='chrome://kabl/content/kabl-config.js'></script>
 <script type='application/javascript' src='chrome://kabl/content/kabl-pref.js'></script>
+<script type='application/javascript' src='chrome://kabl/content/kabl-parse.js'></script>
 
 <dialogheader title='Karma Blocker' description='Configuration'/>
 

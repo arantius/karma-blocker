@@ -13,11 +13,12 @@ var gKablPrefObserver={
 	},
 
 	observe:function(aSubject, aTopic, aData) {
-		if(aTopic != 'nsPref:changed') return;
+		if('nsPref:changed'!=aTopic) return;
 		// aSubject is the nsIPrefBranch we're observing (after appropriate QI)
 		// aData is the name of the pref that's been changed (relative to aSubject)
-		
-		if ('enabled'==aData) {
+
+		switch (aData) {
+		case 'enabled':
 			// load the new value
 			gKablEnabled=gKablPref.getBoolPref('enabled');
 
@@ -32,6 +33,15 @@ var gKablPrefObserver={
 				win.gKablEnabled=gKablEnabled;
 				win.gKabl.setImage();
 			}
+
+			break;
+		case 'rules':
+			// load the new value
+			gKablRules=gKablPref.getCharPref('rules');
+
+			// save it in global component context, for future policy checks
+			gKablRulesObj=gKablParseRules(gKablRules);
+			break;
 		}
 	}
 }
