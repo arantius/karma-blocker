@@ -14,7 +14,7 @@ gKablTokens['field']='(?:'+
 	'|\\$url\\.?(?:host|path|scheme)?'+
 	'|\\$origin\\.?(?:host|path|scheme|tag)?'+
 	')';
-gKablTokens['field_val']=
+gKablTokens['field_type_val']=
 	'(?:other|script|image|stylesheet|object|document|subdocument|refresh)';
 
 // types
@@ -23,10 +23,7 @@ gKablTokens['number']='-?\\d+(?:\\.\\d+)?';
 gKablTokens['string']='(?:\'.*\'|".*")';
 
 // operators
-gKablTokens['eq']='==';
-gKablTokens['neq']='!=';
-gKablTokens['match']='=~';
-gKablTokens['nmatch']='!~';
+gKablTokens['field_op']='(?:==|!=|=~|!~|\^=)';
 gKablTokens['inieq']='=';
 
 // etc
@@ -71,17 +68,17 @@ var gKablRulesObj={
 	rulesTok:[],
 
 	// the actual rules data
-	threshold:10,
-	cutoff:50,
-	groups:[],
+	threshold:null,
+	cutoff:null,
+	groups:null,
 
 	/////////////////////////////// METHODS ////////////////////////////////////
 
 	expect:function(expectTok, errMsg) {
 		var tok=this.rulesTok.shift();
+
 		if (expectTok!=tok.type) {
-			errMsg=errMsg.replace('%%', tok.type);
-			return [tok.cstart, tok.cend, errMsg];
+			throw new KablParseException(tok.cstart, tok.cend, errMsg, tok);
 		}
 
 		return tok;
@@ -97,6 +94,9 @@ var gKablRulesObj={
 		}
 		tokRegex=tokRegex.substring(0, tokRegex.length-1);
 		tokRegex=new RegExp(tokRegex, 'gim');
+
+		// init empty, in case this isn't the first run
+		this.rulesTok=[];
 
 		// use the giant regex to tokenize the string
 		var prev_lastIndex=0;
@@ -149,12 +149,18 @@ var gKablRulesObj={
 		try {
 			this.lex(rules);
 
-			const defaultRulesGroup={
+			// init default values
+			this.threshold=10;
+			this.cutoff=50;
+			this.groups=[];
+
+			const defaultGroup={
 				score:1,
-				match:'any'
+				match:'any',
+				rules:[]
 			};
 
-			var tok=null, tok2=null, state=0, rulesGroup=null;
+			var tok=null, tok2=null, state=0, group=null;
 			// State:
 			// 00 - started
 			// 10 - in settings section
@@ -163,7 +169,7 @@ var gKablRulesObj={
 			// parse the rules, by examining the tokens in order
 			while (this.rulesTok.length>0) {
 				tok=this.rulesTok.shift();
-				dump('Token: '+tok.type+' = '+tok.val+'\n');
+
 				switch (tok.type) {
 				////////////////////////////////////////////////////////////////
 				case 'settings':
@@ -188,14 +194,14 @@ var gKablRulesObj={
 				////////////////////////////////////////////////////////////////
 				case 'group':
 					state=20;
-					if (rulesGroup) this.groups.push(rulesGroup);
-					rulesGroup=defaultRulesGroup.valueOf();
+					if (group) this.groups.push(group);
+					group=defaultGroup.valueOf();
 					break;
 				case 'group_cmd':
 					if (20!=state) {
 						throw new KablParseException(
 							tok.cstart, tok.cend,
-							'Unexpected "%%" outside of [Group] section'
+							'Unexpected "%%" outside of [Group] section', tok
 						);
 					}
 
@@ -203,19 +209,20 @@ var gKablRulesObj={
 					case 'match':
 						this.expect('inieq', 'Unexpected "%%" expected: "="');
 						tok2=this.expect('group_match_val', 'Unexpected "%%" expected: "any", "all"');
+						group.match=tok2.val;
 						break;
 					case 'score':
 						this.expect('inieq', 'Unexpected "%%" expected: "="');
 						tok2=this.expect('number', 'Unexpected "%%" expected: number');
-						this[tok.val]=parseFloat(tok2.val);
+						group.score=parseFloat(tok2.val);
 						break;
 					case 'rule':
 						this.expect('inieq', 'Unexpected "%%" expected: "="');
-						rulesGroup.push(this.parseRule());
+						group.rules.push(this.parseRule());
 						break;
 					}
 					break;
-				////////////////////////////////////////////////////////////////////////
+				////////////////////////////////////////////////////////////////
 				default:
 					throw new KablParseException(
 						tok.cstart, tok.cend,
@@ -229,7 +236,25 @@ var gKablRulesObj={
 	},
 
 	parseRule:function() {
+		var field=this.expect('field', 'Unexpected "%%" expected: field');
+		var op=this.expect('field_op', 'Unexpected "%%" expected: field operator');
 
+		switch (true) {
+		case '$thirdParty'==field.val:
+			var val=this.expect('bool', 'Unexpected "%%" expected: true, false');
+			return [field.val, op.val, val.val];
+			break;
+		case '$origin'==field.val.substring(0, 7):
+		case '$url'==field.val.substring(0, 4):
+			var val=this.expect('string', 'Unexpected "%%" expected: string');
+			return [field.val, op.val, val.val];
+			break;
+		default:
+			throw new KablParseException(
+				field.cstart, field.cend,
+				'Unexpected "%%"', field
+			);
+		}
 	}
 };
 

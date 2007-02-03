@@ -29,10 +29,12 @@
 <hbox id='status_box' align='center'>
 	<button oncommand='gKablCheckConfig();' label='Status' accesskey='S' />
 
-	<label id='status_unk' value='Click button to check...' hidden='false' />
-	<label id='status_ok' value='OK' hidden='true' />
-	<label id='status_err' value='Error' hidden='true' style='color: red;' />
-	<label id='status_errmsg' value='' hidden='true' />
+	<textbox id='status_line' readonly='readonly' flex='1'>
+		<label id='status_unk' value='Click button to check...' hidden='false' />
+		<label id='status_ok' value='OK' hidden='true' style='color: green;'/>
+		<label id='status_err' value='Error' hidden='true' style='color: red;' />
+		<label id='status_errmsg' value='' hidden='true' />
+	</textbox>
 
 </hbox>
 

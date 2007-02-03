@@ -1,6 +1,21 @@
-textbox {
+#status_box {
+	padding-top: 7px;
+}
+
+textbox#rules {
 	margin: 0px 5px;
 	font-family: monospace;
+}
+
+textbox#status_line {
+	margin-right: 5px;
+	cursor: default;
+}
+textbox#status_line input {
+	display: none;
+}
+textbox#status_line label {
+	margin-left: 0;
 }
 
 button[dlgtype='extra1'] {
