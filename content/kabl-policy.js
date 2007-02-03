@@ -13,12 +13,6 @@ var gKablPolicy={
 			return Components.interfaces.nsIContentPolicy.ACCEPT;
 		}
 
-		if (null==requestOrigin || null==requestingNode) {
-			// if we don't know where the request came from, we can't
-			// judge it.  let it through
-			return Components.interfaces.nsIContentPolicy.ACCEPT;
-		}
-
 		if ('http' !=contentLocation.scheme &&
 			'https'!=contentLocation.scheme &&
 			'ftp'  !=contentLocation.scheme
@@ -26,39 +20,8 @@ var gKablPolicy={
 			// it's not a remote scheme, definitely let it through
 			return Components.interfaces.nsIContentPolicy.ACCEPT;
 		}
-dump('rulesobj: '+gKablRulesObj+'\n');
 
-
-		if ('undefined'!=typeof requestingNode.tagName &&
-			'SCRIPT'==requestingNode.tagName
-		) {
-			var cHost=contentLocation.host;
-			var rHost=requestOrigin.host;
-
-			if ('undefined'!=typeof cHost && 'undefined'!=typeof rHost &&
-				''!=cHost && ''!=rHost
-			) {
-				if (cHost.match(/^[0-9.]+$/)) {
-					// the content host is all digits and dots ... IP!
-					// don't munge it
-				} else {
-					cHost=this.hostToTld(cHost);
-					rHost=this.hostToTld(rHost);
-				}
-
-				// at this point, we know the request originated from a
-				// <script> tag.  We have a host and a referring host,
-				// and we've trimmed them down to the "top" domain name.
-				// if they aren't the same domain, REJECT!
-				if (cHost!=rHost) {
-					dump(
-						'KABL denied: '+contentLocation.spec+'\n'+
-						'from page:   '+requestOrigin.spec+'\n'
-					);
-					return Components.interfaces.nsIContentPolicy.REJECT_REQUEST;
-				}
-			}
-		}
+		// todo: fill in the actual logic!
 
 		return Components.interfaces.nsIContentPolicy.ACCEPT;
 	},

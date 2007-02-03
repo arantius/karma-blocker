@@ -40,7 +40,7 @@ function gKablConfigAccept() {
 function gKablCheckConfig() {
 	var textbox=document.getElementById('rules');
 
-	var parsed=gKablParseRules(textbox.value, true);
+	var parsed=gKablRulesObj.parse(textbox.value);
 
 	if (parsed instanceof Array) {
 		textbox.selectionStart=parseInt(parsed[0]);

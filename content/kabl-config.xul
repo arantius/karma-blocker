@@ -31,7 +31,7 @@
 
 	<label id='status_unk' value='Click button to check...' hidden='false' />
 	<label id='status_ok' value='OK' hidden='true' />
-	<label id='status_err' value='Error' hidden='true' />
+	<label id='status_err' value='Error' hidden='true' style='color: red;' />
 	<label id='status_errmsg' value='' hidden='true' />
 
 </hbox>
