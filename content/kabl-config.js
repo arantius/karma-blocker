@@ -30,6 +30,12 @@ function gKablConfigOpen() {
 }
 
 function gKablConfigAccept() {
+	var parseOk=gKablCheckConfig();
+
+	if (!parseOk) {
+		return confirm('Parse error.\nReally save rules?');
+	}
+
 	// extract pref vals
 	gKablEnabled=document.getElementById('enabled').checked;
 	gKablRules=document.getElementById('rules').value;
@@ -53,6 +59,8 @@ function gKablCheckConfig() {
 
 	// return the focus here for continued editing
 	textbox.focus();
+
+	return !(parsed instanceof Array);
 }
 
 function gKablSetStatusLabel(type, msg) {

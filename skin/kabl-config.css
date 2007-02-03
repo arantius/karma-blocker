@@ -9,6 +9,7 @@ textbox#rules {
 
 textbox#status_line {
 	margin-right: 5px;
+	padding-left: 8px;
 	cursor: default;
 }
 textbox#status_line input {

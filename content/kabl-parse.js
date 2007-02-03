@@ -23,7 +23,7 @@ gKablTokens['number']='-?\\d+(?:\\.\\d+)?';
 gKablTokens['string']='(?:\'.*\'|".*")';
 
 // operators
-gKablTokens['field_op']='(?:==|!=|=~|!~|\^=)';
+gKablTokens['field_op']='(?:==|!=|=~|!~|\\^=|\\$=)';
 gKablTokens['inieq']='=';
 
 // etc
