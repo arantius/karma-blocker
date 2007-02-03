@@ -154,17 +154,17 @@ var gKablRulesObj={
 			this.cutoff=50;
 			this.groups=[];
 
-			const defaultGroup={
-				score:1,
-				match:'any',
-				rules:[]
+			function defaultGroup() {
+				this.score=1;
+				this.match='any';
+				this.rules=[];
 			};
 
-			var tok=null, tok2=null, state=0, group=null;
 			// State:
 			// 00 - started
 			// 10 - in settings section
 			// 20 - in group section
+			var tok=null, tok2=null, state=0, group=null;
 
 			// parse the rules, by examining the tokens in order
 			while (this.rulesTok.length>0) {
@@ -195,7 +195,7 @@ var gKablRulesObj={
 				case 'group':
 					state=20;
 					if (group) this.groups.push(group);
-					group=defaultGroup.valueOf();
+					group=new defaultGroup;
 					break;
 				case 'group_cmd':
 					if (20!=state) {
@@ -233,6 +233,11 @@ var gKablRulesObj={
 		} catch (e if e instanceof KablParseException) {
 			return [e.start, e.end, e.message];
 		}
+
+		// if the last parsed section was a group with rules, add it
+		if (group && group.rules.length) this.groups.push(group);
+	
+		return true;
 	},
 
 	parseRule:function() {
@@ -255,6 +260,8 @@ var gKablRulesObj={
 				'Unexpected "%%"', field
 			);
 		}
+
+		return null;
 	}
 };
 

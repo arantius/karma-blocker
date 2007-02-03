@@ -21,7 +21,90 @@ var gKablPolicy={
 			return Components.interfaces.nsIContentPolicy.ACCEPT;
 		}
 
-		// todo: fill in the actual logic!
+		function Fields(type, loc, org, node) {
+			this['$type']=type;
+
+			this['$url']=loc.spec;
+			this['$url.host']=loc.host;
+			this['$url.path']=loc.path;
+			this['$url.scheme']=loc.scheme;
+
+			if ('chrome'==org.scheme) {
+				this['$thirdParty']=false;
+
+				this['$origin']=undefined;
+				this['$origin.host']=undefined;
+				this['$origin.path']=undefined;
+				this['$origin.scheme']=undefined;
+
+				this['$origin.tag']=undefined;
+			} else {
+				var lHost=loc.host;
+				var oHost=org.host;
+				if (lHost.match(/^[0-9.]+$/)) {
+					// the content host is all digits and dots ... IP!
+					// don't munge it
+				} else {
+					lHost=gKablPolicy.hostToTld(lHost);
+					oHost=gKablPolicy.hostToTld(oHost);
+				}
+				this['$thirdParty']=(lHost!=oHost);
+
+				this['$origin']=org.spec;
+				this['$origin.host']=org.host;
+				this['$origin.path']=org.path;
+				this['$origin.scheme']=org.scheme;
+
+				this['$origin.tag']=node.tagName;
+			}
+		}
+		var fields=new Fields(
+			contentType, contentLocation, requestOrigin, requestingNode
+		);
+
+		dump('\n\nChecking against:\n'+contentLocation.spec+'\n'+requestOrigin.spec+'\n');
+		var score=0, val, field, flag=false;
+		for (var i=0, group=null; group=gKablRulesObj.groups[i]; i++) {
+			dump('  Group ...\n');
+			for (var j=0, rule=null; rule=group.rules[j]; j++) {
+				dump('    rule = '+rule.toSource()+'\n');
+				flag=false;
+
+				if ('$thirdParty'==rule[0]) {
+					val=new Boolean(rule[2]);
+				} else {
+					val=rule[2].substring(1, rule[2].length-1);
+					val=val.toLowerCase();
+				}
+				field=fields[rule[0]];
+				if ('string'==typeof field) field=field.toLowerCase();
+
+				switch (rule[1]) {
+					case '==': flag=field==val; break;
+					case '!=': flag=field!=val; break;
+					case '=~': flag=(new RegExp(val)).test(field); break;
+					case '!~': flag=!(new RegExp(val)).test(field); break;
+					case '\\^=': flag=field.substr(0, val.length)==val; break;
+					case '\\$=': flag=field.substr(field.length-val.length)==val; break;
+				}
+
+				//dump('      ' + field + ' <> ' + val + '\n');
+				//dump('      match = '+flag+'\n');
+
+				if (flag && 'any'==group.match) {
+					dump('flag and any, deny\n');
+					return Components.interfaces.nsIContentPolicy.REJECT_REQUEST;
+				} else if (!flag && 'all'==group.match) {
+					dump('!flag and all, skip to next rule\n');
+					break;
+				}
+			}
+
+			if (flag && 'all'==group.match) {
+				dump('final flag and all, deny\n');
+				return Components.interfaces.nsIContentPolicy.REJECT_REQUEST;
+			}
+		}
 
 		return Components.interfaces.nsIContentPolicy.ACCEPT;
 	},

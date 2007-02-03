@@ -41,6 +41,8 @@ function gKablConfigAccept() {
 	gKablRules=document.getElementById('rules').value;
 
 	gKablSave();
+
+	return true;
 }
 
 function gKablCheckConfig() {
