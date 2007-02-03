@@ -10,7 +10,7 @@ gKablTokens['group_match_val']='(?:all|any)';
 
 // fields
 gKablTokens['field']='(?:'+
-	'\\$(?:thirdParty|type)'+
+	'\\$thirdParty|\\$type'+
 	'|\\$url\\.?(?:host|path|scheme)?'+
 	'|\\$origin\\.?(?:host|path|scheme|tag)?'+
 	')';
@@ -249,6 +249,10 @@ var gKablRulesObj={
 			var val=this.expect('bool', 'Unexpected "%%" expected: true, false');
 			return [field.val, op.val, val.val];
 			break;
+		case '$type'==field.val:
+			var val=this.expect('field_type_val', 'Unexpected "%%" expected: type');
+			return [field.val, op.val, val.val];
+			break;
 		case '$origin'==field.val.substring(0, 7):
 		case '$url'==field.val.substring(0, 4):
 			var val=this.expect('string', 'Unexpected "%%" expected: string');
@@ -257,7 +261,7 @@ var gKablRulesObj={
 		default:
 			throw new KablParseException(
 				field.cstart, field.cend,
-				'Unexpected "%%"', field
+				'Unexpected "%%", expected: field', field
 			);
 		}
 

@@ -62,22 +62,29 @@ var gKablPolicy={
 			contentType, contentLocation, requestOrigin, requestingNode
 		);
 
-		dump('\n\nChecking against:\n'+contentLocation.spec+'\n'+requestOrigin.spec+'\n');
+		//dump('\n\nChecking against:\n'+contentLocation.spec+'\n'+requestOrigin.spec+'\n');
 		var score=0, val, field, flag=false;
 		for (var i=0, group=null; group=gKablRulesObj.groups[i]; i++) {
-			dump('  Group ...\n');
+			//dump('  Group ...\n');
 			for (var j=0, rule=null; rule=group.rules[j]; j++) {
-				dump('    rule = '+rule.toSource()+'\n');
+				//dump('    rule = '+rule.toSource()+'\n');
 				flag=false;
 
+				// extract the actual value of this field
+				field=fields[rule[0]];
+				if ('string'==typeof field) field=field.toLowerCase();
+
+				// decode the match value
 				if ('$thirdParty'==rule[0]) {
 					val=new Boolean(rule[2]);
+				} else if ('$type'==rule[0]) {
+					val=Components.interfaces.nsIContentPolicy[
+						'TYPE_'+rule[2].toUpperCase()
+					];
 				} else {
 					val=rule[2].substring(1, rule[2].length-1);
 					val=val.toLowerCase();
 				}
-				field=fields[rule[0]];
-				if ('string'==typeof field) field=field.toLowerCase();
 
 				switch (rule[1]) {
 					case '==': flag=field==val; break;
@@ -92,16 +99,16 @@ var gKablPolicy={
 				//dump('      match = '+flag+'\n');
 
 				if (flag && 'any'==group.match) {
-					dump('flag and any, deny\n');
+					//dump('flag and any, deny\n');
 					return Components.interfaces.nsIContentPolicy.REJECT_REQUEST;
 				} else if (!flag && 'all'==group.match) {
-					dump('!flag and all, skip to next rule\n');
+					//dump('!flag and all, skip to next rule\n');
 					break;
 				}
 			}
 
 			if (flag && 'all'==group.match) {
-				dump('final flag and all, deny\n');
+				//dump('final flag and all, deny\n');
 				return Components.interfaces.nsIContentPolicy.REJECT_REQUEST;
 			}
 		}
