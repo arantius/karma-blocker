@@ -1,3 +1,5 @@
+const gKablDebug=true;
+
 var gKablPolicy={
 	hostToTld:function(host) {
 		// this terribly simple method seems to work well enough
@@ -63,12 +65,12 @@ var gKablPolicy={
 			contentType, contentLocation, requestOrigin, requestingNode
 		);
 
-		dump('\n\nChecking against:\n'+contentLocation.spec+'\n'+requestOrigin.spec+'\n');
+		if (gKablDebug) dump('\n\nChecking against:\n'+contentLocation.spec+'\n'+requestOrigin.spec+'\n');
 		var score=0, val, field, flag=false;
 		for (var i=0, group=null; group=gKablRulesObj.groups[i]; i++) {
-			dump('  Group ...\n');
+			if (gKablDebug) dump('  Group ...\n');
 			for (var j=0, rule=null; rule=group.rules[j]; j++) {
-				dump('    rule = '+rule.toSource()+'\n');
+				if (gKablDebug) dump('    rule = '+rule.toSource()+'\n');
 				flag=false;
 
 				// extract the actual value of this field
@@ -96,20 +98,20 @@ var gKablPolicy={
 					case '$=': flag=field.substr(field.length-val.length)==val; break;
 				}
 
-				dump('      ' + field + ' <> ' + val + '\n');
-				dump('      match = '+flag+'\n');
+				if (gKablDebug) dump('      ' + field + ' <> ' + val + '\n');
+				if (gKablDebug) dump('      match = '+flag+'\n');
 
 				if (flag && 'any'==group.match) {
-					dump('flag and any, deny\n');
+					if (gKablDebug) dump('flag and any, deny\n');
 					return Components.interfaces.nsIContentPolicy.REJECT_REQUEST;
 				} else if (!flag && 'all'==group.match) {
-					dump('!flag and all, skip to next rule\n');
+					if (gKablDebug) dump('!flag and all, skip to next rule\n');
 					break;
 				}
 			}
 
 			if (flag && 'all'==group.match) {
-				dump('final flag and all, deny\n');
+				if (gKablDebug) dump('final flag and all, deny\n');
 				return Components.interfaces.nsIContentPolicy.REJECT_REQUEST;
 			}
 		}
