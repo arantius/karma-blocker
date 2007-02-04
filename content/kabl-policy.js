@@ -1,4 +1,7 @@
 var gKablPolicy={
+	ACCEPT:Components.interfaces.nsIContentPolicy.ACCEPT,
+	REJECT:Components.interfaces.nsIContentPolicy.REJECT_REQUEST,
+
 	hostToTld:function(host) {
 		// this terribly simple method seems to work well enough
 		return host.replace(/.*\.(.*......)/, '$1')
@@ -40,13 +43,36 @@ var gKablPolicy={
 		}
 	},
 
+	// evaluate whether we should handle this type of score
+	evaluate:function(type, score) {
+		var doDebug=(gKablDebug> ('cutoff'==type?2:1) );
+		if (doDebug) dump(
+			'  score: '+score+' rules '+type+': '+gKablRulesObj[type]+' ... '
+		);
+
+		if (('threshold'==type && score>=gKablRulesObj.threshold) ||
+			('cutoff'==type && score>=gKablRulesObj.cutoff)
+		) {
+			if (doDebug) dump('deny!\n');
+			return this.REJECT;
+		} else if ('threshold'==type ||
+			('cutoff'==type && Math.abs(score)>=gKablRulesObj.cutoff)
+		) {
+			if (doDebug) dump('accept.\n');
+			return this.ACCEPT;
+		} else {
+			if (doDebug) dump('ignore.\n');
+			return undefined;
+		}
+	},
+
 	// nsISupports interface implementation
 	shouldLoad:function(
 		contentType, contentLocation, requestOrigin, requestingNode, mimeTypeGuess, extra
 	) {
 		if (!gKablEnabled) {
 			// when not enabled, let it through
-			return Components.interfaces.nsIContentPolicy.ACCEPT;
+			return this.ACCEPT;
 		}
 
 		if ('http' !=contentLocation.scheme &&
@@ -54,7 +80,7 @@ var gKablPolicy={
 			'ftp'  !=contentLocation.scheme
 		) {
 			// it's not a remote scheme, definitely let it through
-			return Components.interfaces.nsIContentPolicy.ACCEPT;
+			return this.ACCEPT;
 		}
 
 		var fields=new this.Fields(
@@ -64,7 +90,7 @@ var gKablPolicy={
 		if (gKablDebug>0) dump('\nKarma Blocker - Checking:\nloc: '+contentLocation.spec+'\norg: '+requestOrigin.spec+'\n');
 		var score=0, val, field, flag=false;
 		for (var i=0, group=null; group=gKablRulesObj.groups[i]; i++) {
-			if (gKablDebug>1) dump('  Group ...\n');
+			if (gKablDebug>2) dump('  Group ...\n');
 			for (var j=0, rule=null; rule=group.rules[j]; j++) {
 				if (gKablDebug>3) dump('    rule = '+rule.toSource()+'\n');
 				flag=false;
@@ -109,28 +135,12 @@ var gKablPolicy={
 				score+=group.score;
 			}
 
-			if (gKablDebug>1) dump('  score: '+score+' rules cutoff: '+gKablRulesObj.cutoff+' ... ');
-			if (Math.abs(score) >= gKablRulesObj.cutoff) {
-				if (score>=0) {
-					if (gKablDebug>1) dump('deny!\n');
-					return Components.interfaces.nsIContentPolicy.REJECT_REQUEST;
-				} else {
-					if (gKablDebug>1) dump('accept.\n');
-					return Components.interfaces.nsIContentPolicy.ACCEPT;
-				}
-			} else {
-				if (gKablDebug>1) dump('ignore.\n');
-			}
+			// reuse flag for (possible) return value here
+			flag=this.evaluate('cutoff', score);
+			if (flag) return flag;
 		}
 
-		if (gKablDebug>1) dump('score: '+score+' rules threshold: '+gKablRulesObj.threshold+' ... ');
-		if (score >= gKablRulesObj.threshold) {
-			if (gKablDebug>1) dump('deny!\n');
-			return Components.interfaces.nsIContentPolicy.REJECT_REQUEST;
-		} else {
-			if (gKablDebug>1) dump('accept.\n');
-			return Components.interfaces.nsIContentPolicy.ACCEPT;
-		}
+		return this.evaluate('threshold', score);
 	},
 
 	// nsISupports interface implementation
@@ -138,7 +148,7 @@ var gKablPolicy={
 		contentType, contentLocation, requestOrigin, requestingNode, mimeType, extra
 	) {
 		if (gKablDebug>0) dump('.... shouldProcess ....\n');
-		return Components.interfaces.nsIContentPolicy.ACCEPT;
+		return this.ACCEPT;
 	},
 
 	// nsISupports interface implementation
