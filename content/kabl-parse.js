@@ -151,7 +151,7 @@ var gKablRulesObj={
 
 			// init default values
 			this.threshold=10;
-			this.cutoff=50;
+			this.cutoff=Number.MAX_VALUE;
 			this.groups=[];
 
 			function defaultGroup() {
