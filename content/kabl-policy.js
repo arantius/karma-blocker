@@ -4,6 +4,7 @@ var gKablPolicy={
 		return host.replace(/.*\.(.*......)/, '$1')
 	},
 
+	// constructor for loading the details into the form we work with
 	Fields:function(type, loc, org, node) {
 		this['$type']=type;
 
@@ -24,10 +25,7 @@ var gKablPolicy={
 		} else {
 			var lHost=loc.host;
 			var oHost=org.host;
-			if (lHost.match(/^[0-9.]+$/)) {
-				// the content host is all digits and dots ... IP!
-				// don't munge it
-			} else {
+			if (!lHost.match(/^[0-9.]+$/)) {
 				lHost=gKablPolicy.hostToTld(lHost);
 				oHost=gKablPolicy.hostToTld(oHost);
 			}
@@ -42,12 +40,12 @@ var gKablPolicy={
 		}
 	},
 
-	// nsIContentPolicy interface implementation
+	// nsISupports interface implementation
 	shouldLoad:function(
 		contentType, contentLocation, requestOrigin, requestingNode, mimeTypeGuess, extra
 	) {
 		if (!gKablEnabled) {
-			// when not enabled:  let it through
+			// when not enabled, let it through
 			return Components.interfaces.nsIContentPolicy.ACCEPT;
 		}
 
@@ -135,7 +133,7 @@ var gKablPolicy={
 		}
 	},
 
-	// this is now for urls that directly load media, and meta-refreshes (before activation)
+	// nsISupports interface implementation
 	shouldProcess:function(
 		contentType, contentLocation, requestOrigin, requestingNode, mimeType, extra
 	) {

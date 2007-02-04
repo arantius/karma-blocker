@@ -16,5 +16,5 @@ function gKablLoad() {
 function gKablSave() {
 	gKablPref.setBoolPref('enabled', gKablEnabled);
 	gKablPref.setCharPref('rules', gKablRules);
-	gKablPref.setCharPref('debug', gKablDebug);
+	gKablPref.setIntPref('debug', gKablDebug);
 }
