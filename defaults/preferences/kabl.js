@@ -1,2 +1,3 @@
 pref('extensions.kabl.enabled', true);
 pref('extensions.kabl.rules', "[Settings]\nthreshold=10\ncutoff=1000\n\n# Block scripts loaded from a third-party server\n[Group]\nmatch=all\nscore=100\nrule=$thirdParty==true\nrule=$origin.tag=='script'\n\n# Block some well known ads and trackers\n[Group]\nmatch=any\nscore=10\nrule=$url=='http://www.google-analytics.com/urchin.js'\nrule=$url.host=='pagead2.googlesyndication.com'\nrule=$url.host=~'^ad[0-9s]?\\.'\nrule=$url.host=~'\\.intellitxt\\.'\nrule=$url.host$='.extreme-dm\\.com'\nrule=$url.host$='.doubleclick\\.net'\nrule=$url.host$='.atdmt\\.com'\n");
+pref('extensions.kabl.debug', 0);

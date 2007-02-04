@@ -1,5 +1,3 @@
-const gKablDebug=true;
-
 var gKablPolicy={
 	hostToTld:function(host) {
 		// this terribly simple method seems to work well enough
@@ -65,12 +63,12 @@ var gKablPolicy={
 			contentType, contentLocation, requestOrigin, requestingNode
 		);
 
-		if (gKablDebug) dump('\n\nChecking against:\n'+contentLocation.spec+'\n'+requestOrigin.spec+'\n');
+		if (gKablDebug>0) dump('\nKarma Blocker - Checking:\nloc: '+contentLocation.spec+'\norg: '+requestOrigin.spec+'\n');
 		var score=0, val, field, flag=false;
 		for (var i=0, group=null; group=gKablRulesObj.groups[i]; i++) {
-			if (gKablDebug) dump('  Group ...\n');
+			if (gKablDebug>1) dump('  Group ...\n');
 			for (var j=0, rule=null; rule=group.rules[j]; j++) {
-				if (gKablDebug) dump('    rule = '+rule.toSource()+'\n');
+				if (gKablDebug>3) dump('    rule = '+rule.toSource()+'\n');
 				flag=false;
 
 				// extract the actual value of this field
@@ -98,8 +96,8 @@ var gKablPolicy={
 					case '$=': flag=field.substr(field.length-val.length)==val; break;
 				}
 
-				if (gKablDebug) dump('      ' + field + ' <> ' + val + '\n');
-				if (gKablDebug) dump('      match = '+flag+'\n');
+				if (gKablDebug>3) dump('      ' + field + ' <> ' + val + '\n');
+				if (gKablDebug>3) dump('      match = '+flag+'\n');
 
 				if (flag && 'any'==group.match) {
 					score+=group.score;
@@ -113,26 +111,26 @@ var gKablPolicy={
 				score+=group.score;
 			}
 
-			if (gKablDebug) dump('  score: '+score+' rules cutoff: '+gKablRulesObj.cutoff+' ... ');
+			if (gKablDebug>1) dump('  score: '+score+' rules cutoff: '+gKablRulesObj.cutoff+' ... ');
 			if (Math.abs(score) >= gKablRulesObj.cutoff) {
 				if (score>=0) {
-					if (gKablDebug) dump('deny!\n');
+					if (gKablDebug>1) dump('deny!\n');
 					return Components.interfaces.nsIContentPolicy.REJECT_REQUEST;
 				} else {
-					if (gKablDebug) dump('accept.\n');
+					if (gKablDebug>1) dump('accept.\n');
 					return Components.interfaces.nsIContentPolicy.ACCEPT;
 				}
 			} else {
-					if (gKablDebug) dump('ignore.\n');
+				if (gKablDebug>1) dump('ignore.\n');
 			}
 		}
 
-		if (gKablDebug) dump('score: '+score+' rules threshold: '+gKablRulesObj.threshold+' ... ');
+		if (gKablDebug>1) dump('score: '+score+' rules threshold: '+gKablRulesObj.threshold+' ... ');
 		if (score >= gKablRulesObj.threshold) {
-			if (gKablDebug) dump('deny!\n');
+			if (gKablDebug>1) dump('deny!\n');
 			return Components.interfaces.nsIContentPolicy.REJECT_REQUEST;
 		} else {
-			if (gKablDebug) dump('accept.\n');
+			if (gKablDebug>1) dump('accept.\n');
 			return Components.interfaces.nsIContentPolicy.ACCEPT;
 		}
 	},
@@ -141,7 +139,7 @@ var gKablPolicy={
 	shouldProcess:function(
 		contentType, contentLocation, requestOrigin, requestingNode, mimeType, extra
 	) {
-		if (gKablDebug) dump('.... shouldProcess ....\n');
+		if (gKablDebug>0) dump('.... shouldProcess ....\n');
 		return Components.interfaces.nsIContentPolicy.ACCEPT;
 	},
 

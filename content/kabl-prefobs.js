@@ -42,6 +42,9 @@ var gKablPrefObserver={
 			// save it in global component context, for future policy checks
 			gKablRulesObj.parse(gKablRules);
 			break;
+		case 'debug':
+			// load the new value
+			gKablDebug=gKablPref.getIntPref('debug');
 		}
 	}
 }
