@@ -102,27 +102,46 @@ var gKablPolicy={
 				if (gKablDebug) dump('      match = '+flag+'\n');
 
 				if (flag && 'any'==group.match) {
-					if (gKablDebug) dump('flag and any, deny\n');
-					return Components.interfaces.nsIContentPolicy.REJECT_REQUEST;
+					score+=group.score;
+					break;
 				} else if (!flag && 'all'==group.match) {
-					if (gKablDebug) dump('!flag and all, skip to next rule\n');
 					break;
 				}
 			}
 
 			if (flag && 'all'==group.match) {
-				if (gKablDebug) dump('final flag and all, deny\n');
-				return Components.interfaces.nsIContentPolicy.REJECT_REQUEST;
+				score+=group.score;
+			}
+
+			if (gKablDebug) dump('  score: '+score+' rules cutoff: '+gKablRulesObj.cutoff+' ... ');
+			if (Math.abs(score) >= gKablRulesObj.cutoff) {
+				if (score>=0) {
+					if (gKablDebug) dump('deny!\n');
+					return Components.interfaces.nsIContentPolicy.REJECT_REQUEST;
+				} else {
+					if (gKablDebug) dump('accept.\n');
+					return Components.interfaces.nsIContentPolicy.ACCEPT;
+				}
+			} else {
+					if (gKablDebug) dump('ignore.\n');
 			}
 		}
 
-		return Components.interfaces.nsIContentPolicy.ACCEPT;
+		if (gKablDebug) dump('score: '+score+' rules threshold: '+gKablRulesObj.threshold+' ... ');
+		if (score >= gKablRulesObj.threshold) {
+			if (gKablDebug) dump('deny!\n');
+			return Components.interfaces.nsIContentPolicy.REJECT_REQUEST;
+		} else {
+			if (gKablDebug) dump('accept.\n');
+			return Components.interfaces.nsIContentPolicy.ACCEPT;
+		}
 	},
 
 	// this is now for urls that directly load media, and meta-refreshes (before activation)
 	shouldProcess:function(
 		contentType, contentLocation, requestOrigin, requestingNode, mimeType, extra
 	) {
+		if (gKablDebug) dump('.... shouldProcess ....\n');
 		return Components.interfaces.nsIContentPolicy.ACCEPT;
 	},
 
