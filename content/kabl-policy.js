@@ -44,16 +44,14 @@ var gKablPolicy={
 	},
 
 	// evaluate whether we should handle this type of score
-	evaluate:function(type, score, node) {
-		var doDebug=(gKablDebug> ('cutoff'==type?2:1) );
-		if (doDebug) dump(
-			'  score: '+score+' rules '+type+': '+gKablRulesObj[type]+' ... '
-		);
+	evaluate:function(type, score, node, loc) {
+		var scoreMsg='  score: '+score+' rules '+type+': '+gKablRulesObj[type]+' ... ';
 
 		if (('threshold'==type && score>=gKablRulesObj.threshold) ||
 			('cutoff'==type && score>=gKablRulesObj.cutoff)
 		) {
-			if (doDebug) dump('deny!\n');
+			if (gKablDebug>1) dump(scoreMsg+'deny!\n');
+			else if (1==gKablDebug) dump('kabl DENY   '+loc.spec+'\n');
 
 			// try block just in case, attempt to hide the node, i.e.
 			// if a non-loaded image will result in an alt tag showing
@@ -68,10 +66,11 @@ var gKablPolicy={
 		} else if ('threshold'==type ||
 			('cutoff'==type && Math.abs(score)>=gKablRulesObj.cutoff)
 		) {
-			if (doDebug) dump('accept.\n');
+			if (gKablDebug>1) dump(scoreMsg+'accept\n');
+			else if (1==gKablDebug) dump('kabl ACCEPT '+loc.spec+'\n');
+
 			return this.ACCEPT;
 		} else {
-			if (doDebug) dump('ignore.\n');
 			return undefined;
 		}
 	},
@@ -97,12 +96,12 @@ var gKablPolicy={
 			contentType, contentLocation, requestOrigin, requestingNode
 		);
 
-		if (gKablDebug>0) dump('\nKarma Blocker - Checking:\nloc: '+contentLocation.spec+'\norg: '+requestOrigin.spec+'\n');
+		if (gKablDebug>1) dump('\nKarma Blocker - Checking:\nloc: '+contentLocation.spec+'\norg: '+requestOrigin.spec+'\n');
 		var score=0, val, field, flag=false;
 		for (var i=0, group=null; group=gKablRulesObj.groups[i]; i++) {
-			if (gKablDebug>2) dump('  Group ...\n');
+			if (gKablDebug>3) dump('  Group ...\n');
 			for (var j=0, rule=null; rule=group.rules[j]; j++) {
-				if (gKablDebug>3) dump('    rule = '+rule.toSource()+'\n');
+				if (gKablDebug>4) dump('    rule = '+rule.toSource()+'\n');
 				flag=false;
 
 				// extract the actual value of this field
@@ -130,8 +129,8 @@ var gKablPolicy={
 					case '$=': flag=field.substr(field.length-val.length)==val; break;
 				}
 
-				if (gKablDebug>3) dump('      ' + field + ' <> ' + val + '\n');
-				if (gKablDebug>3) dump('      match = '+flag+'\n');
+				if (gKablDebug>4) dump('      ' + field + ' <> ' + val + '\n');
+				if (gKablDebug>4) dump('      match = '+flag+'\n');
 
 				if (flag && 'any'==group.match) {
 					score+=group.score;
@@ -146,11 +145,11 @@ var gKablPolicy={
 			}
 
 			// reuse flag for (possible) return value here
-			flag=this.evaluate('cutoff', score, requestingNode);
+			flag=this.evaluate('cutoff', score, requestingNode, contentLocation);
 			if (flag) return flag;
 		}
 
-		return this.evaluate('threshold', score, requestingNode);
+		return this.evaluate('threshold', score, requestingNode, contentLocation);
 	},
 
 	// nsISupports interface implementation
