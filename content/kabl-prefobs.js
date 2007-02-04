@@ -40,7 +40,7 @@ var gKablPrefObserver={
 			gKablRules=gKablPref.getCharPref('rules');
 
 			// save it in global component context, for future policy checks
-			gKablRulesObj=gKablParseRules(gKablRules);
+			gKablRulesObj.parse(gKablRules);
 			break;
 		}
 	}
