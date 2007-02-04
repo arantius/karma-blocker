@@ -44,7 +44,7 @@ var gKablPolicy={
 	},
 
 	// evaluate whether we should handle this type of score
-	evaluate:function(type, score) {
+	evaluate:function(type, score, node) {
 		var doDebug=(gKablDebug> ('cutoff'==type?2:1) );
 		if (doDebug) dump(
 			'  score: '+score+' rules '+type+': '+gKablRulesObj[type]+' ... '
@@ -54,6 +54,16 @@ var gKablPolicy={
 			('cutoff'==type && score>=gKablRulesObj.cutoff)
 		) {
 			if (doDebug) dump('deny!\n');
+
+			// try block just in case, attempt to hide the node, i.e.
+			// if a non-loaded image will result in an alt tag showing
+			try {
+				node=node.QueryInterface(Components.interfaces.nsIDOMNode);
+				node.style.display='none !important';
+			} catch (e) {
+				if (gKablDebug) dump(e+'\n');
+			}
+
 			return this.REJECT;
 		} else if ('threshold'==type ||
 			('cutoff'==type && Math.abs(score)>=gKablRulesObj.cutoff)
@@ -136,11 +146,11 @@ var gKablPolicy={
 			}
 
 			// reuse flag for (possible) return value here
-			flag=this.evaluate('cutoff', score);
+			flag=this.evaluate('cutoff', score, requestingNode);
 			if (flag) return flag;
 		}
 
-		return this.evaluate('threshold', score);
+		return this.evaluate('threshold', score, requestingNode);
 	},
 
 	// nsISupports interface implementation
