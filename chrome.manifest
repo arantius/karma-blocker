@@ -1,4 +1,4 @@
-content	kabl	content/
+content	kabl	content/ xpcnativewrappers=no
 skin	kabl	classic/1.0	skin/
 
 overlay	chrome://browser/content/browser.xul	chrome://kabl/content/kabl-overlay.xul

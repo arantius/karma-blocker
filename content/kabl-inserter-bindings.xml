@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+
+<bindings xmlns="http://www.mozilla.org/xbl"
+	xmlns:xbl="http://www.mozilla.org/xbl"
+	xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+>
+
+<binding id="content">
+	<implementation>
+		<constructor><![CDATA[
+			// We initialize gKablInserter from here instead of from the onload
+			// event because we need to make sure it is initialized before the
+			// browser starts loading the home page
+			gKablInserter.initialize();
+		]]></constructor>
+
+		<destructor><![CDATA[
+			gKablInserter.shutdown();
+		]]></destructor>
+	</implementation>
+</binding>
+
+</bindings>
