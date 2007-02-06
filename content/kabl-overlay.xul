@@ -20,7 +20,7 @@
 			style='font-weight: bold;'
 		/>
 		<menuitem label='Configure...' accesskey='C'
-			oncommand='gKabl.openConfig();' 
+			oncommand='gKabl.openConfig();'
 		/>
 	</popup>
 </statusbar>
