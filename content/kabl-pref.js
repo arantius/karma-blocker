@@ -13,7 +13,7 @@
 //
 // The Initial Developer of the Original Code is Anthony Lieuallen.
 //
-// Portions created by the Initial Developer are Copyright (C) 2005
+// Portions created by the Initial Developer are Copyright (C) 2007
 // the Initial Developer. All Rights Reserved.
 //
 // Alternatively, the contents of this file may be used under the terms of
