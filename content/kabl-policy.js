@@ -124,9 +124,7 @@ var gKablPolicy={
 			return this.ACCEPT;
 		}
 
-		if (requestingNode.QueryInterface(
-			Components.interfaces.nsIDOMXULElement
-		)) {
+		if ('chrome'===requestOrigin.scheme) {
 			// if the requesting node is XUL, it's the main document
 			// if we block it, things go very wrong, so let it through
 			return this.ACCEPT;
