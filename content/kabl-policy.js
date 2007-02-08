@@ -39,6 +39,19 @@ var gKablPolicy={
 		return host.replace(/.*\.(.*......)/, '$1')
 	},
 
+	// Inherited from AdBlock Plus, utils.js
+	windowForNode:function(node) {
+		if (node && node.nodeType != Node.DOCUMENT_NODE) {
+			node = node.ownerDocument;
+		}
+
+		if (!node || node.nodeType != Node.DOCUMENT_NODE) {
+			return null;
+		}
+
+		return node.defaultView;
+	},
+
 	// constructor for loading the details into the form we work with
 	Fields:function(type, loc, org, node) {
 		this['$type']=type;
@@ -124,10 +137,28 @@ var gKablPolicy={
 			return this.ACCEPT;
 		}
 
-		if ('chrome'===requestOrigin.scheme) {
-			// if the requesting node is XUL, it's the main document
-			// if we block it, things go very wrong, so let it through
+		// Only block in content windows
+		var win=windowForNode(requestingNode);
+		var winType=win
+			.QueryInterface(Components.interfaces.nsIInterfaceRequestor)
+			.getInterface(Components.interfaces.nsIWebNavigation)
+			.QueryInterface(Components.interfaces.nsIDocShellTreeItem)
+			.itemType;
+		if (winType!=Components.interfaces.nsIDocShellTreeItem.typeContent) {
 			return this.ACCEPT;
+		}
+
+		try {
+			if (requestingNode.QueryInterface(
+				Components.interfaces.nsIDOMXULElement
+			)) {
+				// if the requesting node is XUL, it's the top-frame document
+				// if we block it, things go very wrong, so let it through
+				return this.ACCEPT;
+			}
+		} catch (e) {
+			// if it isn't there, it will throw with NS_NOINTERFACE ..
+			// fail silently
 		}
 
 		var fields=new this.Fields(
