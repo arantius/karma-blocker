@@ -124,6 +124,14 @@ var gKablPolicy={
 			return this.ACCEPT;
 		}
 
+		if (requestingNode.QueryInterface(
+			Components.interfaces.nsIDOMXULElement
+		)) {
+			// if the requesting node is XUL, it's the main document
+			// if we block it, things go very wrong, so let it through
+			return this.ACCEPT;
+		}
+
 		var fields=new this.Fields(
 			contentType, contentLocation, requestOrigin, requestingNode
 		);
@@ -188,7 +196,10 @@ var gKablPolicy={
 	shouldProcess:function(
 		contentType, contentLocation, requestOrigin, requestingNode, mimeType, extra
 	) {
-		if (gKablDebug>0) dump('.... shouldProcess ....\n');
+		if (gKablDebug>0) dump([
+			'.... shouldProcess ....',
+			contentType, contentLocation.spec, requestOrigin.spec, requestingNode, mimeType, extra
+		,''].join('\n'));
 		return this.ACCEPT;
 	},
 
