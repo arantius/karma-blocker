@@ -15,7 +15,7 @@
 		/>
 	</statusbarpanel>
 	<popup id='status-bar-kabl-context' position='before_end'>
-		<menuitem label='Toggle' accesskey='T'
+		<menuitem label='Toggle' accesskey='T' key='kabl-key-toggle'
 			oncommand='kabl.toggle();'
 			style='font-weight: bold;'
 		/>
@@ -25,14 +25,12 @@
 	</popup>
 </statusbar>
 
-<!--
-<keyset id="mainKeyset">
-	<key id='kabl-key-shortcut'
+<keyset>
+	<key id='kabl-key-toggle'
 		modifiers='ctrl alt'
-		keycode='S'
-		oncommand='kabl.toggle();'
+		key='K'
+		onkeypress='kabl.toggle();'
 	/>
 </keyset>
--->
 
 </overlay>
