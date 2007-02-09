@@ -34,6 +34,12 @@ var gKablPolicy={
 	ACCEPT:Components.interfaces.nsIContentPolicy.ACCEPT,
 	REJECT:Components.interfaces.nsIContentPolicy.REJECT_REQUEST,
 
+	fieldNames:{
+		'$type':1, '$url':1, '$url.host':1, '$url.path':1, '$url.scheme':1,
+		'$thirdParty':1, '$origin':1, '$origin.host':1, '$origin.path':1,
+		'$origin.scheme':1, '$origin.tag':1
+	},
+
 	hostToTld:function(host) {
 		// this terribly simple method seems to work well enough
 		return host.replace(/.*\.(.*......)/, '$1')
@@ -52,7 +58,9 @@ var gKablPolicy={
 		return node.defaultView;
 	},
 
-	// constructor for loading the details into the form we work with
+	// holds details of the request in object scope
+	fields:{},
+	// constructor for it
 	Fields:function(type, loc, org, node) {
 		this['$type']=type;
 
@@ -86,23 +94,83 @@ var gKablPolicy={
 
 			this['$origin.tag']=node.tagName;
 		}
+
+		for (key in this.fieldNames) {
+			if ('string'==typeof this[key]) this[key]=this[key].toLowerCase();
+		}
+
+		this.loc=loc;
+		this.org=org;
+		this.node=node;
 	},
 
-	// evaluate whether we should handle this type of score
-	evaluate:function(type, score, node, loc) {
+	// true if group matches
+	evalGroup:function(group) {
+		var flag;
+
+		if (gKablDebug>3) dump('  Group ...\n');
+		for (var j=0, rule=null; rule=group.rules[j]; j++) {
+			if (gKablDebug>4) dump('    rule = '+rule.toSource()+'\n');
+			flag=false;
+
+			switch (rule.op) {
+				case '==':
+					flag=this.fields[rule.field]==rule.val;
+					break;
+				case '!=':
+					flag=this.fields[rule.field]!=rule.val;
+					break;
+				case '=~':
+					flag=(new RegExp(rule.val)).test(this.fields[rule.field]);
+					break;
+				case '!~':
+					flag=!(new RegExp(rule.val)).test(this.fields[rule.field]);
+					break;
+				case '^=':
+					flag=this.fields[rule.field].substr(0, rule.val.length)==rule.val;
+					break;
+				case '$=':
+					flag=this.fields[rule.field]
+						.substr(this.fields[rule.field].length-rule.val.length)==rule.val;
+					break;
+			}
+
+			if (gKablDebug>5) dump([
+				'      ', this.fields[rule.field],
+				' ', rule.op,
+				' ', rule.val,
+				'\n'
+			].join(''));
+			if (gKablDebug>4) dump('    match = '+flag+'\n');
+
+			if (flag && 'any'==group.match) {
+				return true;
+			} else if (!flag && 'all'==group.match) {
+				return false;
+			}
+		}
+
+		if (flag && 'all'==group.match) {
+			return true;
+		}
+	},
+
+	// evaluate if/how we should handle this type of score
+	evalScore:function(type, score) {
 		var scoreMsg='  score: '+score+' rules '+type+': '+gKablRulesObj[type]+' ... ';
 
 		if (('threshold'==type && score>=gKablRulesObj.threshold) ||
 			('cutoff'==type && score>=gKablRulesObj.cutoff)
 		) {
 			if (gKablDebug>1) dump(scoreMsg+'deny!\n');
-			else if (1==gKablDebug) dump('kabl DENY   '+loc.spec+'\n');
+			else if (1==gKablDebug) dump('kabl DENY   '+this.fields.loc.spec+'\n');
 
 			// try block just in case, attempt to hide the node, i.e.
 			// if a non-loaded image will result in an alt tag showing
 			try {
-				node=node.QueryInterface(Components.interfaces.nsIDOMNode);
-				node.style.display='none !important';
+				this.fields.node=this.fields.node
+					.QueryInterface(Components.interfaces.nsIDOMNode);
+				this.fields.node.style.display='none !important';
 			} catch (e) {
 				if (gKablDebug) dump(e+'\n');
 			}
@@ -112,7 +180,7 @@ var gKablPolicy={
 			('cutoff'==type && Math.abs(score)>=gKablRulesObj.cutoff)
 		) {
 			if (gKablDebug>1) dump(scoreMsg+'accept\n');
-			else if (1==gKablDebug) dump('kabl ACCEPT '+loc.spec+'\n');
+			else if (1==gKablDebug) dump('kabl ACCEPT '+this.fields.loc.spec+'\n');
 
 			return this.ACCEPT;
 		} else {
@@ -148,12 +216,12 @@ var gKablPolicy={
 			return this.ACCEPT;
 		}
 
+		// if the requesting node is XUL, it's the top-frame document
+		// if we block it, things go very wrong, so let it through
 		try {
 			if (requestingNode.QueryInterface(
 				Components.interfaces.nsIDOMXULElement
 			)) {
-				// if the requesting node is XUL, it's the top-frame document
-				// if we block it, things go very wrong, so let it through
 				return this.ACCEPT;
 			}
 		} catch (e) {
@@ -161,64 +229,22 @@ var gKablPolicy={
 			// fail silently
 		}
 
-		var fields=new this.Fields(
+		this.fields=new this.Fields(
 			contentType, contentLocation, requestOrigin, requestingNode
 		);
 
 		if (gKablDebug>1) dump('\nKarma Blocker - Checking:\nloc: '+contentLocation.spec+'\norg: '+requestOrigin.spec+'\n');
-		var score=0, val, field, flag=false;
+		var score=0, flag=false;
 		for (var i=0, group=null; group=gKablRulesObj.groups[i]; i++) {
-			if (gKablDebug>3) dump('  Group ...\n');
-			for (var j=0, rule=null; rule=group.rules[j]; j++) {
-				if (gKablDebug>4) dump('    rule = '+rule.toSource()+'\n');
-				flag=false;
-
-				// extract the actual value of this field
-				field=fields[rule[0]];
-				if ('string'==typeof field) field=field.toLowerCase();
-
-				// decode the match value
-				if ('$thirdParty'==rule[0]) {
-					val=new Boolean(rule[2]);
-				} else if ('$type'==rule[0]) {
-					val=Components.interfaces.nsIContentPolicy[
-						'TYPE_'+rule[2].toUpperCase()
-					];
-				} else {
-					val=rule[2].substring(1, rule[2].length-1);
-					val=val.toLowerCase();
-				}
-
-				switch (rule[1]) {
-					case '==': flag=field==val; break;
-					case '!=': flag=field!=val; break;
-					case '=~': flag=(new RegExp(val)).test(field); break;
-					case '!~': flag=!(new RegExp(val)).test(field); break;
-					case '^=': flag=field.substr(0, val.length)==val; break;
-					case '$=': flag=field.substr(field.length-val.length)==val; break;
-				}
-
-				if (gKablDebug>4) dump('      ' + field + ' <> ' + val + '\n');
-				if (gKablDebug>4) dump('      match = '+flag+'\n');
-
-				if (flag && 'any'==group.match) {
-					score+=group.score;
-					break;
-				} else if (!flag && 'all'==group.match) {
-					break;
-				}
-			}
-
-			if (flag && 'all'==group.match) {
+			if (this.evalGroup(group)) {
 				score+=group.score;
-			}
 
-			// reuse flag for (possible) return value here
-			flag=this.evaluate('cutoff', score, requestingNode, contentLocation);
-			if (flag) return flag;
+				flag=this.evalScore('cutoff', score);
+				if (flag) return flag;
+			}
 		}
 
-		return this.evaluate('threshold', score, requestingNode, contentLocation);
+		return this.evalScore('threshold', score);
 	},
 
 	// nsISupports interface implementation

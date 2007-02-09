@@ -273,22 +273,28 @@ var gKablRulesObj={
 	},
 
 	parseRule:function() {
-		var field=this.expect('field', 'Unexpected "%%" expected: field');
-		var op=this.expect('field_op', 'Unexpected "%%" expected: field operator');
+		var fieldTok=this.expect('field', 'Unexpected "%%" expected: field');
+		var opTok=this.expect('field_op', 'Unexpected "%%" expected: field operator');
+
+		var valTok=null, val=null;
 
 		switch (true) {
-		case '$thirdParty'==field.val:
-			var val=this.expect('bool', 'Unexpected "%%" expected: true, false');
-			return [field.val, op.val, val.val];
+		case '$thirdParty'==fieldTok.val:
+			valTok=this.expect('bool', 'Unexpected "%%" expected: true, false');
+			val=new Boolean(valTok.val); //ensure type
 			break;
-		case '$type'==field.val:
-			var val=this.expect('field_type_val', 'Unexpected "%%" expected: type');
-			return [field.val, op.val, val.val];
+		case '$type'==fieldTok.val:
+			valTok=this.expect('field_type_val', 'Unexpected "%%" expected: type');
+			// ensure type
+			val=Components.interfaces.nsIContentPolicy[
+				'TYPE_'+valTok.val.toUpperCase()
+			];
 			break;
-		case '$origin'==field.val.substring(0, 7):
-		case '$url'==field.val.substring(0, 4):
-			var val=this.expect('string', 'Unexpected "%%" expected: string');
-			return [field.val, op.val, val.val];
+		case '$origin'==fieldTok.val.substring(0, 7):
+		case '$url'==fieldTok.val.substring(0, 4):
+			valTok=this.expect('string', 'Unexpected "%%" expected: string');
+			val=valTok.val.toLowerCase(); // ensure type, case insensitivity
+			val=val.substr(0, val.length-1).substr(1); // strip off the quote marks
 			break;
 		default:
 			throw new KablParseException(
@@ -297,7 +303,15 @@ var gKablRulesObj={
 			);
 		}
 
-		return null;
+		if (val) {
+			return {
+				field: fieldTok.val,
+				op:    opTok.val,
+				val:   val
+			};
+		} else {
+			return null;
+		}
 	}
 };
 
