@@ -120,7 +120,7 @@ var gKablPolicy={
 		}
 	},
 
-	// nsISupports interface implementation
+	// nsIContentPolicy interface implementation
 	shouldLoad:function(
 		contentType, contentLocation, requestOrigin, requestingNode, mimeTypeGuess, extra
 	) {
