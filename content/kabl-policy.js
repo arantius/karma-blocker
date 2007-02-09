@@ -41,11 +41,11 @@ var gKablPolicy={
 
 	// Inherited from AdBlock Plus, utils.js
 	windowForNode:function(node) {
-		if (node && node.nodeType != Node.DOCUMENT_NODE) {
+		if (node && node.nodeType!=Components.interfaces.nsIDOMNode.DOCUMENT_NODE) {
 			node = node.ownerDocument;
 		}
 
-		if (!node || node.nodeType != Node.DOCUMENT_NODE) {
+		if (!node || node.nodeType!=Components.interfaces.nsIDOMNode.DOCUMENT_NODE) {
 			return null;
 		}
 
@@ -138,7 +138,7 @@ var gKablPolicy={
 		}
 
 		// Only block in content windows
-		var win=windowForNode(requestingNode);
+		var win=this.windowForNode(requestingNode);
 		var winType=win
 			.QueryInterface(Components.interfaces.nsIInterfaceRequestor)
 			.getInterface(Components.interfaces.nsIWebNavigation)
