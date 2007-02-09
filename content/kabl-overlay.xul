@@ -3,17 +3,6 @@
 
 <script type='application/x-javascript' src='chrome://kabl/content/kabl-pref.js'></script>
 <script type='application/x-javascript' src='chrome://kabl/content/kabl-overlay.js'></script>
-<!--
-<script	type='application/x-javascript'	src='chrome://kabl/content/kabl-inserter.js'/>
-
-<vbox id='appcontent'>
-	<box >
-		<browser id='kablInserterBrowser'
-			style='-moz-binding: url("chrome://kabl/content/kabl-inserter-bindings.xml#content");'
-		/>
-	</box>
-</vbox>
--->
 
 <statusbar id='status-bar'>
 	<statusbarpanel id='status-bar-kabl' insertafter='livemark-button'
