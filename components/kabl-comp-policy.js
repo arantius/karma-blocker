@@ -30,7 +30,7 @@
 //
 // ***** END LICENSE BLOCK *****
 
-const KABL_CONTRACTID='@arantius.com/kabl;1';
+const KABL_CONTRACTID='@arantius.com/kabl-policy;1';
 const KABL_CID=Components.ID('{cabe6b3f-578c-480f-a2f0-68bc4b7a1142}');
 
 const CATMAN_CONTRACTID='@mozilla.org/categorymanager;1';

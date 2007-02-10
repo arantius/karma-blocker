@@ -30,7 +30,10 @@
 //
 // ***** END LICENSE BLOCK *****
 
-const CLASS_ID    = Components.ID('{ed99d6dd-f1df-49c9-934a-1673cafee2ad}');
+const CATMAN_CONTRACTID='@mozilla.org/categorymanager;1';
+const JSLOADER_CONTRACTID='@mozilla.org/moz/jssubscript-loader;1';
+
+const CLASS_ID    = Components.ID('{520ecec6-6599-46a6-bbfe-458084bbcf7d}');
 const CLASS_NAME  = 'KABL Function Injector';
 const CONTRACT_ID = '@arantius.com/kabl-injector;1';
 
@@ -40,12 +43,16 @@ KablInjector.prototype={
 	// nsIObserver
 	observe:function(aSubject, aTopic, aData) {
 		// just in case!
-		if ('xpcom-startup'!=aTopic) return;
+		if ('app-startup'!=aTopic) return;
 		dump('KablInjector observe '+aTopic+'...\n');
 
 		try {
+			dump('\nrules inject: '+
+				(gKablRulesObj.injectFunctions.toSource())
+				+'\n\n'
+			);
 
-			var catman=Components.classes['@mozilla.org/categorymanager;1']
+			var catman=Components.classes[CATMAN_CONTRACTID]
 				.getService(Components.interfaces.nsICategoryManager);
 
 			catman.addCategoryEntry(
@@ -85,6 +92,8 @@ var Factory={
 };
 
 var Module={
+	factoryLoaded:false,
+
 	registerSelf:function(aCompMgr, aFileSpec, aLocation, aType) {
 		dump('KablInjector Module registerSelf...\n');
 
@@ -96,9 +105,8 @@ var Module={
 
 		var catMan=Components.classes['@mozilla.org/categorymanager;1']
 			.getService(Components.interfaces.nsICategoryManager);
-
 		catMan.addCategoryEntry(
-			'xpcom-startup', 'KablInjector', CONTRACT_ID, true, true
+			'app-startup', 'KablInjector', CONTRACT_ID, true, true
 		);
 	},
 
@@ -108,20 +116,42 @@ var Module={
 		aCompMgr=aCompMgr
 			.QueryInterface(Components.interfaces.nsIComponentRegistrar);
 		aCompMgr.unregisterFactoryLocation(CLASS_ID, aLocation);
+
+		var catMan=Components.classes['@mozilla.org/categorymanager;1']
+			.getService(Components.interfaces.nsICategoryManager);
+		catMan.deleteCategoryEntry(
+			'app-startup', 'KablInjector', true
+		);
 	},
 
 	getClassObject:function(aCompMgr, aCID, aIID) {
 		dump('KablInjector Module getClassObject...\n');
+		try {
 
 		if (!aIID.equals(Components.interfaces.nsIFactory)) {
 			throw Components.results.NS_ERROR_NOT_IMPLEMENTED;
 		}
 
-		if (aCID.equals(CLASS_ID)) {
-			return Factory;
+		if (!aCID.equals(CLASS_ID)) {
+			throw Components.results.NS_ERROR_NO_INTERFACE;
 		}
 
-		throw Components.results.NS_ERROR_NO_INTERFACE;
+		if (!this.factoryLoaded) {
+			var loader=Components.classes[JSLOADER_CONTRACTID]
+				.getService(Components.interfaces.mozIJSSubScriptLoader);
+
+			loader.loadSubScript('chrome://kabl/content/kabl-pref.js');
+			loader.loadSubScript('chrome://kabl/content/kabl-parse.js');
+
+			this.factoryLoaded=true;
+		}
+
+		return Factory;
+
+		} catch (e) {
+			dump('KablInjector getClassObject error:\n'+e.toSource()+'\n');
+		}
+
 	},
 
 	canUnload:function(aCompMgr) { return true; }
