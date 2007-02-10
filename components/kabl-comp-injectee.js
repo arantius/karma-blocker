@@ -36,13 +36,13 @@
 //
 // ***** END LICENSE BLOCK *****
 
-var componentName='mnIKablInjector';
-var componentId  =Components.ID('{d10f581a-d163-4194-a0cc-75b6a8e35a09}');
-var contractId   ='@arantius.com/kabl-injector;1';
+const CLASS_ID    = Components.ID('{ed99d6dd-f1df-49c9-934a-1673cafee2ad}');
+const CLASS_NAME  = 'KABL Function Injector';
+const CONTRACT_ID = '@arantius.com/kabl-injectee;1';
 
-function kablInjector() {
+function kablInjectee() {
 }
-kablInjector.prototype={
+kablInjectee.prototype={
 	// nsISecurityCheckedComponent
 	canCallMethod:function(iid) { return 'NoAccess'; },
 	canCreateWrapper:function(iid) { return 'AllAccess'; },
@@ -50,9 +50,9 @@ kablInjector.prototype={
 	canSetProperty:function(iid) { return 'NoAccess'; },
 
 	// nsIClassInfo
-	classDescription:componentName,
-	classID:componentId,
-	contractID:contractId,
+	classDescription:CLASS_NAME,
+	classID:CLASS_ID,
+	contractID:CONTRACT_ID,
 	flags:Components.interfaces.nsIClassInfo.SINGLETON,
 	implementationLanguage:Components.interfaces.nsIProgrammingLanguage.JAVASCRIPT,
 
@@ -60,7 +60,7 @@ kablInjector.prototype={
 	getHelperForLanguage:function(aLanguage) { return null; },
 	getInterfaces:function(aCount) {
 		var interfaces=[
-			Components.interfaces.mnIKablInjector,
+			Components.interfaces.mnIKablInjectee,
 			Components.interfaces.nsISecurityCheckedComponent,
 			Components.interfaces.nsIClassInfo
 		];
@@ -70,7 +70,7 @@ kablInjector.prototype={
 
 	// nsISupports
 	QueryInterface:function(aIID) {
-		if (aIID.equals(Components.interfaces.mnIKablInjector) ||
+		if (aIID.equals(Components.interfaces.mnIKablInjectee) ||
 			aIID.equals(Components.interfaces.nsISecurityCheckedComponent) ||
 			aIID.equals(Components.interfaces.nsIClassInfo) ||
 			aIID.equals(Components.interfaces.nsISupports)
@@ -82,37 +82,23 @@ kablInjector.prototype={
 	}
 };
 
-/* The rest of this code is largely borrowed from 'Creating Applications With
- * Mozilla', http://books.mozdev.org, Chapter 8.
- */
+// The rest of this code is largely borrowed from 'Creating Applications With
+// Mozilla', http://books.mozdev.org, Chapter 8.
 var Module={
 	registerSelf:function(compMgr, fileSpec, loc, type) {
 		compReg=compMgr.QueryInterface(Components.interfaces.nsIComponentRegistrar);
 		compReg.registerFactoryLocation(
-			componentId, componentName, contractId, fileSpec, loc, type
-		);
-
-		var catman=Components.classes['@mozilla.org/categorymanager;1']
-			.getService(Components.interfaces.nsICategoryManager);
-		catman.addCategoryEntry(
-			'JavaScript global property', 'kablInjector',
-			contractId, true, true
+			CLASS_ID, CLASS_NAME, CONTRACT_ID, fileSpec, loc, type
 		);
 	},
 
 	unregisterSelf:function(compMgr, fileSpec, loc) {
 		compReg=compMgr.QueryInterface(Components.interfaces.nsIComponentRegistrar);
-		compReg.unregisterFactoryLocation(componentId, fileSpec);
-
-		var catman=Components.classes[CATMAN_CONTRACTID]
-			.getService(Components.interfaces.nsICategoryManager);
-		catman.deleteCategoryEntry(
-			'JavaScript global property', contractId, true
-		);
+		compReg.unregisterFactoryLocation(CLASS_ID, fileSpec);
 	},
 
 	getClassObject:function(compMgr, aCID, aIID) {
-		if (!aCID.equals(componentId)) {
+		if (!aCID.equals(CLASS_ID)) {
 			throw Components.results.NS_ERROR_NO_INTERFACE;
 		}
 		if (!aIID.equals(Components.interfaces.nsIFactory)) {
@@ -127,7 +113,7 @@ var Module={
 				throw Components.results.NS_ERROR_NO_AGGREGATION;
 			}
 
-			return (new kablInjector()).QueryInterface(iid);
+			return (new kablInjectee()).QueryInterface(iid);
 		}
 	},
 

@@ -35,6 +35,10 @@ var gKablTokens=[];
 gKablTokens['settings']='\\[Settings\\]';
 gKablTokens['settings_cmd']='(?:threshold|cutoff)';
 
+// inject section
+gKablTokens['inject']='\\[Inject\\]';
+gKablTokens['inject_cmd']='(?:function)';
+
 // group section
 gKablTokens['group']='\\[Group\\]';
 gKablTokens['group_cmd']='(?:match|score|rule)';
@@ -103,6 +107,7 @@ var gKablRulesObj={
 	threshold:null,
 	cutoff:null,
 	groups:null,
+	injectFunctions:null,
 
 	/////////////////////////////// METHODS ////////////////////////////////////
 
@@ -185,6 +190,7 @@ var gKablRulesObj={
 			this.threshold=10;
 			this.cutoff=Number.MAX_VALUE;
 			this.groups=[];
+			this.injectFunctions=[];
 
 			function defaultGroup() {
 				this.score=1;
@@ -196,6 +202,7 @@ var gKablRulesObj={
 			// 00 - started
 			// 10 - in settings section
 			// 20 - in group section
+			// 30 - in inject section
 			var tok=null, tok2=null, state=0, group=null;
 
 			// parse the rules, by examining the tokens in order
@@ -220,6 +227,29 @@ var gKablRulesObj={
 						this.expect('inieq', 'Unexpected "%%" expected: "="');
 						tok2=this.expect('number', 'Unexpected "%%" expected: number');
 						this[tok.val]=parseFloat(tok2.val);
+						break;
+					}
+					break;
+				////////////////////////////////////////////////////////////////
+				case 'inject':
+					state=30;
+					break;
+				case 'inject_cmd':
+					if (30!=state) {
+						throw new KablParseException(
+							tok.cstart, tok.cend,
+							'Unexpected '+tok.type+' outside of [Inject] section'
+						);
+					}
+
+					switch (tok.val) {
+					case 'function':
+						this.expect('inieq', 'Unexpected "%%" expected: "="');
+						tok2=this.expect('string', 'Unexpected "%%" expected: string');
+						this.injectFunctions.push(
+							// strip off the quote marks
+							tok2.val.substr(0, tok2.val.length-1).substr(1)
+						);
 						break;
 					}
 					break;
