@@ -6,6 +6,10 @@
 <script type='application/x-javascript' src='chrome://kabl/content/kabl-overlay.js'></script>
 <script	type='application/x-javascript'	src='chrome://kabl/content/kabl-inserter.js'></script>
 
+<!--
+This browser, with its XBL binding, fires off the injector init before the
+first content window begins to open, ensuring it always works.
+-->
 <vbox id='appcontent'>
 	<box >
 		<browser id='kablInserterBrowser'
@@ -15,24 +19,22 @@
 </vbox>
 
 <statusbar id='status-bar'>
-	<statusbarpanel id='status-bar-kabl' insertafter='livemark-button'
-		oncommand='alert("foo");'
-	>
+	<statusbarpanel id='status-bar-kabl'>
 		<image id='status-bar-kabl-image' width='16' height='16'
 			src='chrome://kabl/skin/kabl-on.png'
 			onclick='if (!event.button) gKabl.toggle();'
 			context='status-bar-kabl-context'
 		/>
+		<popup id='status-bar-kabl-context' position='before_end'>
+			<menuitem label='Toggle' accesskey='T'
+				oncommand='gKabl.toggle();'
+				style='font-weight: bold;'
+			/>
+			<menuitem label='Configure...' accesskey='C'
+				oncommand='gKabl.openConfig();'
+			/>
+		</popup>
 	</statusbarpanel>
-	<popup id='status-bar-kabl-context' position='before_end'>
-		<menuitem label='Toggle' accesskey='T'
-			oncommand='gKabl.toggle();'
-			style='font-weight: bold;'
-		/>
-		<menuitem label='Configure...' accesskey='C'
-			oncommand='gKabl.openConfig();'
-		/>
-	</popup>
 </statusbar>
 
 <keyset id="mainKeyset">

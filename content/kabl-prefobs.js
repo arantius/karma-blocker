@@ -80,18 +80,9 @@ var gKablPrefObserver={
 			// save it in global component context, for future policy checks
 			gKablRulesObj.parse(gKablRules);
 
-			// propagate it to all the open windows
-			var ifaces=Components.interfaces;
-			var mediator=Components.classes['@mozilla.org/appshell/window-mediator;1'].
-				getService(ifaces.nsIWindowMediator);
-			var win,winEnum=mediator.getEnumerator('navigator:browser');
-			while (winEnum.hasMoreElements()){
-				win=winEnum.getNext();
-
-				this.withAllChrome(function(win) {
-					win.gKablRulesObj=gKablRulesObj;
-				});
-			}
+			this.withAllChrome(function(win) {
+				win.gKablRulesObj=gKablRulesObj;
+			});
 
 			break;
 		case 'debug':

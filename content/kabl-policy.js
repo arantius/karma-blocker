@@ -205,7 +205,7 @@ var gKablPolicy={
 			return this.ACCEPT;
 		}
 
-		// Only block in content windows
+		// Only block in content windows (this from AdBlock Plus)
 		var win=this.windowForNode(requestingNode);
 		var winType=win
 			.QueryInterface(Components.interfaces.nsIInterfaceRequestor)
@@ -252,8 +252,8 @@ var gKablPolicy={
 		contentType, contentLocation, requestOrigin, requestingNode, mimeType, extra
 	) {
 		if (gKablDebug>0) dump([
-			'.... shouldProcess ....',
-			contentType, contentLocation.spec, requestOrigin.spec, requestingNode, mimeType, extra
+			'.... shouldProcess ....', contentType, contentLocation.spec,
+			requestOrigin.spec, requestingNode, mimeType, extra
 		,''].join('\n'));
 		return this.ACCEPT;
 	},
