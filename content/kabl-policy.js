@@ -163,7 +163,7 @@ var gKablPolicy={
 			('cutoff'==type && score>=gKablRulesObj.cutoff)
 		) {
 			if (gKablDebug>1) dump(scoreMsg+'deny!\n');
-			else if (1==gKablDebug) dump('kabl DENY   '+this.fields.loc.spec+'\n');
+			else if (1==gKablDebug) dump('kabl X '+this.fields.loc.spec+'\n');
 
 			// try block just in case, attempt to hide the node, i.e.
 			// if a non-loaded image will result in an alt tag showing
@@ -180,7 +180,7 @@ var gKablPolicy={
 			('cutoff'==type && Math.abs(score)>=gKablRulesObj.cutoff)
 		) {
 			if (gKablDebug>1) dump(scoreMsg+'accept\n');
-			else if (1==gKablDebug) dump('kabl ACCEPT '+this.fields.loc.spec+'\n');
+			else if (1==gKablDebug) dump('kabl   '+this.fields.loc.spec+'\n');
 
 			return this.ACCEPT;
 		} else {

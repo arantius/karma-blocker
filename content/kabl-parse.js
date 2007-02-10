@@ -122,6 +122,9 @@ var gKablRulesObj={
 	},
 
 	lex:function(rules) {
+		// special case
+		if (rules.match(/^\s*/)) return true;
+
 		// collapse defined tokens into a giant regex
 		var tokRegex='', i=0, parens='';
 		for (key in gKablTokens) {
