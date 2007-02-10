@@ -30,15 +30,15 @@
 //
 // ***** END LICENSE BLOCK *****
 
-const _KABL_CONTRACTID='@arantius.com/kabl;1';
-const _KABL_CID=Components.ID('{cabe6b3f-578c-480f-a2f0-68bc4b7a1142}');
+const KABL_CONTRACTID='@arantius.com/kabl;1';
+const KABL_CID=Components.ID('{cabe6b3f-578c-480f-a2f0-68bc4b7a1142}');
 
 const CATMAN_CONTRACTID='@mozilla.org/categorymanager;1';
 const JSLOADER_CONTRACTID='@mozilla.org/moz/jssubscript-loader;1';
 
 // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ //
 
-var gKablModule={
+var Module={
 	factoryLoaded:false,
 
 	registerSelf:function(compMgr, fileSpec, location, type) {
@@ -46,14 +46,14 @@ var gKablModule={
 			Components.interfaces.nsIComponentRegistrar
 		);
 		compMgr.registerFactoryLocation(
-			_KABL_CID, 'KABL content policy', _KABL_CONTRACTID,
+			KABL_CID, 'KABL content policy', KABL_CONTRACTID,
 			fileSpec, location, type
 		);
 
 		var catman=Components.classes[CATMAN_CONTRACTID]
 			.getService(Components.interfaces.nsICategoryManager);
 		catman.addCategoryEntry(
-			'content-policy', _KABL_CONTRACTID, _KABL_CONTRACTID, true, true
+			'content-policy', KABL_CONTRACTID, KABL_CONTRACTID, true, true
 		);
 	},
 
@@ -62,15 +62,15 @@ var gKablModule={
 			Components.interfaces.nsIComponentRegistrar
 		);
 
-		compMgr.unregisterFactoryLocation(_KABL_CID, fileSpec);
+		compMgr.unregisterFactoryLocation(KABL_CID, fileSpec);
 
 		var catman=Components.classes[CATMAN_CONTRACTID]
 			.getService(Components.interfaces.nsICategoryManager);
-		catman.deleteCategoryEntry('content-policy', _KABL_CONTRACTID, true);
+		catman.deleteCategoryEntry('content-policy', KABL_CONTRACTID, true);
 	},
 
 	getClassObject:function(compMgr, cid, iid) {
-		if (!cid.equals(_KABL_CID)) {
+		if (!cid.equals(KABL_CID)) {
 			throw Components.results.NS_ERROR_NO_INTERFACE;
 		}
 
@@ -102,5 +102,5 @@ var gKablModule={
 
 // module initialisation
 function NSGetModule(comMgr, fileSpec) {
-	return gKablModule;
+	return Module;
 }
