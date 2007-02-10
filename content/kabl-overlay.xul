@@ -2,7 +2,17 @@
 <overlay id='kabl-overlay' xmlns='http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul'>
 
 <script type='application/x-javascript' src='chrome://kabl/content/kabl-pref.js'></script>
+<script type='application/x-javascript' src='chrome://kabl/content/kabl-parse.js'></script>
 <script type='application/x-javascript' src='chrome://kabl/content/kabl-overlay.js'></script>
+<script	type='application/x-javascript'	src='chrome://kabl/content/kabl-inserter.js'></script>
+
+<vbox id='appcontent'>
+	<box >
+		<browser id='kablInserterBrowser'
+			style='-moz-binding: url("chrome://kabl/content/kabl-inserter-bindings.xml#content");'
+		/>
+	</box>
+</vbox>
 
 <statusbar id='status-bar'>
 	<statusbarpanel id='status-bar-kabl' insertafter='livemark-button'
@@ -15,7 +25,7 @@
 		/>
 	</statusbarpanel>
 	<popup id='status-bar-kabl-context' position='before_end'>
-		<menuitem label='Toggle' accesskey='T' key='kabl-key-toggle'
+		<menuitem label='Toggle' accesskey='T'
 			oncommand='gKabl.toggle();'
 			style='font-weight: bold;'
 		/>

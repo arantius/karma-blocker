@@ -44,6 +44,19 @@ var gKablPrefObserver={
 		this._branch.removeObserver('', this);
 	},
 
+	// run the passed function on all navigator windows
+	withAllChrome:function(func) {
+		var ifaces=Components.interfaces;
+		var mediator=Components.classes['@mozilla.org/appshell/window-mediator;1'].
+			getService(ifaces.nsIWindowMediator);
+		var win,winEnum=mediator.getEnumerator('navigator:browser');
+		while (winEnum.hasMoreElements()){
+			win=winEnum.getNext();
+
+			func(win);
+		}
+	},
+
 	observe:function(aSubject, aTopic, aData) {
 		if('nsPref:changed'!=aTopic) return;
 		// aSubject is the nsIPrefBranch we're observing (after appropriate QI)
@@ -54,17 +67,10 @@ var gKablPrefObserver={
 			// load the new value
 			gKablEnabled=gKablPref.getBoolPref('enabled');
 
-			// propagate it to all the open windows
-			var ifaces=Components.interfaces;
-			var mediator=Components.classes['@mozilla.org/appshell/window-mediator;1'].
-				getService(ifaces.nsIWindowMediator);
-			var win,winEnum=mediator.getEnumerator('navigator:browser');
-			while (winEnum.hasMoreElements()){
-				win=winEnum.getNext();
-
+			this.withAllChrome(function(win) {
 				win.gKablEnabled=gKablEnabled;
 				win.gKabl.setImage();
-			}
+			});
 
 			break;
 		case 'rules':
@@ -73,6 +79,20 @@ var gKablPrefObserver={
 
 			// save it in global component context, for future policy checks
 			gKablRulesObj.parse(gKablRules);
+
+			// propagate it to all the open windows
+			var ifaces=Components.interfaces;
+			var mediator=Components.classes['@mozilla.org/appshell/window-mediator;1'].
+				getService(ifaces.nsIWindowMediator);
+			var win,winEnum=mediator.getEnumerator('navigator:browser');
+			while (winEnum.hasMoreElements()){
+				win=winEnum.getNext();
+
+				this.withAllChrome(function(win) {
+					win.gKablRulesObj=gKablRulesObj;
+				});
+			}
+
 			break;
 		case 'debug':
 			// load the new value
