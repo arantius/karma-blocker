@@ -297,7 +297,7 @@ var gKablFactory={
 // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ //
 
 // Initialization and registration
-if ('undefined'==typeof(Components.classes[_KABL_CONTRACTID])) {
+if ('undefined'==typeof(Components.classes[KABL_CONTRACTID])) {
 	(function() { // to keep from munging with scope
 		const CONTENTPOLICY_CONTRACTID="@mozilla.org/layout/content-policy;1";
 		const CONTENTPOLICY_DESCRIPTION="Content policy service";
@@ -311,7 +311,7 @@ if ('undefined'==typeof(Components.classes[_KABL_CONTRACTID])) {
 			cid, CONTENTPOLICY_DESCRIPTION, CONTENTPOLICY_CONTRACTID, gKablFactory
 		);
 		compMgr.registerFactory(
-			_KABL_CID, CONTENTPOLICY_DESCRIPTION, _KABL_CONTRACTID, gKablFactory
+			KABL_CID, CONTENTPOLICY_DESCRIPTION, KABL_CONTRACTID, gKablFactory
 		);
 	})();
 }
