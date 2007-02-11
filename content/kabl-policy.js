@@ -42,7 +42,7 @@ var gKablPolicy={
 
 	hostToTld:function(host) {
 		// this terribly simple method seems to work well enough
-		return host.replace(/.*\.(.*......)/, '$1')
+		return host.replace(/.*\.(.*......)/, '$1');
 	},
 
 	// Inherited from AdBlock Plus, utils.js
@@ -95,12 +95,10 @@ var gKablPolicy={
 			this['$origin.tag']=node.tagName;
 		}
 
-		for (key in this.fieldNames) {
+		for (key in gKablPolicy.fieldNames) {
 			if ('string'==typeof this[key]) this[key]=this[key].toLowerCase();
 		}
 
-		this.loc=loc;
-		this.org=org;
 		this.node=node;
 	},
 
@@ -163,7 +161,7 @@ var gKablPolicy={
 			('cutoff'==type && score>=gKablRulesObj.cutoff)
 		) {
 			if (gKablDebug>1) dump(scoreMsg+'deny!\n');
-			else if (1==gKablDebug) dump('kabl X '+this.fields.loc.spec+'\n');
+			else if (1==gKablDebug) dump('kabl X '+this.fields['$url']+'\n');
 
 			// try block just in case, attempt to hide the node, i.e.
 			// if a non-loaded image will result in an alt tag showing
@@ -172,7 +170,7 @@ var gKablPolicy={
 					.QueryInterface(Components.interfaces.nsIDOMNode);
 				this.fields.node.style.display='none !important';
 			} catch (e) {
-				if (gKablDebug) dump(e+'\n');
+				if (gKablDebug) dump('Error in evalScore: '+e+'\n');
 			}
 
 			return this.REJECT;
@@ -180,7 +178,7 @@ var gKablPolicy={
 			('cutoff'==type && Math.abs(score)>=gKablRulesObj.cutoff)
 		) {
 			if (gKablDebug>1) dump(scoreMsg+'accept\n');
-			else if (1==gKablDebug) dump('kabl   '+this.fields.loc.spec+'\n');
+			else if (1==gKablDebug) dump('kabl   '+this.fields['$url']+'\n');
 
 			return this.ACCEPT;
 		} else {
@@ -197,9 +195,9 @@ var gKablPolicy={
 			return this.ACCEPT;
 		}
 
-		if ('http' !=contentLocation.scheme &&
-			'https'!=contentLocation.scheme &&
-			'ftp'  !=contentLocation.scheme
+		if (!contentLocation.schemeIs('http') &&
+			!contentLocation.schemeIs('https') &&
+			!contentLocation.schemeIs('ftp')
 		) {
 			// it's not a remote scheme, definitely let it through
 			return this.ACCEPT;
