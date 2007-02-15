@@ -103,7 +103,7 @@ var gKablPolicy={
 	},
 
 	// true if group matches
-	evalGroup:function(group) {
+	evalGroup:function(group, fields) {
 		var flag;
 
 		if (gKablDebug>3) dump('  Group ...\n');
@@ -113,28 +113,28 @@ var gKablPolicy={
 
 			switch (rule.op) {
 				case '==':
-					flag=this.fields[rule.field]==rule.val;
+					flag=fields[rule.field]==rule.val;
 					break;
 				case '!=':
-					flag=this.fields[rule.field]!=rule.val;
+					flag=fields[rule.field]!=rule.val;
 					break;
 				case '=~':
-					flag=(new RegExp(rule.val)).test(this.fields[rule.field]);
+					flag=(new RegExp(rule.val)).test(fields[rule.field]);
 					break;
 				case '!~':
-					flag=!(new RegExp(rule.val)).test(this.fields[rule.field]);
+					flag=!(new RegExp(rule.val)).test(fields[rule.field]);
 					break;
 				case '^=':
-					flag=this.fields[rule.field].substr(0, rule.val.length)==rule.val;
+					flag=fields[rule.field].substr(0, rule.val.length)==rule.val;
 					break;
 				case '$=':
-					flag=this.fields[rule.field]
-						.substr(this.fields[rule.field].length-rule.val.length)==rule.val;
+					flag=fields[rule.field]
+						.substr(fields[rule.field].length-rule.val.length)==rule.val;
 					break;
 			}
 
 			if (gKablDebug>5) dump([
-				'      ', this.fields[rule.field],
+				'      ', fields[rule.field],
 				' ', rule.op,
 				' ', rule.val,
 				'\n'
@@ -154,21 +154,21 @@ var gKablPolicy={
 	},
 
 	// evaluate if/how we should handle this type of score
-	evalScore:function(type, score) {
+	evalScore:function(type, score, fields) {
 		var scoreMsg='  score: '+score+' rules '+type+': '+gKablRulesObj[type]+' ... ';
 
 		if (('threshold'==type && score>=gKablRulesObj.threshold) ||
 			('cutoff'==type && score>=gKablRulesObj.cutoff)
 		) {
 			if (gKablDebug>1) dump(scoreMsg+'deny!\n');
-			else if (1==gKablDebug) dump('kabl X '+this.fields['$url']+'\n');
+			else if (1==gKablDebug) dump('kabl X '+fields['$url']+'\n');
 
 			// try block just in case, attempt to hide the node, i.e.
 			// if a non-loaded image will result in an alt tag showing
 			try {
-				this.fields.node=this.fields.node
+				fields.node=fields.node
 					.QueryInterface(Components.interfaces.nsIDOMNode);
-				this.fields.node.style.display='none !important';
+				fields.node.style.display='none !important';
 			} catch (e) {
 				if (gKablDebug) dump('Error in evalScore: '+e+'\n');
 			}
@@ -178,7 +178,7 @@ var gKablPolicy={
 			('cutoff'==type && Math.abs(score)>=gKablRulesObj.cutoff)
 		) {
 			if (gKablDebug>1) dump(scoreMsg+'accept\n');
-			else if (1==gKablDebug) dump('kabl   '+this.fields['$url']+'\n');
+			else if (1==gKablDebug) dump('kabl   '+fields['$url']+'\n');
 
 			return this.ACCEPT;
 		} else {
@@ -227,22 +227,22 @@ var gKablPolicy={
 			// fail silently
 		}
 
-		this.fields=new this.Fields(
+		var fields=new this.Fields(
 			contentType, contentLocation, requestOrigin, requestingNode
 		);
 
 		if (gKablDebug>1) dump('\nKarma Blocker - Checking:\nloc: '+contentLocation.spec+'\norg: '+requestOrigin.spec+'\n');
 		var score=0, flag=false;
 		for (var i=0, group=null; group=gKablRulesObj.groups[i]; i++) {
-			if (this.evalGroup(group)) {
+			if (this.evalGroup(group, fields)) {
 				score+=group.score;
 
-				flag=this.evalScore('cutoff', score);
+				flag=this.evalScore('cutoff', score, fields);
 				if (flag) return flag;
 			}
 		}
 
-		flag=this.evalScore('threshold', score);
+		flag=this.evalScore('threshold', score, fields);
 		if (flag) return flag;
 
 		return this.ACCEPT;
