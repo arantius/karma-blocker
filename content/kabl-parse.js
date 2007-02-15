@@ -65,6 +65,7 @@ gKablTokens['inieq']='=';
 // etc
 gKablTokens['comment']='^#.*';
 gKablTokens['newline']='\\n';
+gKablTokens['whitespace']='\s+'
 
 var gKablIdxTokMap=[];
 for (key in gKablTokens) {
@@ -161,7 +162,7 @@ var gKablRulesObj={
 				var tokType=gKablIdxTokMap[tokIdx];
 
 				switch (tokType) {
-				case 'newline': case 'comment':
+				case 'newline': case 'whitespace': case 'comment':
 					// ignore
 					break;
 				case undefined:

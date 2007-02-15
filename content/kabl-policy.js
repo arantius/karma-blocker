@@ -242,7 +242,7 @@ var gKablPolicy={
 			}
 		}
 
-		flag=this.evalScore('cutoff', score);
+		flag=this.evalScore('threshold', score);
 		if (flag) return flag;
 
 		return this.ACCEPT;
