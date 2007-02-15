@@ -242,7 +242,10 @@ var gKablPolicy={
 			}
 		}
 
-		return this.evalScore('threshold', score);
+		flag=this.evalScore('cutoff', score);
+		if (flag) return flag;
+
+		return this.ACCEPT;
 	},
 
 	// nsISupports interface implementation
