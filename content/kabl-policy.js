@@ -58,9 +58,7 @@ var gKablPolicy={
 		return node.defaultView;
 	},
 
-	// holds details of the request in object scope
-	fields:{},
-	// constructor for it
+	// constructor for details of the request
 	Fields:function(type, loc, org, node) {
 		this['$type']=type;
 
