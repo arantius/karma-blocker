@@ -188,16 +188,24 @@ var gKablPolicy={
 	shouldLoad:function(
 		contentType, contentLocation, requestOrigin, requestingNode, mimeTypeGuess, extra
 	) {
+		// when not enabled, let it through
 		if (!gKablEnabled) {
-			// when not enabled, let it through
 			return this.ACCEPT;
 		}
 
+		// it's not a remote scheme, definitely let it through
 		if (!contentLocation.schemeIs('http') &&
 			!contentLocation.schemeIs('https') &&
+			!contentLocation.schemeIs('chrome') &&
 			!contentLocation.schemeIs('ftp')
 		) {
-			// it's not a remote scheme, definitely let it through
+			return this.ACCEPT;
+		}
+
+		// if it is chrome, and so is the origin, let it through
+		if (contentLocation.schemeIs('chrome') &&
+			originLocation.schemeIs('chrome')
+		) {
 			return this.ACCEPT;
 		}
 
