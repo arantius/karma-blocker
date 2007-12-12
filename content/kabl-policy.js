@@ -76,14 +76,21 @@ var gKablPolicy={
 		this['$origin.tag']=undefined;
 		// Conditionally override them based on scheme.
 		switch (org.scheme) {
-		case 'chrome':
 		case 'about':
-			// no-op
+			this['$origin']=org.spec;
+			this['$origin.tag']=node.tagName;
+			break;
+		case 'file':
+		case 'chrome':
+			this['$origin']=org.spec;
+			this['$origin.path']=org.path;
+			this['$origin.scheme']=org.scheme;
+
+			this['$origin.tag']=node.tagName;
 			break;
 		case 'ftp':
 		case 'http':
 		case 'https':
-			dump(org.spec+'\n');
 			var lHost=loc.host;
 			var oHost=org.host;
 			if (!lHost.match(/^[0-9.]+$/)) {
@@ -101,10 +108,10 @@ var gKablPolicy={
 
 			break;
 		default:
-			if (DEBUG) {
+			if (gKablDebug ) {
 				dump(
 					'kabl error condition, unknown origin scheme for\n    '+
-					org.spec
+					org.spec+'\n'
 				);
 			}
 			break;
