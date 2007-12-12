@@ -91,14 +91,17 @@ gKablInserter.attachToWindow=function(win) {
 
 gKablInserter.attachToLoadingWindow=function(win) {
 	if (!gKablEnabled) return;
-
-	if (gKablDebug>0) dump('kabl inject into: '+win.location+'\n');
+	var whereFlag=false;
 
 	// xpcnativewrapper = no expando, so unwrap
 	win=win.wrappedJSObject || win;
 
 	for (var i=0, func=null; func=gKablRulesObj.injectFunctions[i]; i++) {
 		if ('undefined'!=typeof win[func]) continue;
+		if (!whereFlag) {
+			whereFlag=true;
+			if (gKablDebug>0) dump('kabl inject into: '+win.location+'\n');
+		}
 		if (gKablDebug>0) dump('kabl inject function: '+func+'\n');
 		win[func]=new Function();
 	}
