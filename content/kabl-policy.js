@@ -67,16 +67,23 @@ var gKablPolicy={
 		this['$url.path']=loc.path;
 		this['$url.scheme']=loc.scheme;
 
-		if ('chrome'==org.scheme) {
-			this['$thirdParty']=false;
-
-			this['$origin']=undefined;
-			this['$origin.host']=undefined;
-			this['$origin.path']=undefined;
-			this['$origin.scheme']=undefined;
-
-			this['$origin.tag']=undefined;
-		} else {
+		// Set base values.
+		this['$thirdParty']=false;
+		this['$origin']=undefined;
+		this['$origin.host']=undefined;
+		this['$origin.path']=undefined;
+		this['$origin.scheme']=undefined;
+		this['$origin.tag']=undefined;
+		// Conditionally override them based on scheme.
+		switch (org.scheme) {
+		case 'chrome':
+		case 'about':
+			// no-op
+			break;
+		case 'ftp':
+		case 'http':
+		case 'https':
+			dump(org.spec+'\n');
 			var lHost=loc.host;
 			var oHost=org.host;
 			if (!lHost.match(/^[0-9.]+$/)) {
@@ -91,6 +98,16 @@ var gKablPolicy={
 			this['$origin.scheme']=org.scheme;
 
 			this['$origin.tag']=node.tagName;
+
+			break;
+		default:
+			if (DEBUG) {
+				dump(
+					'kabl error condition, unknown origin scheme for\n    '+
+					org.spec
+				);
+			}
+			break;
 		}
 
 		for (key in gKablPolicy.fieldNames) {
@@ -211,6 +228,7 @@ var gKablPolicy={
 
 		// Only block in content windows (this from AdBlock Plus)
 		var win=this.windowForNode(requestingNode);
+		if (!win) return this.ACCEPT;
 		var winType=win
 			.QueryInterface(Components.interfaces.nsIInterfaceRequestor)
 			.getInterface(Components.interfaces.nsIWebNavigation)
