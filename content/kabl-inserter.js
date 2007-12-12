@@ -63,7 +63,7 @@ gKablInserter.shutdown=function() {
 gKablInserter.addObserver=function() {
 	var tabBrowser=document.getElementById('content');
 	tabBrowser.addProgressListener(gKablInserterTabProgressListener,
-		Components.interfaces.nsIWebProgress.NOTIFY_DOCUMENT);
+		Components.interfaces.nsIWebProgress.NOTIFY_STATE_DOCUMENT);
 
 	for (var i=0; i<tabBrowser.browsers.length; ++i) {
 		var browser=tabBrowser.browsers[i];
