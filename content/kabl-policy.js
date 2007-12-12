@@ -204,7 +204,7 @@ var gKablPolicy={
 
 		// if it is chrome, and so is the origin, let it through
 		if (contentLocation.schemeIs('chrome') &&
-			originLocation.schemeIs('chrome')
+			requestOrigin.schemeIs('chrome')
 		) {
 			return this.ACCEPT;
 		}
