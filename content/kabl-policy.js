@@ -235,6 +235,13 @@ var gKablPolicy={
 			return this.ACCEPT;
 		}
 
+		// let through critical chrome bindings always
+		if (contentLocation.spec.substr(0, 47)==
+			'chrome://global/content/bindings/scrollbar.xml#'
+		) {
+			return this.ACCEPT;
+		}
+
 		// Only block in content windows (this from AdBlock Plus)
 		var win=this.windowForNode(requestingNode);
 		if (!win) return this.ACCEPT;
