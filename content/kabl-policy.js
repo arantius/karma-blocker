@@ -30,41 +30,6 @@
 //
 // ***** END LICENSE BLOCK *****
 
-function strippedTextContent(el) {
-	var text=el.innerHTML || el.textContent;
-	if (!text) return '';
-
-	text=text.replace(/[\s]+/g, ' '); //collapse whitespace
-	text=text.replace(/<script.*?\/script>/gi, ''); //strip js
-	text=text.replace(/<noscript.*?\/noscript>/gi, ''); //strip no-js
-	text=text.replace(/<iframe.*?\/iframe>/gi, ''); // iframe, alternate content
-	text=text.replace(/<!--.*?-->/gi, ''); //strip comments
-	text=text.replace(/<\/?[^>]+>/gi, ''); //strip tags
-	text=text.replace(/^\s+/, '');
-	text=text.replace(/\s+$/, '');
-
-	return text;
-}
-
-// Starting from a to-be-blocked element, try to climb up the DOM to find the
-// biggest empty box containing it, and display:none that box, too.
-function collapseEmptyBoxes(el) {
-	var el2, empty=true;
-	do {
-		el2=el.parentNode;
-		if (!el2) return;
-
-		if (strippedTextContent(el2).length>0) empty=false;
-		if (el2.getElementsByTagName('IMG').length>0) empty=false;
-		if (el2.getElementsByTagName('EMBED').length>0) empty=false;
-		if (el2.getElementsByTagName('OBJECT').length>0) empty=false;
-
-		if (empty) el=el2;
-	} while (empty);
-
-	if (el) el.style.display='none';
-}
-
 var gKablPolicy={
 	ACCEPT:Components.interfaces.nsIContentPolicy.ACCEPT,
 	REJECT:Components.interfaces.nsIContentPolicy.REJECT_REQUEST,
@@ -226,8 +191,6 @@ var gKablPolicy={
 				fields.node=fields.node
 					.QueryInterface(Components.interfaces.nsIDOMNode);
 				fields.node.style.display='none !important';
-
-				collapseEmptyBoxes(fields.node);
 			} catch (e) {
 				if (gKablDebug) dump('Error in evalScore: '+e+'\n');
 			}
