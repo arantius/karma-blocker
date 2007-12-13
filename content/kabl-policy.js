@@ -237,7 +237,9 @@ var gKablPolicy={
 
 		// let through critical chrome bindings always
 		if (contentLocation.spec.substr(0, 47)==
-			'chrome://global/content/bindings/scrollbar.xml#'
+			'chrome://global/content/bindings/scrollbar.xml#' ||
+			contentLocation.spec.substr(0, 49)==
+			'chrome://global/content/platformHTMLBindings.xml#'
 		) {
 			return this.ACCEPT;
 		}
