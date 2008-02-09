@@ -322,7 +322,7 @@ var gKablRulesObj={
 		switch (true) {
 		case '$thirdParty'==fieldTok.val:
 			valTok=this.expect('bool', 'Unexpected "%%" expected: true, false');
-			val=new Boolean(valTok.val); //ensure type
+			val='true'===valTok.val?true:false;
 			break;
 		case '$type'==fieldTok.val:
 			valTok=this.expect('field_type_val', 'Unexpected "%%" expected: type');
