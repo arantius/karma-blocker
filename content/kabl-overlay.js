@@ -56,6 +56,8 @@ var gKabl={
 	onLoad:function() {
 		window.removeEventListener('DOMContentLoaded', gKabl.onLoad, false);
 		gKabl.setImage();
+
+		gKablMonitor.open();
 	}
 };
 

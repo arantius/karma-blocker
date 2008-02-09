@@ -41,7 +41,7 @@ gKablTokens['inject_cmd']='(?:function)';
 
 // group section
 gKablTokens['group']='\\[Group\\]';
-gKablTokens['group_cmd']='(?:match|score|rule)';
+gKablTokens['group_cmd']='(?:match|score|rule|name)';
 gKablTokens['group_match_val']='(?:all|any)';
 
 // fields
@@ -195,10 +195,12 @@ var gKablRulesObj={
 			this.groups=[];
 			this.injectFunctions=[];
 
+			var untitledGroupNum=0;
 			function defaultGroup() {
 				this.score=1;
 				this.match='any';
 				this.rules=[];
+				this.name='Untitled Group '+(++untitledGroupNum);
 			};
 
 			// State:
@@ -284,6 +286,12 @@ var gKablRulesObj={
 					case 'rule':
 						this.expect('inieq', 'Unexpected "%%" expected: "="');
 						group.rules.push(this.parseRule());
+						break;
+					case 'name':
+						this.expect('inieq', 'Unexpected "%%" expected: "="');
+						tok2=this.expect('string', 'Unexpected "%%" expected: string');
+						group.name=parseFloat(tok2.val);
+						untitledGroupNum--;
 						break;
 					}
 					break;

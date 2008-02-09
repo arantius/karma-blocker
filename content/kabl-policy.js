@@ -34,6 +34,8 @@ var gKablPolicy={
 	ACCEPT:Components.interfaces.nsIContentPolicy.ACCEPT,
 	REJECT:Components.interfaces.nsIContentPolicy.REJECT_REQUEST,
 
+	monitorWin:null,
+
 	fieldNames:{
 		'$type':1, '$url':1, '$url.host':1, '$url.path':1, '$url.scheme':1,
 		'$thirdParty':1, '$origin':1, '$origin.host':1, '$origin.path':1,
@@ -208,6 +210,31 @@ var gKablPolicy={
 		}
 	},
 
+	// nsIKablPolicy
+	openMonitorWindow:function(parentWin) {
+		if (this.monitorWin && false===this.monitorWin.closed) {
+			return this.monitorWin;
+		}
+
+		return this.monitorWin=parentWin.open(
+			'chrome://kabl/content/kabl-monitor.xul', null,
+			'chrome,close,dependent,dialog,resizable,titlebar'
+		);
+	},
+
+	// nsIKablPolicy
+	closeMonitorWindow:function() {
+		this.monitorWin.close();
+		this.monitorWin=null;
+	},
+
+	monitorAdd:function(fields, score, flag) {
+		if (!this.monitorWin || this.monitorWin.closed) return;
+
+		var blocked=this.REJECT==flag;
+		this.monitorWin.gKablMonitor.add(fields, score, blocked);
+	},
+
 	// nsIContentPolicy interface implementation
 	shouldLoad:function(
 		contentType, contentLocation, requestOrigin, requestingNode, mimeTypeGuess, extra
@@ -256,8 +283,8 @@ var gKablPolicy={
 			return this.ACCEPT;
 		}
 
-		// if the requesting node is XUL, it's the top-frame document
-		// if we block it, things go very wrong, so let it through
+		// if the requesting node is XUL, it's the top-frame document.
+		// if we block it, things go very wrong, so let it through.
 		try {
 			if (requestingNode.QueryInterface(
 				Components.interfaces.nsIDOMXULElement
@@ -274,20 +301,25 @@ var gKablPolicy={
 		);
 
 		if (gKablDebug>1) dump('\nKarma Blocker - Checking:\nloc: '+contentLocation.spec+'\norg: '+requestOrigin.spec+'\n');
+
 		var score=0, flag=false;
 		for (var i=0, group=null; group=gKablRulesObj.groups[i]; i++) {
 			if (this.evalGroup(group, fields)) {
 				score+=group.score;
 
 				flag=this.evalScore('cutoff', score, fields);
-				if (flag) return flag;
+				if (flag) break;
 			}
 		}
 
-		flag=this.evalScore('threshold', score, fields);
-		if (flag) return flag;
+		if (!flag) {
+			flag=this.evalScore('threshold', score, fields);
+		}
+		
+		if (!flag) flag=this.ACCEPT;
 
-		return this.ACCEPT;
+		this.monitorAdd(fields, score, flag);
+		return flag;
 
 		} catch (e) {
 			dump('ERROR IN kabl:\n');
@@ -300,17 +332,14 @@ var gKablPolicy={
 	shouldProcess:function(
 		contentType, contentLocation, requestOrigin, requestingNode, mimeType, extra
 	) {
-		if (gKablDebug>0) dump([
-			'.... shouldProcess ....', contentType, contentLocation.spec,
-			requestOrigin.spec, requestingNode, mimeType, extra
-		,''].join('\n'));
 		return this.ACCEPT;
 	},
 
 	// nsISupports interface implementation
 	QueryInterface:function(iid) {
 		if (!iid.equals(Components.interfaces.nsISupports) &&
-			!iid.equals(Components.interfaces.nsIContentPolicy)
+			!iid.equals(Components.interfaces.nsIContentPolicy) &&
+			!iid.equals(Components.interfaces.nsIKablPolicy)
 		) {
 			throw Components.results.NS_ERROR_NO_INTERFACE;
 		}
@@ -334,7 +363,8 @@ var gKablFactory={
 		if (!iid.equals(Components.interfaces.nsISupports) &&
 			!iid.equals(Components.interfaces.nsISupportsWeakReference) &&
 			!iid.equals(Components.interfaces.nsIFactory) &&
-			!iid.equals(Components.interfaces.nsIObserver)
+			!iid.equals(Components.interfaces.nsIObserver) &&
+			!iid.equals(Components.interfaces.nsIKablPolicy)
 		) {
 			throw Components.results.NS_ERROR_NO_INTERFACE;
 		}

@@ -1,0 +1,8 @@
+tree {
+	min-height: 20em;
+	min-width: 50em;
+}
+
+treecell[blocked=true] {
+	background-color: red;
+}

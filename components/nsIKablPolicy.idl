@@ -1,0 +1,13 @@
+/*
+See:
+http://developer.mozilla.org/en/docs/How_to_Build_an_XPCOM_Component_in_Javascript
+*/
+
+#include "nsISupports.idl"
+#include "nsIDOMWindow.idl"
+
+[scriptable, uuid(ee1829af-67ad-480b-91b4-28920faecab6)]
+interface nsIKablPolicy : nsISupports {
+	void openMonitorWindow(in nsIDOMWindow parentWin);
+	void closeMonitorWindow();
+};

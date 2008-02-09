@@ -3,6 +3,7 @@
 
 <script type='application/x-javascript' src='chrome://kabl/content/kabl-pref.js'></script>
 <script type='application/x-javascript' src='chrome://kabl/content/kabl-parse.js'></script>
+<script type='application/x-javascript' src='chrome://kabl/content/kabl-monitor.js'></script>
 <script type='application/x-javascript' src='chrome://kabl/content/kabl-overlay.js'></script>
 <script	type='application/x-javascript'	src='chrome://kabl/content/kabl-inserter.js'></script>
 
@@ -32,6 +33,9 @@ first content window begins to open, ensuring it always works.
 			/>
 			<menuitem label='Configure...' accesskey='C'
 				oncommand='gKabl.openConfig();'
+			/>
+			<menuitem label='Monitor...' accesskey='M'
+				oncommand='gKablMonitor.open();'
 			/>
 		</popup>
 	</statusbarpanel>
