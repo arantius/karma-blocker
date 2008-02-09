@@ -290,7 +290,7 @@ var gKablRulesObj={
 					case 'name':
 						this.expect('inieq', 'Unexpected "%%" expected: "="');
 						tok2=this.expect('string', 'Unexpected "%%" expected: string');
-						group.name=parseFloat(tok2.val);
+						group.name=tok2.val.substring(1, tok2.val.length-1);
 						untitledGroupNum--;
 						break;
 					}
@@ -346,9 +346,10 @@ var gKablRulesObj={
 
 		if (val) {
 			return {
-				field: fieldTok.val,
-				op:    opTok.val,
-				val:   val
+				field:fieldTok.val,
+				op:opTok.val,
+				val:val,
+				match:false
 			};
 		} else {
 			return null;

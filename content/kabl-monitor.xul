@@ -17,15 +17,28 @@
 <script type='application/javascript' src='chrome://kabl/content/kabl-monitor.js'></script>
 <dialogheader title='Karma Blocker' description='Monitor'/>
 
-<tree flex='1'>
-	<treecols>
-		<treecol id='colField' label='Field' flex='20' primary='true' />
-		<splitter class='tree-splitter'/>
-		<treecol id='colScore' label='Score' flex='1'/>
-		<splitter class='tree-splitter'/>
-		<treecol id='colBlock' label='Blocked' flex='1'/>
-	</treecols>
-	<treechildren id='tree'/>
-</tree>
+<vbox flex='1'>
+	<label>Resources:</label>
+	<tree flex='2' onselect='gKablMonitor.resSelect(event);'>
+		<treecols>
+			<treecol label='Field' flex='20' primary='true' />
+			<splitter class='tree-splitter'/>
+			<treecol label='Score' flex='1'/>
+			<splitter class='tree-splitter'/>
+			<treecol label='Blocked' flex='1'/>
+		</treecols>
+		<treechildren id='treeRes'/>
+	</tree>
+
+	<label>Scores:</label>
+	<tree flex='1'>
+		<treecols>
+			<treecol label='Group' flex='20' primary='true' />
+			<splitter class='tree-splitter'/>
+			<treecol label='Score/Match' flex='1'/>
+		</treecols>
+		<treechildren id='treeScore'/>
+	</tree>
+</vbox>
 
 </dialog>

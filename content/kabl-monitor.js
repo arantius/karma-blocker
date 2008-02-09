@@ -46,6 +46,16 @@ var gKablMonitor={
 		'12':'object_subrequest'
 	},
 
+	treeRes:null,
+	treeScore:null,
+	clearing: false,
+
+	onLoad:function() {
+		window.removeEventListener('DOMContentLoaded', gKablMonitor.onLoad, false);
+		gKablMonitor.treeRes=document.getElementById('treeRes');
+		gKablMonitor.treeScore=document.getElementById('treeScore');
+	},
+
 	open:function() {
 		Components
 			.classes['@arantius.com/kabl-policy;1']
@@ -61,16 +71,38 @@ var gKablMonitor={
 	},
 	
 	clear:function() {
-		var tree=document.getElementById('tree');
-
-		while (tree.firstChild) tree.removeChild(tree.firstChild);
+		this.clearing=true;
+		while (this.treeScore.firstChild) {
+			this.treeScore.removeChild(this.treeScore.firstChild);
+		}
+		while (this.treeRes.firstChild) {
+			this.treeRes.removeChild(this.treeRes.firstChild);
+		}
+		this.clearing=false;
 	},
 	
-	add:function(fields, score, blocked) {
-		dump('> gKablMonitor.add()...\n');
-		dump('blocked? '+blocked+'\n');
+	resSelect:function(event) {
+		if (this.clearing) return;
 
+		while (this.treeScore.firstChild) {
+			this.treeScore.removeChild(this.treeScore.firstChild);
+		}
+
+		var group, item=this.treeRes.childNodes[
+			this.treeRes.parentNode.currentIndex
+		];
+		for (i in item.groups) {
+			group=item.groups[i];
+			this.treeScore.appendChild(
+				this.groupItem(group)
+			);
+		}
+	},
+
+	add:function(fields, groups, score, blocked) {
 		var item=this.fieldItem('$url', fields.$url, score, blocked);
+		item.groups=groups;
+
 		var children=document.createElement('treechildren');
 		item.appendChild(children);
 
@@ -84,12 +116,10 @@ var gKablMonitor={
 			children.appendChild(subItem);
 		}
 
-		document.getElementById('tree').appendChild(item);
+		this.treeRes.insertBefore(item, this.treeRes.firstChild);
 	},
 
 	fieldItem:function(name, value, score, blocked) {
-		dump('> gKablMonitor.fieldItem()...\n');
-
 		if ('$type'==name) {
 			value=this.typeMap[value];
 		}
@@ -116,5 +146,47 @@ var gKablMonitor={
 		}
 
 		return item;
+	},
+
+	groupItem:function(group) {
+		var cell, row, item=document.createElement('treeitem');
+		item.setAttribute('container', 'true');
+
+		row=document.createElement('treerow');
+		item.appendChild(row);
+		
+		cell=document.createElement('treecell');
+		cell.setAttribute('label', group.name);
+		row.appendChild(cell);
+
+		cell=document.createElement('treecell');
+		cell.setAttribute('label', group.score);
+		row.appendChild(cell);
+
+		var children=document.createElement('treechildren');
+		item.appendChild(children);
+
+		var rule;
+		for (i in group.rules) {
+			rule=group.rules[i];
+
+			var subItem=document.createElement('treeitem');
+
+			row=document.createElement('treerow');
+			subItem.appendChild(row);
+			children.appendChild(subItem);
+			
+			cell=document.createElement('treecell');
+			cell.setAttribute('label', rule.field+' '+rule.op+' '+rule.val);
+			row.appendChild(cell);
+			
+			cell=document.createElement('treecell');
+			cell.setAttribute('label', rule.match?'Yes':'No');
+			row.appendChild(cell);
+		}
+
+		return item;
 	}
 };
+
+window.addEventListener('DOMContentLoaded', gKablMonitor.onLoad, false);

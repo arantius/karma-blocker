@@ -30,6 +30,16 @@
 //
 // ***** END LICENSE BLOCK *****
 
+function cloneObject(what) {
+	for (i in what) {
+		if ('object'==typeof what[i]) {
+			this[i]=new cloneObject(what[i]);
+		} else {
+			this[i]=what[i];
+		}
+	}
+};
+
 var gKablPolicy={
 	ACCEPT:Components.interfaces.nsIContentPolicy.ACCEPT,
 	REJECT:Components.interfaces.nsIContentPolicy.REJECT_REQUEST,
@@ -130,9 +140,7 @@ var gKablPolicy={
 	evalGroup:function(group, fields) {
 		var flag;
 
-		if (gKablDebug>3) dump('  Group ...\n');
 		for (var j=0, rule=null; rule=group.rules[j]; j++) {
-			if (gKablDebug>4) dump('    rule = '+rule.toSource()+'\n');
 			flag=false;
 
 			switch (rule.op) {
@@ -157,13 +165,7 @@ var gKablPolicy={
 					break;
 			}
 
-			if (gKablDebug>5) dump([
-				'      ', fields[rule.field],
-				' ', rule.op,
-				' ', rule.val,
-				'\n'
-			].join(''));
-			if (gKablDebug>4) dump('    match = '+flag+'\n');
+			rule.match=flag;
 
 			if (flag && 'any'==group.match) {
 				return true;
@@ -184,9 +186,6 @@ var gKablPolicy={
 		if (('threshold'==type && score>=gKablRulesObj.threshold) ||
 			('cutoff'==type && score>=gKablRulesObj.cutoff)
 		) {
-			if (gKablDebug>1) dump(scoreMsg+'deny!\n');
-			else if (1==gKablDebug) dump('kabl X '+fields['$url']+'\n');
-
 			// try block just in case, attempt to hide the node, i.e.
 			// if a non-loaded image will result in an alt tag showing
 			try {
@@ -201,9 +200,6 @@ var gKablPolicy={
 		} else if ('threshold'==type ||
 			('cutoff'==type && Math.abs(score)>=gKablRulesObj.cutoff)
 		) {
-			if (gKablDebug>1) dump(scoreMsg+'accept\n');
-			else if (1==gKablDebug) dump('kabl   '+fields['$url']+'\n');
-
 			return this.ACCEPT;
 		} else {
 			return undefined;
@@ -218,7 +214,7 @@ var gKablPolicy={
 
 		return this.monitorWin=parentWin.open(
 			'chrome://kabl/content/kabl-monitor.xul', null,
-			'chrome,close,dependent,dialog,resizable,titlebar'
+			'chrome,close=no,dependent,dialog,resizable'
 		);
 	},
 
@@ -228,11 +224,11 @@ var gKablPolicy={
 		this.monitorWin=null;
 	},
 
-	monitorAdd:function(fields, score, flag) {
+	monitorAdd:function(fields, groups, score, flag) {
 		if (!this.monitorWin || this.monitorWin.closed) return;
 
 		var blocked=this.REJECT==flag;
-		this.monitorWin.gKablMonitor.add(fields, score, blocked);
+		this.monitorWin.gKablMonitor.add(fields, groups, score, blocked);
 	},
 
 	// nsIContentPolicy interface implementation
@@ -299,16 +295,22 @@ var gKablPolicy={
 		var fields=new this.Fields(
 			contentType, contentLocation, requestOrigin, requestingNode
 		);
+		var groups=[];
 
-		if (gKablDebug>1) dump('\nKarma Blocker - Checking:\nloc: '+contentLocation.spec+'\norg: '+requestOrigin.spec+'\n');
-
-		var score=0, flag=false;
+		var score=0, flag=false, group;
 		for (var i=0, group=null; group=gKablRulesObj.groups[i]; i++) {
+			group=new cloneObject(group);
+
 			if (this.evalGroup(group, fields)) {
 				score+=group.score;
 
 				flag=this.evalScore('cutoff', score, fields);
+				
+				groups[groups.length]=group;
 				if (flag) break;
+			} else {
+				group.score=0;
+				groups[groups.length]=group;
 			}
 		}
 
@@ -318,7 +320,7 @@ var gKablPolicy={
 		
 		if (!flag) flag=this.ACCEPT;
 
-		this.monitorAdd(fields, score, flag);
+		this.monitorAdd(fields, groups, score, flag);
 		return flag;
 
 		} catch (e) {
