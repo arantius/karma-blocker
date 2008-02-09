@@ -25,36 +25,7 @@
 		<splitter class='tree-splitter'/>
 		<treecol id='colBlock' label='Blocked' flex='1'/>
 	</treecols>
-	<treechildren id='tree'>
-		<treeitem container='true'>
-			<treerow>
-				<treecell label='URL: http://www.example.com/'/>
-				<treecell label='15'/>
-			</treerow>
-
-			<treechildren>
-				<treeitem>
-					<treerow>
-						<treecell label='Third p: false'/>
-					</treerow>
-				</treeitem>
-			</treechildren>
-		</treeitem>
-		<treeitem container='true'>
-			<treerow>
-				<treecell label='URL: http://www.example.com/'/>
-				<treecell label='15'/>
-			</treerow>
-
-			<treechildren>
-				<treeitem>
-					<treerow>
-						<treecell label='Third p: false'/>
-					</treerow>
-				</treeitem>
-			</treechildren>
-		</treeitem>
-	</treechildren>
+	<treechildren id='tree'/>
 </tree>
 
 </dialog>

@@ -31,6 +31,21 @@
 // ***** END LICENSE BLOCK *****
 
 var gKablMonitor={
+	typeMap:{
+		'1':'other',
+		'2':'script',
+		'3':'image',
+		'4':'stylesheet',
+		'5':'object',
+		'6':'document',
+		'7':'subdocument',
+		'8':'refresh',
+		'9':'xbl',
+		'10':'ping',
+		'11':'xmlhttprequest',
+		'12':'object_subrequest'
+	},
+
 	open:function() {
 		Components
 			.classes['@arantius.com/kabl-policy;1']
@@ -75,6 +90,10 @@ var gKablMonitor={
 	fieldItem:function(name, value, score, blocked) {
 		dump('> gKablMonitor.fieldItem()...\n');
 
+		if ('$type'==name) {
+			value=this.typeMap[value];
+		}
+
 		var cell, row, item=document.createElement('treeitem');
 
 		row=document.createElement('treerow');
@@ -92,7 +111,7 @@ var gKablMonitor={
 			row.appendChild(cell);
 
 			cell=document.createElement('treecell');
-			cell.setAttribute('blocked', blocked);
+			if (blocked) cell.setAttribute('properties', 'blocked');
 			row.appendChild(cell);
 		}
 

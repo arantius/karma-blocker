@@ -3,6 +3,6 @@ tree {
 	min-width: 50em;
 }
 
-treecell[blocked=true] {
-	background-color: red;
+treechildren:-moz-tree-cell(blocked) {
+	background: url('chrome://kabl/skin/kabl-on.png') 50% 50% no-repeat;
 }
