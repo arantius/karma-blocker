@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<RDF:RDF
+	xmlns:RDF="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+	xmlns:em="http://www.mozilla.org/2004/em-rdf#"
+>
+
+<RDF:Description about="urn:mozilla:extension:kabl@trac.arantius.com">
+	<em:updates>
+		<RDF:Seq>
+			<RDF:li resource="urn:mozilla:extension:kabl@trac.arantius.com:0.3"/>
+		</RDF:Seq>
+	</em:updates>
+	<em:version>0.3</em:version>
+	<em:signature>MIGTMA0GCSqGSIb3DQEBDQUAA4GBAJBUWf6oNEwLRtkvbhu7HxxnHfDDsFMe6xpTrECFBxwcUGcpGu8Y61HUrGijqa1VFUX5upGzcbjh7J7oH8NBYuz6FxezQk7N0bWXSEWvmkIcPFnIY547q2lDhCxFS4W66X7coudMYv93QGQ2QdxPdFNMoHvcw+Ii6ao1nxfn7jZw</em:signature>
+</RDF:Description>
+<RDF:Description about="urn:mozilla:extension:kabl@trac.arantius.com:0.3">
+	<em:version>0.3</em:version>
+	<em:targetApplication>
+		<RDF:Description>
+			<em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id>
+			<em:minVersion>2.0</em:minVersion>
+			<em:maxVersion>3.0.*</em:maxVersion>
+			<em:updateLink>http://arantius.com/misc/firefox-extensions/mine/kabl-0.3.xpi</em:updateLink>
+		</RDF:Description>
+	</em:targetApplication>
+	<em:signature>MIGTMA0GCSqGSIb3DQEBDQUAA4GBAJBUWf6oNEwLRtkvbhu7HxxnHfDDsFMe6xpTrECFBxwcUGcpGu8Y61HUrGijqa1VFUX5upGzcbjh7J7oH8NBYuz6FxezQk7N0bWXSEWvmkIcPFnIY547q2lDhCxFS4W66X7coudMYv93QGQ2QdxPdFNMoHvcw+Ii6ao1nxfn7jZw</em:signature>
+</RDF:Description>
+
+</RDF:RDF>
