@@ -56,6 +56,12 @@ var gKabl={
 	onLoad:function() {
 		window.removeEventListener('DOMContentLoaded', gKabl.onLoad, false);
 		gKabl.setImage();
+
+		var kablService=Components.classes['@arantius.com/kabl-policy;1']
+			.createInstance(Components.interfaces.nsIKablPolicy);
+
+		document.getElementById('appcontent')
+			.addEventListener('DOMContentLoaded', kablService.collapse, false);
 	}
 };
 

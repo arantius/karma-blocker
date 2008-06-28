@@ -10,4 +10,6 @@ http://developer.mozilla.org/en/docs/How_to_Build_an_XPCOM_Component_in_Javascri
 interface nsIKablPolicy : nsISupports {
 	void openMonitorWindow(in nsIDOMWindow parentWin);
 	void closeMonitorWindow();
+	
+	void collapse(in nsIDOMEvent event);
 };

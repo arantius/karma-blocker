@@ -40,6 +40,25 @@ function cloneObject(what) {
 	}
 };
 
+function strippedTextContent(el) {
+	var text=el.innerHTML || el.textContent;
+	if (!text) return '';
+
+	text=text.replace(/[\s]+/g, ' '); //collapse whitespace
+	text=text.replace(/^\s+|\s+$/g, ''); //strip leading/trailing whitespace
+	text=text.replace(/<script.*?\/script>/gi, ''); //strip js
+	text=text.replace(/<noscript.*?\/noscript>/gi, ''); //strip no-js
+	text=text.replace(/<iframe.*?\/iframe>/gi, ''); // iframe, alternate content
+	text=text.replace(/<!--.*?-->/gi, ''); //strip comments
+	text=text.replace(/<\/?[^>]+>/gi, ''); //strip tags
+
+	return text;
+}
+
+const gKablCollapseMarker=String(Math.floor(Math.random()*100000));
+const UNORDERED_NODE_SNAPSHOT_TYPE=6;
+const COLLAPSE_TEXT_LENGTH=25;
+
 var gKablPolicy={
 	ACCEPT:Components.interfaces.nsIContentPolicy.ACCEPT,
 	REJECT:Components.interfaces.nsIContentPolicy.REJECT_REQUEST,
@@ -120,7 +139,7 @@ var gKablPolicy={
 
 			break;
 		default:
-			if (gKablDebug ) {
+			if (gKablDebug) {
 				dump(
 					'kabl error condition, unknown origin scheme for\n    '+
 					org.spec+'\n'
@@ -191,7 +210,16 @@ var gKablPolicy={
 			try {
 				fields.node=fields.node
 					.QueryInterface(Components.interfaces.nsIDOMNode);
-				fields.node.style.display='none !important';
+				fields.node.setAttribute('style', 'display: none !important');
+			} catch (e) {
+				if (gKablDebug) dump('Error in evalScore: '+e+'\n');
+			}
+
+			// mark a node for extended hiding
+			try {
+				fields.node=fields.node
+					.QueryInterface(Components.interfaces.nsIDOMNode);
+				fields.node.setAttribute('kabl', gKablCollapseMarker);
 			} catch (e) {
 				if (gKablDebug) dump('Error in evalScore: '+e+'\n');
 			}
@@ -218,7 +246,6 @@ var gKablPolicy={
 		);
 	},
 
-	// nsIKablPolicy
 	closeMonitorWindow:function() {
 		this.monitorWin.close();
 		this.monitorWin=null;
@@ -231,7 +258,42 @@ var gKablPolicy={
 		this.monitorWin.gKablMonitor.add(fields, groups, score, blocked);
 	},
 
-	// nsIContentPolicy interface implementation
+	collapse:function(event) {
+		// called when a content page loads, this looks for elements that were
+		// marked as blocked, and looks for a parent node that should be
+		// collapsed down (because it's probably just a wrapper around the ad)
+		
+		var doc=event.target;
+		var xpr=doc.evaluate(
+			'//*[@kabl="'+gKablCollapseMarker+'"]',
+			doc, null, UNORDERED_NODE_SNAPSHOT_TYPE, null
+		);
+		for (var i=0, item=null; item=xpr.snapshotItem(i); i++) {
+			// Climb the DOM, from this item, to find a container to collapse.
+			var el=null;
+			while (item=item.parentNode) {
+				if (strippedTextContent(item).length>COLLAPSE_TEXT_LENGTH) break;
+
+				el=item;
+			}
+
+			// If we selected an item, collapse it.
+			// try block just in case, attempt to hide the node, i.e.
+			// if a non-loaded image will result in an alt tag showing
+			try {
+				if (el) {
+					el=el.QueryInterface(Components.interfaces.nsIDOMNode);
+					//el.style.display='none !important';
+					el.setAttribute('style', 'display: none !important');
+					el.setAttribute('kablcollapse', '1');
+				}
+			} catch (e) {
+				if (gKablDebug) dump('Error in collapse: '+e+'\n');
+			}
+		}
+	},
+
+	// nsIContentPolicy
 	shouldLoad:function(
 		contentType, contentLocation, requestOrigin, requestingNode, mimeTypeGuess, extra
 	) {
@@ -253,7 +315,7 @@ var gKablPolicy={
 
 		// if it is chrome, and so is the origin, let it through
 		if (contentLocation.schemeIs('chrome') &&
-			requestOrigin.schemeIs('chrome')
+			requestOrigin && requestOrigin.schemeIs('chrome')
 		) {
 			return this.ACCEPT;
 		}
