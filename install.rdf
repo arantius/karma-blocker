@@ -3,7 +3,7 @@
 	<Description about="urn:mozilla:install-manifest">
 		<em:id>kabl@trac.arantius.com</em:id>
 		<em:name>Karma Blocker</em:name>
-		<em:version>0.4</em:version>
+		<em:version>0.3.2</em:version>
 		<em:description>Block resources based on their karma.</em:description>
 
 		<em:creator>Anthony Lieuallen</em:creator>
@@ -11,9 +11,6 @@
 		<em:iconURL>chrome://kabl/skin/kabl-on.png</em:iconURL>
 		<em:homepageURL>http://trac.arantius.com/wiki/Extensions/KarmaBlocker</em:homepageURL>
 		<em:optionsURL>chrome://kabl/content/kabl-config.xul</em:optionsURL>
-
-		<em:updateURL>http://arantius.com/misc/firefox-extensions/mine/kabl.rdf</em:updateURL>
-		<em:updateKey>em:updateKey="MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCgvhRtOhjdrvaU1TTAkMIvgZJ/5y3UF9GfjLiys1uvm/r2LVD1ukcJpHC37aMSQ255JmO5+Rdom0vxWHr+3qWIuBxVuD3y7Mq/JP5N5gcgV5zKKJ4P+dl20jt/y6JdnroHGZS1l9yL6p5UUKMM0QNer055Safe1NFMQ2wy2wjj7wIDAQAB</em:updateKey>
 
 		<em:targetApplication>
 			<Description>
