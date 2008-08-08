@@ -205,21 +205,27 @@ var gKablPolicy={
 		if (('threshold'==type && score>=gKablRulesObj.threshold) ||
 			('cutoff'==type && score>=gKablRulesObj.cutoff)
 		) {
-			// try block just in case, attempt to hide the node, i.e.
-			// if a non-loaded image will result in an alt tag showing
 			try {
-				fields.node=fields.node
+				var el=fields.node
 					.QueryInterface(Components.interfaces.nsIDOMNode);
-				fields.node.setAttribute('style', 'display: none !important');
+			} catch (e) {
+				if (gKablDebug) dump('Error in evalScore: '+e+'\n');
+				return;
+			}
+
+			// Attempt to hide the node, i.e. if a non-loaded image will
+			// result in an alt tag showing.
+			try {
+				el.setAttribute('style', 'display: none !important');
 			} catch (e) {
 				if (gKablDebug) dump('Error in evalScore: '+e+'\n');
 			}
 
-			// mark a node for extended hiding
+			// Mark the node for collapsing.
 			try {
-				fields.node=fields.node
-					.QueryInterface(Components.interfaces.nsIDOMNode);
-				fields.node.setAttribute('kabl', gKablCollapseMarker);
+				if ('STYLE'!=el.tagName) {
+					el.setAttribute('kabl', gKablCollapseMarker);
+				}
 			} catch (e) {
 				if (gKablDebug) dump('Error in evalScore: '+e+'\n');
 			}
@@ -283,7 +289,6 @@ var gKablPolicy={
 			try {
 				if (el) {
 					el=el.QueryInterface(Components.interfaces.nsIDOMNode);
-					//el.style.display='none !important';
 					el.setAttribute('style', 'display: none !important');
 					el.setAttribute('kablcollapse', '1');
 				}
