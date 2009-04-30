@@ -100,6 +100,10 @@ var gKablMonitor={
 	},
 
 	add:function(fields, groups, score, blocked) {
+		if (!blocked && document.getElementById('showBlocked').selected) {
+			return;
+		}
+
 		var item=this.fieldItem('$url', fields.$url, score, blocked);
 		item.groups=groups;
 

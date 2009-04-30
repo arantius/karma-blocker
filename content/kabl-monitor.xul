@@ -18,7 +18,17 @@
 <dialogheader title='Karma Blocker' description='Monitor'/>
 
 <vbox flex='1'>
-	<label>Resources:</label>
+	<radiogroup orient='horizontal'>
+		<!-- Extra wrapping boxes here make the label center vertically. -->
+		<vbox>
+			<box flex='1'/>
+			<label valign='baseline'>Resources:</label>
+			<box flex='1'/>
+		</vbox>
+		<radio id='showAll'     label='Show All' selected='selected' />
+		<radio id='showBlocked' label='Show Blocked' />
+	</radiogroup>
+
 	<tree flex='2' onselect='gKablMonitor.resSelect(event);'>
 		<treecols>
 			<treecol label='Field' flex='20' primary='true' />
