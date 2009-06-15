@@ -33,7 +33,7 @@
 var gKablTokens=[];
 // settings section
 gKablTokens['settings']='\\[Settings\\]';
-gKablTokens['settings_cmd']='(?:threshold|cutoff)';
+gKablTokens['settings_cmd']='(?:threshold|cutoff|collapse)';
 
 // inject section
 gKablTokens['inject']='\\[Inject\\]';
@@ -106,6 +106,7 @@ var gKablRulesObj={
 	// the actual rules data
 	threshold:null,
 	cutoff:null,
+	collapse:null,
 	groups:null,
 	injectFunctions:null,
 
@@ -192,6 +193,7 @@ var gKablRulesObj={
 			// init default values
 			this.threshold=10;
 			this.cutoff=Number.MAX_VALUE;
+			this.collapse=false;
 			this.groups=[];
 			this.injectFunctions=[];
 
@@ -228,10 +230,16 @@ var gKablRulesObj={
 					}
 
 					switch (tok.val) {
-					case 'threshold': case 'cutoff':
+					case 'threshold':
+					case 'cutoff':
 						this.expect('inieq', 'Unexpected "%%" expected: "="');
 						tok2=this.expect('number', 'Unexpected "%%" expected: number');
 						this[tok.val]=parseFloat(tok2.val);
+						break;
+					case 'collapse':
+						this.expect('inieq', 'Unexpected "%%" expected: "="');
+						tok2=this.expect('bool', 'Unexpected "%%" expected: bool');
+						this.collapse='true'==tok2.val;
 						break;
 					}
 					break;

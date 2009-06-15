@@ -265,6 +265,9 @@ var gKablPolicy={
 	},
 
 	collapse:function(event) {
+		// Don't continue if we're configured not to do collapsing.
+		if (!gKablRulesObj.collapse) return;
+		
 		// called when a content page loads, this looks for elements that were
 		// marked as blocked, and looks for a parent node that should be
 		// collapsed down (because it's probably just a wrapper around the ad)
@@ -278,6 +281,11 @@ var gKablPolicy={
 			// Climb the DOM, from this item, to find a container to collapse.
 			var el=null;
 			while (item=item.parentNode) {
+				// Before we pick this as a collapsing candidate, check for
+				// stop conditions.
+				if ('BODY'==item.tagName) break;
+				if ('HTML'==item.tagName) break;
+				if (0!=item.getElementsByTagName('form').length) break;
 				if (strippedTextContent(item).length>COLLAPSE_TEXT_LENGTH) break;
 
 				el=item;
