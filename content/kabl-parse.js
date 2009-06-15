@@ -51,7 +51,7 @@ gKablTokens['field']='(?:'+
 	'|\\$origin\\.?(?:host|path|scheme|tag)?'+
 	')';
 gKablTokens['field_type_val']=
-	'(?:other|script|image|stylesheet|object|document|subdocument|refresh)';
+	'(?:other|script|image|stylesheet|object_subrequest|object|document|subdocument|refresh)';
 
 // types
 gKablTokens['bool']='(?:true|false)';
