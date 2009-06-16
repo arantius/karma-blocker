@@ -30,15 +30,18 @@
 //
 // ***** END LICENSE BLOCK *****
 
-function cloneObject(what) {
-	for (i in what) {
-		if ('object'==typeof what[i]) {
-			this[i]=new cloneObject(what[i]);
-		} else {
-			this[i]=what[i];
-		}
+function cloneObject(obj) {
+    if (null==obj || 'object'!=typeof obj) {
+        return obj;
 	}
-};
+
+    var out=new obj.constructor();
+    for (var key in obj) {
+        out[key]=cloneObject(obj[key]);
+	}
+
+    return out;
+}
 
 function strippedTextContent(el) {
 	var text=el.innerHTML || el.textContent;
@@ -368,22 +371,19 @@ var gKablPolicy={
 		var fields=new this.Fields(
 			contentType, contentLocation, requestOrigin, requestingNode
 		);
-		var groups=[];
+		var monitorGroups=[];
 
 		var score=0, flag=false, group;
 		for (var i=0, group=null; group=gKablRulesObj.groups[i]; i++) {
 			group=new cloneObject(group);
+			monitorGroups.push(group);
 
 			if (this.evalGroup(group, fields)) {
 				score+=group.score;
-
 				flag=this.evalScore('cutoff', score, fields);
-				
-				groups[groups.length]=group;
 				if (flag) break;
 			} else {
 				group.score=0;
-				groups[groups.length]=group;
 			}
 		}
 
@@ -393,7 +393,7 @@ var gKablPolicy={
 		
 		if (!flag) flag=this.ACCEPT;
 
-		this.monitorAdd(fields, groups, score, flag);
+		this.monitorAdd(fields, monitorGroups, score, flag);
 		return flag;
 
 		} catch (e) {
