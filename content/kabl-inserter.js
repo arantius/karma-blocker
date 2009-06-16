@@ -96,7 +96,11 @@ gKablInserter.attachToLoadingWindow=function(win) {
 	win=win.wrappedJSObject || win;
 
 	for (var i=0, func=null; func=gKablRulesObj.injectFunctions[i]; i++) {
-		var obj=new Function(), subObj=obj;
+		var obj=new Function(
+			'var obj=new Function(); obj.__noSuchMethod__=obj; return obj;'
+		);
+		obj.__noSuchMethod__=obj;
+		var subObj=obj;
 		var name=func.split('.');
 		var baseName=name.shift(), subName;
 
@@ -105,7 +109,7 @@ gKablInserter.attachToLoadingWindow=function(win) {
 
 		// Create properties, if necessary.
 		while (subName=name.shift()) {
-			subObj[subName]=new Function();
+			subObj[subName]=obj;
 			subObj=subObj[subName];
 		}
 
