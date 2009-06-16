@@ -355,19 +355,7 @@ var gKablPolicy={
 			return this.ACCEPT;
 		}
 
-		// if the requesting node is XUL, it's the top-frame document.
-		// if we block it, things go very wrong, so let it through.
-		try {
-			if (requestingNode.QueryInterface(
-				Components.interfaces.nsIDOMXULElement
-			)) {
-				return this.ACCEPT;
-			}
-		} catch (e) {
-			// if it isn't there, it will throw with NS_NOINTERFACE ..
-			// fail silently
-		}
-
+		// Start checking for whether we should block!
 		var fields=new this.Fields(
 			contentType, contentLocation, requestOrigin, requestingNode
 		);
