@@ -190,6 +190,44 @@ var gKablMonitor={
 		}
 
 		return item;
+	},
+
+	labelForResourceItem:function(item) {
+		//          row        cell
+		return item.firstChild.firstChild.getAttribute('label');
+	},
+
+	onResourceContextShowing:function(event) {
+		dump('>>> onResourceContextShowing() ...\n');
+		
+		var items=this.treeRes.getElementsByTagName('treeitem');
+		var treeView=this.treeRes.parentNode.view;
+		var selectedUrl=0
+		var selectedElse=0
+		var start=new Object(), end=new Object();
+		for (var i=0; i<treeView.selection.getRangeCount(); i++) {
+			treeView.selection.getRangeAt(i, start, end);
+			for (var j=start.value; j<=end.value; j++) {
+				var item=treeView.getItemAtIndex(j);
+				if ('true'==item.getAttribute('container')) {
+					selectedUrl++;
+				} else {
+					selectedElse++;
+				}
+			}
+		}
+
+		/*
+		var selectedItem=this.treeRes.childNodes[
+			this.treeRes.parentNode.currentIndex
+		];
+		*/
+		dump('url: '+selectedUrl+' else: '+selectedElse+'\n');
+
+		var context=document.getElementById('resource-context');
+		context.childNodes[0].disabled=(0==selectedUrl+selectedElse);
+		context.childNodes[1].disabled=(0==selectedUrl || 0!=selectedElse);
+		context.childNodes[2].disabled=(1!=selectedUrl || 0!=selectedElse);
 	}
 };
 

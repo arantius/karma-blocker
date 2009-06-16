@@ -37,8 +37,16 @@
 			<splitter class='tree-splitter'/>
 			<treecol label='Blocked' flex='1'/>
 		</treecols>
-		<treechildren id='treeRes'/>
+		<treechildren id='treeRes' context='resource-context'/>
 	</tree>
+
+	<menupopup id='resource-context'
+		onpopupshowing='gKablMonitor.onResourceContextShowing(event);'
+	>
+		<menuitem label='Copy' accesskey='C'/>
+		<menuitem label='Delete' accesskey='D'/>
+		<menuitem label='Open' accesskey='O'/>
+	</menupopup>
 
 	<label>Scores:</label>
 	<tree flex='1'>
