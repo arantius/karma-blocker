@@ -326,18 +326,16 @@ var gKablPolicy={
 			return this.ACCEPT;
 		}
 
-		// if it is chrome, and so is the origin, let it through
-		if (contentLocation.schemeIs('chrome') &&
-			requestOrigin && requestOrigin.schemeIs('chrome')
+		// never block core parts of the browser
+		if ('chrome://global/'==contentLocation.spec.substr(0, 16)
+			|| 'chrome://browser/'==contentLocation.spec.substr(0, 17)
 		) {
 			return this.ACCEPT;
 		}
 
-		// let through critical chrome bindings always
-		if (contentLocation.spec.substr(0, 47)==
-			'chrome://global/content/bindings/scrollbar.xml#' ||
-			contentLocation.spec.substr(0, 49)==
-			'chrome://global/content/platformHTMLBindings.xml#'
+		// if it is chrome, and so is the origin, let it through
+		if (contentLocation.schemeIs('chrome') &&
+			requestOrigin && requestOrigin.schemeIs('chrome')
 		) {
 			return this.ACCEPT;
 		}
