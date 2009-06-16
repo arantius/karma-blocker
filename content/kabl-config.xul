@@ -24,7 +24,7 @@
 <dialogheader title='Karma Blocker' description='Configuration'/>
 
 <checkbox id='enabled' label='Enabled' />
-<textbox id='rules' cols='80' rows='15' multiline='true' flex='1' />
+<textbox id='rules' cols='80' rows='15' multiline='true' flex='1' wrap='off' />
 
 <hbox id='status_box' align='center'>
 	<button oncommand='gKablCheckConfig();' label='Status' accesskey='S' />
