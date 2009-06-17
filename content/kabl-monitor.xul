@@ -43,9 +43,12 @@
 	<menupopup id='resource-context'
 		onpopupshowing='gKablMonitor.onResourceContextShowing(event);'
 	>
-		<menuitem label='Copy' accesskey='C'/>
-		<menuitem label='Delete' accesskey='D'/>
-		<menuitem label='Open' accesskey='O'/>
+		<menuitem label='Copy' accesskey='C' oncommand='gKablMonitor.resourceContextCopy();'/>
+		<menuitem label='Delete' accesskey='D' oncommand='gKablMonitor.resourceContextDelete();'/>
+		<menuitem label='Open URL' accesskey='O' oncommand='gKablMonitor.resourceContextOpen();'/>
+		<menuseparator/>
+		<menuitem label='Expand' accesskey='' oncommand='gKablMonitor.resourceContextExpand(false);'/>
+		<menuitem label='Collapse' accesskey='' oncommand='gKablMonitor.resourceContextExpand(true);'/>
 	</menupopup>
 
 	<label>Scores:</label>

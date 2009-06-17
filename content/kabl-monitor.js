@@ -48,7 +48,7 @@ var gKablMonitor={
 
 	treeRes:null,
 	treeScore:null,
-	clearing: false,
+	changing:false,
 
 	onLoad:function() {
 		window.removeEventListener('DOMContentLoaded', gKablMonitor.onLoad, false);
@@ -71,30 +71,32 @@ var gKablMonitor={
 	},
 	
 	clear:function() {
-		this.clearing=true;
-		while (this.treeScore.firstChild) {
-			this.treeScore.removeChild(this.treeScore.firstChild);
+		gKablMonitor.changing=true;
+		while (gKablMonitor.treeScore.firstChild) {
+			gKablMonitor.treeScore.removeChild(gKablMonitor.treeScore.firstChild);
 		}
-		while (this.treeRes.firstChild) {
-			this.treeRes.removeChild(this.treeRes.firstChild);
+		while (gKablMonitor.treeRes.firstChild) {
+			gKablMonitor.treeRes.removeChild(gKablMonitor.treeRes.firstChild);
 		}
-		this.clearing=false;
+		gKablMonitor.changing=false;
 	},
 	
 	resSelect:function(event) {
-		if (this.clearing) return;
+		if (gKablMonitor.changing) return;
 
-		while (this.treeScore.firstChild) {
-			this.treeScore.removeChild(this.treeScore.firstChild);
+		while (gKablMonitor.treeScore.firstChild) {
+			gKablMonitor.treeScore.removeChild(gKablMonitor.treeScore.firstChild);
 		}
 
-		var group, item=this.treeRes.childNodes[
-			this.treeRes.parentNode.currentIndex
+		var group, item=gKablMonitor.treeRes.childNodes[
+			gKablMonitor.treeRes.parentNode.currentIndex
 		];
+		if (!item) return;
+
 		for (i in item.groups) {
 			group=item.groups[i];
-			this.treeScore.appendChild(
-				this.groupItem(group)
+			gKablMonitor.treeScore.appendChild(
+				gKablMonitor.groupItem(group)
 			);
 		}
 	},
@@ -104,7 +106,7 @@ var gKablMonitor={
 			return;
 		}
 
-		var item=this.fieldItem('$url', fields.$url, score, blocked);
+		var item=gKablMonitor.fieldItem('$url', fields.$url, score, blocked);
 		item.groups=groups;
 
 		var children=document.createElement('treechildren');
@@ -116,16 +118,16 @@ var gKablMonitor={
 			if ('node'==i) continue;
 			if ('undefined'==typeof fields[i]) continue;
 
-			subItem=this.fieldItem(i, fields[i]);
+			subItem=gKablMonitor.fieldItem(i, fields[i]);
 			children.appendChild(subItem);
 		}
 
-		this.treeRes.insertBefore(item, this.treeRes.firstChild);
+		gKablMonitor.treeRes.insertBefore(item, gKablMonitor.treeRes.firstChild);
 	},
 
 	fieldItem:function(name, value, score, blocked) {
 		if ('$type'==name) {
-			value=this.typeMap[value];
+			value=gKablMonitor.typeMap[value];
 		}
 
 		var cell, row, item=document.createElement('treeitem');
@@ -197,37 +199,101 @@ var gKablMonitor={
 		return item.firstChild.firstChild.getAttribute('label');
 	},
 
-	onResourceContextShowing:function(event) {
-		dump('>>> onResourceContextShowing() ...\n');
-		
-		var items=this.treeRes.getElementsByTagName('treeitem');
-		var treeView=this.treeRes.parentNode.view;
-		var selectedUrl=0
-		var selectedElse=0
+	withSelectedResources:function(callbackRow, callbackDetail) {
+		var items=gKablMonitor.treeRes.getElementsByTagName('treeitem');
+		var treeView=gKablMonitor.treeRes.parentNode.view;
 		var start=new Object(), end=new Object();
 		for (var i=0; i<treeView.selection.getRangeCount(); i++) {
 			treeView.selection.getRangeAt(i, start, end);
 			for (var j=start.value; j<=end.value; j++) {
-				var item=treeView.getItemAtIndex(j);
-				if ('true'==item.getAttribute('container')) {
-					selectedUrl++;
+				if (treeView.isContainer(j)) {
+					callbackRow( treeView.getItemAtIndex(j), j, treeView );
 				} else {
-					selectedElse++;
+					callbackDetail( treeView.getItemAtIndex(j), j, treeView );
 				}
 			}
 		}
+	},
 
-		/*
-		var selectedItem=this.treeRes.childNodes[
-			this.treeRes.parentNode.currentIndex
-		];
-		*/
-		dump('url: '+selectedUrl+' else: '+selectedElse+'\n');
+	onResourceContextShowing:function(event) {
+		// Find which rows are selected.
+		var selectedRow=0;
+		var selectedDetail=0;
+		var selectedOpen=0;
+		var selectedClosed=0;
+		gKablMonitor.withSelectedResources(
+			function(item, i, view) {
+				selectedRow++
+				if (view.isContainerOpen(i)) {
+					selectedOpen++;
+				} else {
+					selectedClosed++
+				}
+			},
+			function() { selectedDetail++ }
+		);
 
+		// Set appropriate enabled/disabled statuses based on selection
 		var context=document.getElementById('resource-context');
-		context.childNodes[0].disabled=(0==selectedUrl+selectedElse);
-		context.childNodes[1].disabled=(0==selectedUrl || 0!=selectedElse);
-		context.childNodes[2].disabled=(1!=selectedUrl || 0!=selectedElse);
+		context.childNodes[0].disabled=(0==selectedRow+selectedDetail);
+		context.childNodes[1].disabled=(0==selectedRow || 0!=selectedDetail);
+		context.childNodes[2].disabled=(1!=selectedRow || 0!=selectedDetail);
+		context.childNodes[4].disabled=(0==selectedClosed);
+		context.childNodes[5].disabled=(0==selectedOpen);
+	},
+
+// \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ //
+
+	resourceContextCopy:function() {
+		var data=[];
+		function addData(item) {
+			var label=gKablMonitor.labelForResourceItem(item);
+			data.push(label);
+		}
+
+		gKablMonitor.withSelectedResources(addData, addData);
+
+		Components.classes["@mozilla.org/widget/clipboardhelper;1"]
+			.getService(Components.interfaces.nsIClipboardHelper)
+			.copyString(data.join('\n'))
+	},
+
+	resourceContextDelete:function() {
+		var items=[];
+
+		gKablMonitor.withSelectedResources(
+			function(item) { items.push(item) },
+			function(){}
+		);
+
+		gKablMonitor.changing=true;
+		for (var i=0, item=null; item=items[i]; i++) {
+			item.parentNode.removeChild(item);
+		}
+		gKablMonitor.changing=false;
+	},
+
+	resourceContextOpen:function() {
+		gKablMonitor.withSelectedResources(
+			function(item) {
+				var label=gKablMonitor.labelForResourceItem(item);
+				window.opener.getBrowser().addTab(
+					label.substr(label.indexOf(' ')+1)
+				);
+			},
+			function(){}
+		);
+	},
+
+	resourceContextExpand:function(ifOpen) {
+		gKablMonitor.changing=true;
+		gKablMonitor.withSelectedResources(
+			function(item, i, view) {
+				if (ifOpen==view.isContainerOpen(i)) view.toggleOpenState(i);
+			},
+			function(){}
+		);
+		gKablMonitor.changing=false;
 	}
 };
 
