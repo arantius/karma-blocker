@@ -115,7 +115,7 @@ var gKablPolicy={
 
 			if (!node.attributes) return;
 			for (var i=0, attr=null; attr=node.attributes.item(i); i++) {
-				obj['$origin.tag.'+attr.nodeName]=attr.nodeValue;
+				obj['$origin.tag.'+attr.nodeName]=attr.nodeValue.toLowerCase();
 			}
 		}
 
