@@ -48,6 +48,7 @@ gKablTokens['group_match_val']='(?:all|any)';
 gKablTokens['field']='(?:'+
 	'\\$thirdParty|\\$type'+
 	'|\\$url\\.?(?:host|path|scheme)?'+
+	'|\\$origin\\.tag\\.[a-zA-Z][a-zA-Z0-9]*'+
 	'|\\$origin\\.?(?:host|path|scheme|tag)?'+
 	')';
 gKablTokens['field_type_val']=

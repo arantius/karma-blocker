@@ -108,11 +108,22 @@ var gKablPolicy={
 		this['$origin.path']=undefined;
 		this['$origin.scheme']=undefined;
 		this['$origin.tag']=undefined;
+
 		// Conditionally override them based on scheme.
+		function setOriginTag(obj, node) {
+			obj['$origin.tag']=node.tagName;
+
+			if (!node.attributes) return;
+			for (var i=0, attr=null; attr=node.attributes.item(i); i++) {
+				obj['$origin.tag.'+attr.nodeName]=attr.nodeValue;
+			}
+		}
+
 		switch (org.scheme) {
 		case 'about':
 			this['$origin']=org.spec;
-			this['$origin.tag']=node.tagName;
+			setOriginTag(this, node);
+
 			break;
 		case 'file':
 		case 'chrome':
@@ -120,7 +131,8 @@ var gKablPolicy={
 			this['$origin.path']=org.path;
 			this['$origin.scheme']=org.scheme;
 
-			this['$origin.tag']=node.tagName;
+			setOriginTag(this, node);
+
 			break;
 		case 'ftp':
 		case 'http':
@@ -138,7 +150,7 @@ var gKablPolicy={
 			this['$origin.path']=org.path;
 			this['$origin.scheme']=org.scheme;
 
-			this['$origin.tag']=node.tagName;
+			setOriginTag(this, node);
 
 			break;
 		default:
