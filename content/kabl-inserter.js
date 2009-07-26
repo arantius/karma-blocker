@@ -95,11 +95,11 @@ gKablInserter.attachToLoadingWindow=function(win) {
 	// xpcnativewrapper = no expando, so unwrap
 	win=win.wrappedJSObject || win;
 
+	var obj=function(){return arguments.callee;};
+	obj.__noSuchMethod__=obj;
+	obj.toString=function(){return '';};
+
 	for (var i=0, func=null; func=gKablRulesObj.injectFunctions[i]; i++) {
-		var obj=new Function(
-			'var obj=new Function(); obj.__noSuchMethod__=obj; return obj;'
-		);
-		obj.__noSuchMethod__=obj;
 		var subObj=obj;
 		var name=func.split('.');
 		var baseName=name.shift(), subName;
