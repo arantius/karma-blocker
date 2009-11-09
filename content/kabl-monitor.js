@@ -183,7 +183,9 @@ var gKablMonitor={
 			children.appendChild(subItem);
 			
 			cell=document.createElement('treecell');
-			cell.setAttribute('label', rule.field+' '+rule.op+' '+rule.val);
+			var val=rule.val;
+			if ('$type'==rule.field) val=this.typeMap[val];
+			cell.setAttribute('label', rule.field+' '+rule.op+' '+val);
 			row.appendChild(cell);
 			
 			cell=document.createElement('treecell');
