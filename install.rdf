@@ -3,7 +3,7 @@
 	<Description about="urn:mozilla:install-manifest">
 		<em:id>kabl@trac.arantius.com</em:id>
 		<em:name>Karma Blocker</em:name>
-		<em:version>0.4</em:version>
+		<em:version>0.4.1</em:version>
 		<em:description>Block resources based on their karma.</em:description>
 
 		<em:creator>Anthony Lieuallen</em:creator>
