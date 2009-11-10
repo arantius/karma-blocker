@@ -117,6 +117,11 @@ var gKablPolicy={
 			for (var i=0, attr=null; attr=node.attributes.item(i); i++) {
 				obj['$origin.tag.'+attr.nodeName]=attr.nodeValue.toLowerCase();
 			}
+
+			if (obj['$origin.tag.width'] && obj['$origin.tag.height']) {
+				obj['$origin.tag.size']=obj['$origin.tag.width']
+					+'x'+obj['$origin.tag.height'];
+			}
 		}
 
 		switch (org.scheme) {
