@@ -1,0 +1,6 @@
+#tb-kabl {
+  list-style-image: url("chrome://kabl/skin/kabl-on.png");
+}
+#tb-kabl[disabled] {
+  list-style-image: url("chrome://kabl/skin/kabl-off.png");
+}

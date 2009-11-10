@@ -51,6 +51,15 @@ var gKabl={
 			'src',
 			'chrome://kabl/skin/kabl-'+(gKablEnabled?'on':'off')+'.png'
 		);
+
+		var tb=document.getElementById('tb-kabl');
+		if (tb) {
+			if (gKablEnabled) {
+				tb.removeAttribute('disabled');
+			} else {
+				tb.setAttribute('disabled', 'disabled');
+			}
+		}
 	},
 
 	onLoad:function() {

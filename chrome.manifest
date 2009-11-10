@@ -2,3 +2,5 @@ content kabl             content/
 skin    kabl classic/1.0 skin/
 
 overlay chrome://browser/content/browser.xul chrome://kabl/content/kabl-overlay.xul
+style   chrome://browser/content/browser.xul chrome://kabl/skin/kabl-overlay.css
+style   chrome://global/content/customizeToolbar.xul    chrome://kabl/skin/kabl-overlay.css
