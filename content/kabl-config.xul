@@ -3,17 +3,18 @@
 <?xml-stylesheet href='chrome://kabl/skin/kabl-config.css' type='text/css'?>
 <dialog title='Karma Blocker - Configuration'
 	xmlns='http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul'
-	buttons='accept,cancel,extra2'
+	buttons='accept,cancel,extra2,extra1'
 	
 	buttonlabelaccept='Save'
 	buttonlabelcancel='Cancel'
 	buttonlabelextra2='Help'
-	buttonlabelextra2='Defaults'
+	buttonlabelextra1='Defaults'
 
 	onload='return gKablConfigOpen();'
 	ondialogaccept='return gKablConfigAccept();'
 	ondialogcancel='return true;'
 	ondialogextra2='gKablLoadInBrowser("http://trac.arantius.com/wiki/Support/KarmaBlocker/Configuration");'
+	ondialogextra1='gKablResetConfig();'
 
 	id='kabl-config-dialog'
 	persist="screenX screenY width height sizemode"

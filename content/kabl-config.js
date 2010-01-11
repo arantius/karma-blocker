@@ -113,3 +113,16 @@ function gKablLoadInBrowser(url) {
 		protocolService.loadUrl(url);
 	}
 }
+
+function gKablResetConfig() {
+	if (!confirm('Really throw away current rules and reset to defaults?')) {
+		return;
+	}
+
+	var defaultPref=Components.classes['@mozilla.org/preferences-service;1']
+		.getService(Components.interfaces.nsIPrefService)
+		.getDefaultBranch('extensions.kabl.');
+
+	var textbox=document.getElementById('rules');
+	textbox.value=defaultPref.getCharPref('rules');
+}
