@@ -8,11 +8,12 @@
 	buttonlabelaccept='Save'
 	buttonlabelcancel='Cancel'
 	buttonlabelextra2='Help'
+	buttonlabelextra2='Defaults'
 
 	onload='return gKablConfigOpen();'
 	ondialogaccept='return gKablConfigAccept();'
 	ondialogcancel='return true;'
-	ondialogextra2='gKablLoadInBrowser("http://trac.arantius.com/wiki/Extensions/KarmaBlocker");'
+	ondialogextra2='gKablLoadInBrowser("http://trac.arantius.com/wiki/Support/KarmaBlocker/Configuration");'
 
 	id='kabl-config-dialog'
 	persist="screenX screenY width height sizemode"
