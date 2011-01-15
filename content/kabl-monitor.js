@@ -69,7 +69,7 @@ var gKablMonitor={
 			.createInstance(Components.interfaces.nsIKablPolicy)
 			.closeMonitorWindow(window);
 	},
-	
+
 	clear:function() {
 		gKablMonitor.changing=true;
 		while (gKablMonitor.treeScore.firstChild) {
@@ -80,7 +80,7 @@ var gKablMonitor={
 		}
 		gKablMonitor.changing=false;
 	},
-	
+
 	resSelect:function(event) {
 		if (gKablMonitor.changing) return;
 
@@ -134,7 +134,7 @@ var gKablMonitor={
 
 		row=document.createElement('treerow');
 		item.appendChild(row);
-		
+
 		cell=document.createElement('treecell');
 		cell.setAttribute('label', name+': '+value);
 		row.appendChild(cell);
@@ -160,7 +160,7 @@ var gKablMonitor={
 
 		row=document.createElement('treerow');
 		item.appendChild(row);
-		
+
 		cell=document.createElement('treecell');
 		cell.setAttribute('label', group.name);
 		row.appendChild(cell);
@@ -181,13 +181,13 @@ var gKablMonitor={
 			row=document.createElement('treerow');
 			subItem.appendChild(row);
 			children.appendChild(subItem);
-			
+
 			cell=document.createElement('treecell');
 			var val=rule.val;
 			if ('$type'==rule.field) val=this.typeMap[val];
 			cell.setAttribute('label', rule.field+' '+rule.op+' '+val);
 			row.appendChild(cell);
-			
+
 			cell=document.createElement('treecell');
 			cell.setAttribute('label', rule.match?'Yes':'No');
 			row.appendChild(cell);
@@ -225,14 +225,14 @@ var gKablMonitor={
 		var selectedClosed=0;
 		gKablMonitor.withSelectedResources(
 			function(item, i, view) {
-				selectedRow++
+				selectedRow++;
 				if (view.isContainerOpen(i)) {
 					selectedOpen++;
 				} else {
-					selectedClosed++
+					selectedClosed++;
 				}
 			},
-			function() { selectedDetail++ }
+			function() { selectedDetail++; }
 		);
 
 		// Set appropriate enabled/disabled statuses based on selection
@@ -257,14 +257,14 @@ var gKablMonitor={
 
 		Components.classes["@mozilla.org/widget/clipboardhelper;1"]
 			.getService(Components.interfaces.nsIClipboardHelper)
-			.copyString(data.join('\n'))
+			.copyString(data.join('\n'));
 	},
 
 	resourceContextDelete:function() {
 		var items=[];
 
 		gKablMonitor.withSelectedResources(
-			function(item) { items.push(item) },
+			function(item) { items.push(item); },
 			function(){}
 		);
 

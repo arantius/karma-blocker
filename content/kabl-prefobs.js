@@ -90,5 +90,5 @@ var gKablPrefObserver={
 			gKablDebug=gKablPref.getIntPref('debug');
 		}
 	}
-}
+};
 gKablPrefObserver.register();

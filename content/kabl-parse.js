@@ -65,7 +65,7 @@ gKablTokens['inieq']='=';
 
 // etc
 gKablTokens['comment']='^#.*';
-gKablTokens['whitespace']='[ \t\\n\\r]'
+gKablTokens['whitespace']='[ \t\\n\\r]';
 
 var gKablIdxTokMap=[];
 for (key in gKablTokens) {
@@ -82,7 +82,7 @@ function KablToken(type, val, cstart, cend) {
 }
 KablToken.prototype.toString = function() {
 	return "{ " + this.type + ", \"" + this.val + "\" }";
-}
+};
 
 function KablParseException(start, end, errMsg, token) {
 	if (token) {
@@ -93,7 +93,7 @@ function KablParseException(start, end, errMsg, token) {
 	this.end=end;
 	this.message=errMsg;
 
-	this.toString=function(){ return '[KablParseException '+errMsg+']'; }
+	this.toString=function(){ return '[KablParseException '+errMsg+']'; };
 }
 
 // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ //
@@ -312,8 +312,12 @@ var gKablRulesObj={
 					);
 				}
 			}
-		} catch (e if e instanceof KablParseException) {
-			return [e.start, e.end, e.message];
+		} catch (e) {
+			if (e instanceof KablParseException) {
+				return [e.start, e.end, e.message];
+			} else {
+				throw e;
+			}
 		}
 
 		// if the last parsed section was a group with rules, add it
