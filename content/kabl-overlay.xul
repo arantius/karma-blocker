@@ -19,28 +19,6 @@ first content window begins to open, ensuring it always works.
 	</box>
 </vbox>
 
-<statusbar id='status-bar'>
-	<statusbarpanel id='status-bar-kabl'>
-		<image id='status-bar-kabl-image' width='16' height='16'
-			src='chrome://kabl/skin/kabl-on.png'
-			onclick='if (!event.button) gKabl.toggle();'
-			context='status-bar-kabl-context'
-		/>
-		<popup id='status-bar-kabl-context' position='before_end'>
-			<menuitem label='Toggle' accesskey='T'
-				oncommand='gKabl.toggle();'
-				style='font-weight: bold;'
-			/>
-			<menuitem label='Configure...' accesskey='C'
-				oncommand='gKabl.openConfig();'
-			/>
-			<menuitem label='Monitor...' accesskey='M'
-				oncommand='gKablMonitor.open();'
-			/>
-		</popup>
-	</statusbarpanel>
-</statusbar>
-
 <toolbarpalette id='BrowserToolbarPalette'>
 	<toolbarbutton id='tb-kabl' type='menu-button'
 		class='toolbarbutton-1 chromeclass-toolbar-additional'

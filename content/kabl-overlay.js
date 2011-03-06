@@ -44,27 +44,22 @@ var gKabl={
 	toggle:function() {
 		gKablEnabled=!gKablEnabled;
 		gKablPref.setBoolPref('enabled', gKablEnabled);
+		gKabl.setDisabled();
 	},
 
-	setImage:function() {
-		document.getElementById('status-bar-kabl-image').setAttribute(
-			'src',
-			'chrome://kabl/skin/kabl-'+(gKablEnabled?'on':'off')+'.png'
-		);
-
+	setDisabled:function() {
 		var tb=document.getElementById('tb-kabl');
 		if (tb) {
-			if (gKablEnabled) {
-				tb.removeAttribute('disabled');
-			} else {
-				tb.setAttribute('disabled', 'disabled');
-			}
+			// Standard is disabled=true -- but that disables the button, so
+			// clicking it fires no command and won't re-enable us.  Use our
+			// own yes/no styled to be similar.
+			tb.setAttribute('disabled', gKablEnabled ? 'no' : 'yes');
 		}
 	},
 
 	onLoad:function() {
 		window.removeEventListener('DOMContentLoaded', gKabl.onLoad, false);
-		gKabl.setImage();
+		gKabl.setDisabled();
 
 		var kablService=Components.classes['@arantius.com/kabl-policy;1']
 			.createInstance(Components.interfaces.nsIKablPolicy);

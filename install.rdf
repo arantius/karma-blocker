@@ -8,7 +8,7 @@
 
 		<em:creator>Anthony Lieuallen</em:creator>
 
-		<em:iconURL>chrome://kabl/skin/kabl-on.png</em:iconURL>
+		<em:iconURL>chrome://kabl/skin/icon.png</em:iconURL>
 		<em:homepageURL>http://trac.arantius.com/wiki/Extensions/KarmaBlocker</em:homepageURL>
 		<em:optionsURL>chrome://kabl/content/kabl-config.xul</em:optionsURL>
 

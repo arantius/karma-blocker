@@ -1,6 +1,13 @@
 #tb-kabl {
-  list-style-image: url("chrome://kabl/skin/kabl-on.png");
+  list-style-image: url("chrome://kabl/skin/toolbar-large.png");
 }
-#tb-kabl[disabled] {
-  list-style-image: url("chrome://kabl/skin/kabl-off.png");
+toolbar[iconsize="small"] #tb-kabl {
+  list-style-image: url("chrome://kabl/skin/toolbar.png");
+}
+
+#tb-kabl[disabled="yes"] {
+	opacity: 0.8;
+}
+#tb-kabl[disabled="yes"] .toolbarbutton-icon {
+  opacity: 0.5;
 }
