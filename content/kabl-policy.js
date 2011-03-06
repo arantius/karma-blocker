@@ -287,11 +287,11 @@ var gKablPolicy={
 	collapse:function(event) {
 		// Don't continue if we're configured not to do collapsing.
 		if (!gKablRulesObj.collapse) return;
-		
+
 		// called when a content page loads, this looks for elements that were
 		// marked as blocked, and looks for a parent node that should be
 		// collapsed down (because it's probably just a wrapper around the ad)
-		
+
 		var doc=event.target;
 		var xpr=doc.evaluate(
 			'//*[@kabl="'+gKablCollapseMarker+'"]',
@@ -395,7 +395,7 @@ var gKablPolicy={
 		if (!flag) {
 			flag=this.evalScore('threshold', score, fields);
 		}
-		
+
 		if (!flag) flag=this.ACCEPT;
 
 		this.monitorAdd(fields, monitorGroups, score, flag);

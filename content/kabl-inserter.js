@@ -46,17 +46,17 @@ var gKablInserter={};
 gKablInserter.initialize=function() {
 	this.browser=document.getElementById('kablInserterBrowser');
 	this.browser.addEventListener('load', gKablInserter.setup, true);
-}
+};
 
 gKablInserter.setup=function(event) {
 	gKablInserter.addObserver();
-}
+};
 
 gKablInserter.shutdown=function() {
 	try {
 		this.removeObserver();
 	} catch (exc) {}
-}
+};
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -69,12 +69,12 @@ gKablInserter.addObserver=function() {
 		var browser=tabBrowser.browsers[i];
 		this.attachToWindow(browser.contentWindow);
 	}
-}
+};
 
 gKablInserter.removeObserver=function() {
 	var tabBrowser=document.getElementById('content');
 	tabBrowser.removeProgressListener(gKablInserterTabProgressListener);
-}
+};
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -87,7 +87,7 @@ gKablInserter.attachToWindow=function(win) {
 			Components.interfaces.nsIWebProgress.NOTIFY_DOCUMENT);
 		browser.attachedKablInserter=true;
 	}
-}
+};
 
 gKablInserter.attachToLoadingWindow=function(win) {
 	if (!gKablEnabled) return;
@@ -115,7 +115,7 @@ gKablInserter.attachToLoadingWindow=function(win) {
 
 		win[baseName]=obj;
 	}
-}
+};
 
 gKablInserter.getBrowserByWindow=function(win) {
 	var tabBrowser=document.getElementById('content');
@@ -125,7 +125,7 @@ gKablInserter.getBrowserByWindow=function(win) {
 	}
 
 	return null;
-}
+};
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -158,7 +158,7 @@ gKablInserterTabProgressListener.onLocationChange=function(progress, request, lo
 	if (progress.DOMWindow.parent==progress.DOMWindow) {
 		gKablInserter.attachToWindow(progress.DOMWindow);
 	}
-}
+};
 
 var gKablInserterFrameProgressListener=new gKablInserterWebProgressListener();
 gKablInserterFrameProgressListener.onStateChange=function(progress, request, flag, status) {
@@ -166,4 +166,4 @@ gKablInserterFrameProgressListener.onStateChange=function(progress, request, fla
 	if (flag & Components.interfaces.nsIWebProgressListener.STATE_START) {
 		gKablInserter.attachToLoadingWindow(progress.DOMWindow);
 	}
-}
+};
