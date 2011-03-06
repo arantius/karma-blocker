@@ -100,6 +100,7 @@ function KablParseException(start, end, errMsg, token) {
 	this.toString=function(){ return '[KablParseException '+errMsg+']'; };
 }
 
+var untitledGroupNum=0;
 function defaultGroup() {
 	this.score=1;
 	this.match='any';
@@ -209,7 +210,7 @@ var gKablRulesObj={
 			this.groups=[];
 			this.injectFunctions=[];
 
-			var untitledGroupNum=0;
+			untitledGroupNum=0;
 
 			// State:
 			// 00 - started
