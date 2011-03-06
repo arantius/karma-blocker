@@ -368,7 +368,7 @@ var gKablRulesObj={
 				field:fieldTok.val,
 				op:opTok.val,
 				val:val,
-				match:false
+				match:null
 			};
 		} else {
 			return null;

@@ -181,7 +181,13 @@ var gKablMonitor={
 			row.appendChild(cell);
 
 			cell=document.createElement('treecell');
-			cell.setAttribute('label', rule.match?'Yes':'No');
+			var match='';
+			if (null===rule.match) {
+				match='Skipped';
+			} else {
+				match=rule.match?'Yes':'No';
+			}
+			cell.setAttribute('label', match);
 			row.appendChild(cell);
 		}
 
