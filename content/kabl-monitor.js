@@ -30,6 +30,10 @@
 //
 // ***** END LICENSE BLOCK *****
 
+Components.utils.import('chrome://kabl/content/kabl-policy.js');
+
+//\\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ //
+
 var gKablMonitor={
 	typeMap:{
 		'1':'other',
