@@ -141,6 +141,7 @@ function evalGroup(group, fields) {
 	for (var j=0, rule=null; rule=group.rules[j]; j++) {
 		flag=false;
 
+		if (!(rule.field in fields)) continue;
 		switch (rule.op) {
 			case '==':
 				flag=fields[rule.field]==rule.val;
