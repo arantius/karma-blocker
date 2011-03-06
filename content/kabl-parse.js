@@ -31,7 +31,6 @@
 // ***** END LICENSE BLOCK *****
 
 var EXPORTED_SYMBOLS = ['gKablRulesObj'];
-Components.utils.import('chrome://kabl/content/kabl-pref.js');
 
 // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ //
 
@@ -374,8 +373,3 @@ var gKablRulesObj={
 		}
 	}
 };
-
-// \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ //
-
-// set up initial parsed rules object
-gKablRulesObj.parse(gKablPrefs.rules);

@@ -98,6 +98,9 @@ var gKablPolicy={
 		if (startupDone) return;
 		startupDone=true;
 
+		// set up initial parsed rules object
+		gKablRulesObj.parse(gKablPrefs.rules);
+
 		try {
 			var registrar = Components.manager.QueryInterface(
 				Ci.nsIComponentRegistrar);
@@ -271,8 +274,6 @@ var gKablPolicy={
 
 	// evaluate if/how we should handle this type of score
 	evalScore:function(type, score, fields) {
-		var scoreMsg='  score: '+score+' rules '+type+': '+gKablRulesObj[type]+' ... ';
-
 		if (('threshold'==type && score>=gKablRulesObj.threshold) ||
 			('cutoff'==type && score>=gKablRulesObj.cutoff)
 		) {

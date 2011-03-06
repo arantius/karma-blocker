@@ -31,6 +31,10 @@
 //
 // ***** END LICENSE BLOCK *****
 
+Components.utils.import('chrome://kabl/content/kabl-parse.js');
+
+// \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ //
+
 function gKablConfigOpen() {
 	document.getElementById('enabled').setAttribute('checked', gKablPrefs.enabled);
 
@@ -43,7 +47,6 @@ function gKablConfigOpen() {
 
 function gKablConfigAccept() {
 	var parseOk=gKablCheckConfig();
-
 	if (!parseOk) {
 		return confirm('Parse error.\nReally save rules?');
 	}
