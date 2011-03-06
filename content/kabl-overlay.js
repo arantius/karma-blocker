@@ -51,9 +51,6 @@ var gKabl={
 	},
 
 	setDisabled:function() {
-		dump('>>> gkabl.setDisabled() ...\n');
-		dump(gKablPrefs.enabled+'\n');
-
 		var tb=document.getElementById('tb-kabl');
 		if (tb) {
 			// Standard is disabled=true -- but that disables the button, so
