@@ -63,6 +63,12 @@ function Fields(type, loc, org, node) {
 	this['$origin.scheme']=undefined;
 	this['$origin.tag']=undefined;
 
+	if ('about:feeds' == org.spec) {
+		var ioService = Cc["@mozilla.org/network/io-service;1"]
+			.getService(Ci.nsIIOService);
+		org = ioService.newURI(node.ownerDocument.location.href, null, null);
+	}
+
 	// Conditionally override them based on scheme.
 	switch (org.scheme) {
 	case 'about':
