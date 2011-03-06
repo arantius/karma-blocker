@@ -34,6 +34,8 @@ Components.utils.import('chrome://kabl/content/kabl-policy.js');
 
 //\\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ //
 
+var lastSelectedItem=null;
+
 var gKablMonitor={
 	typeMap:{
 		'1':'other',
@@ -74,15 +76,18 @@ var gKablMonitor={
 	resSelect:function(event) {
 		if (gKablMonitor.changing) return;
 
+		var item=gKablMonitor.treeRes.childNodes[
+ 			gKablMonitor.treeRes.parentNode.currentIndex];
+ 		if (item && item==lastSelectedItem) return;
+ 		lastSelectedItem=item;
+
 		while (gKablMonitor.treeScore.firstChild) {
 			gKablMonitor.treeScore.removeChild(gKablMonitor.treeScore.firstChild);
 		}
 
-		var group, item=gKablMonitor.treeRes.childNodes[
-			gKablMonitor.treeRes.parentNode.currentIndex
-		];
-		if (!item) return;
+ 		if (!item) return;
 
+		var group;
 		for (i in item.groups) {
 			group=item.groups[i];
 			gKablMonitor.treeScore.appendChild(
