@@ -32,10 +32,10 @@
 // ***** END LICENSE BLOCK *****
 
 function gKablConfigOpen() {
-	document.getElementById('enabled').setAttribute('checked', gKablEnabled);
+	document.getElementById('enabled').setAttribute('checked', gKablPrefs.enabled);
 
 	var textbox=document.getElementById('rules');
-	textbox.value=gKablRules;
+	textbox.value=gKablPrefs.rules;
 	textbox.selectionStart=0;
 	textbox.selectionEnd=0;
 	textbox.focus();
@@ -49,8 +49,8 @@ function gKablConfigAccept() {
 	}
 
 	// extract pref vals
-	gKablEnabled=document.getElementById('enabled').checked;
-	gKablRules=document.getElementById('rules').value;
+	gKablPrefs.enabled=document.getElementById('enabled').checked;
+	gKablPrefs.rules=document.getElementById('rules').value;
 
 	gKablSave();
 

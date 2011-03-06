@@ -31,28 +31,80 @@
 // ***** END LICENSE BLOCK *****
 
 var EXPORTED_SYMBOLS=[
-	'gKablDebug', 'gKablEnabled', 'gKablLoad', 'gKablPref',
-	'gKablRules', 'gKablSave'];
+	'gKablLoad', 'gKablPrefs', 'gKablSet', 'gKablSave'];
 
 // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ //
 
-var gKablPref=Components.classes['@mozilla.org/preferences-service;1']
+var prefBranch=Components.classes['@mozilla.org/preferences-service;1']
 	.getService(Components.interfaces.nsIPrefService)
 	.getBranch('extensions.kabl.');
 
 // globals that hold the settings
-var gKablEnabled, gKablRules, gKablDebug;
+var gKablPrefs={
+	'enabled':null,
+	'rules':null,
+	'debug':null};
+
 // load 'em up!
 gKablLoad();
 
 function gKablLoad() {
-	gKablEnabled=gKablPref.getBoolPref('enabled');
-	gKablRules=gKablPref.getCharPref('rules');
-	gKablDebug=gKablPref.getIntPref('debug');
+	gKablPrefs.enabled=prefBranch.getBoolPref('enabled');
+	gKablPrefs.rules=prefBranch.getCharPref('rules');
+	gKablPrefs.debug=prefBranch.getIntPref('debug');
 }
 
 function gKablSave() {
-	gKablPref.setBoolPref('enabled', gKablEnabled);
-	gKablPref.setCharPref('rules', gKablRules);
-	gKablPref.setIntPref('debug', gKablDebug);
+	prefBranch.setBoolPref('enabled', gKablPrefs.enabled);
+	prefBranch.setCharPref('rules', gKablPrefs.rules);
+	prefBranch.setIntPref('debug', gKablPrefs.debug);
 }
+
+function gKablSet(name, value) {
+	gKablPrefs[name]=value;
+	gKablSave();
+}
+
+// run the passed function on all navigator windows
+function withAllChrome(func) {
+	var mediator=Components.classes['@mozilla.org/appshell/window-mediator;1'].
+		getService(Components.interfaces.nsIWindowMediator);
+	var winEnum=mediator.getEnumerator('navigator:browser');
+	while (winEnum.hasMoreElements()){
+		func(winEnum.getNext());
+	}
+}
+
+var gKablPrefObserver={
+	_branch:null,
+
+	register:function() {
+		prefBranch.QueryInterface(Components.interfaces.nsIPrefBranch2);
+		prefBranch.addObserver('', this, false);
+	},
+
+	observe:function(aSubject, aTopic, aData) {
+		if('nsPref:changed'!=aTopic) return;
+		// aSubject is the nsIPrefBranch we're observing (after appropriate QI)
+		// aData is the name of the pref that's been changed (relative to aSubject)
+		switch (aData) {
+		case 'enabled':
+			// load the new value
+			gKablPrefs.enabled=prefBranch.getBoolPref('enabled');
+			withAllChrome(function(win) {
+				win.gKabl.setDisabled();
+			});
+			break;
+		case 'rules':
+			// load the new value
+			gKablPrefs.rules=prefBranch.getCharPref('rules');
+			// save it in global component context, for future policy checks
+			gKablRulesObj.parse(gKablPrefs.rules);
+			break;
+		case 'debug':
+			// load the new value
+			gKablPrefs.debug=prefBranch.getIntPref('debug');
+		}
+	}
+};
+gKablPrefObserver.register();

@@ -47,18 +47,19 @@ var gKabl={
 	},
 
 	toggle:function() {
-		gKablEnabled=!gKablEnabled;
-		gKablPref.setBoolPref('enabled', gKablEnabled);
-		gKabl.setDisabled();
+		gKablSet('enabled', !gKablPrefs.enabled);
 	},
 
 	setDisabled:function() {
+		dump('>>> gkabl.setDisabled() ...\n');
+		dump(gKablPrefs.enabled+'\n');
+
 		var tb=document.getElementById('tb-kabl');
 		if (tb) {
 			// Standard is disabled=true -- but that disables the button, so
 			// clicking it fires no command and won't re-enable us.  Use our
 			// own yes/no styled to be similar.
-			tb.setAttribute('disabled', gKablEnabled ? 'no' : 'yes');
+			tb.setAttribute('disabled', gKablPrefs.enabled ? 'no' : 'yes');
 		}
 	},
 

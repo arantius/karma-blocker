@@ -378,4 +378,4 @@ var gKablRulesObj={
 // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ //
 
 // set up initial parsed rules object
-gKablRulesObj.parse(gKablRules);
+gKablRulesObj.parse(gKablPrefs.rules);

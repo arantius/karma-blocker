@@ -210,7 +210,7 @@ var gKablPolicy={
 
 			break;
 		default:
-			if (gKablDebug) {
+			if (gKablPrefs.debug) {
 				dump(
 					'kabl error condition, unknown origin scheme for\n    '+
 					org.spec+'\n'
@@ -280,7 +280,7 @@ var gKablPolicy={
 				var el=fields.node
 					.QueryInterface(Components.interfaces.nsIDOMNode);
 			} catch (e) {
-				if (gKablDebug) dump('Error in evalScore: '+e+'\n');
+				if (gKablPrefs.debug) dump('Error in evalScore: '+e+'\n');
 				return;
 			}
 
@@ -289,7 +289,7 @@ var gKablPolicy={
 			try {
 				el.setAttribute('style', 'display: none !important');
 			} catch (e) {
-				if (gKablDebug) dump('Error in evalScore: '+e+'\n');
+				if (gKablPrefs.debug) dump('Error in evalScore: '+e+'\n');
 			}
 
 			// Mark the node for collapsing.
@@ -298,7 +298,7 @@ var gKablPolicy={
 					el.setAttribute('kabl', gKablCollapseMarker);
 				}
 			} catch (e) {
-				if (gKablDebug) dump('Error in evalScore: '+e+'\n');
+				if (gKablPrefs.debug) dump('Error in evalScore: '+e+'\n');
 			}
 
 			return this.REJECT;
@@ -372,7 +372,7 @@ var gKablPolicy={
 					el.setAttribute('kablcollapse', '1');
 				}
 			} catch (e) {
-				if (gKablDebug) dump('Error in collapse: '+e+'\n');
+				if (gKablPrefs.debug) dump('Error in collapse: '+e+'\n');
 			}
 		}
 	},
@@ -386,7 +386,7 @@ var gKablPolicy={
 		try {
 
 		// when not enabled, let it through
-		if (!gKablEnabled) {
+		if (!gKablPrefs.enabled) {
 			return this.ACCEPT;
 		}
 

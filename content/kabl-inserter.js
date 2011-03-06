@@ -92,7 +92,7 @@ gKablInserter.attachToWindow=function(win) {
 };
 
 gKablInserter.attachToLoadingWindow=function(win) {
-	if (!gKablEnabled) return;
+	if (!gKablPrefs.enabled) return;
 
 	// xpcnativewrapper = no expando, so unwrap
 	win=win.wrappedJSObject || win;
