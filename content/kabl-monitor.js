@@ -146,7 +146,7 @@ var gKablMonitor={
 
 	groupItem:function(group) {
 		var cell, row, item=document.createElement('treeitem');
-		item.setAttribute('container', 'true');
+		if (group.rules) item.setAttribute('container', 'true');
 
 		row=document.createElement('treerow');
 		item.appendChild(row);
@@ -158,6 +158,8 @@ var gKablMonitor={
 		cell=document.createElement('treecell');
 		cell.setAttribute('label', group.score);
 		row.appendChild(cell);
+
+		if (!group.rules) return item;
 
 		var children=document.createElement('treechildren');
 		item.appendChild(children);

@@ -446,7 +446,12 @@ var gKablPolicy={
 			if (evalGroup(group, fields)) {
 				score+=group.score;
 				flag=evalScore('cutoff', score, fields);
-				if (flag) break;
+				if (flag) {
+					monitorGroups.push({
+						'name': 'Cutoff score reached, processing halted.',
+						'score': null, 'match': null, 'rules': null});
+					break;
+				}
 			} else {
 				group.score=0;
 			}
