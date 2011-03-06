@@ -30,17 +30,29 @@
 //
 // ***** END LICENSE BLOCK *****
 
+var EXPORTED_SYMBOLS = ['gKablPolicy'];
+
+const Cc = Components.classes;
+const Ci = Components.interfaces;
+const Cu = Components.utils;
+
+Cu.import('chrome://kabl/content/kabl-parse.js');
+Cu.import('chrome://kabl/content/kabl-pref.js');
+Cu.import("resource://gre/modules/XPCOMUtils.jsm");
+
+//\\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ //
+
 function cloneObject(obj) {
-    if (null==obj || 'object'!=typeof obj) {
-        return obj;
+		if (null==obj || 'object'!=typeof obj) {
+				return obj;
 	}
 
-    var out=new obj.constructor();
-    for (var key in obj) {
-        out[key]=cloneObject(obj[key]);
+		var out=new obj.constructor();
+		for (var key in obj) {
+				out[key]=cloneObject(obj[key]);
 	}
 
-    return out;
+		return out;
 }
 
 function strippedTextContent(el) {
@@ -62,7 +74,46 @@ const gKablCollapseMarker=String(Math.floor(Math.random()*100000));
 const UNORDERED_NODE_SNAPSHOT_TYPE=6;
 const COLLAPSE_TEXT_LENGTH=25;
 
+//\\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ //
+
+var startupDone=false;
+
 var gKablPolicy={
+	classDescription: 'Karma Blocker content policy',
+	classID: Components.ID('cabe6b3f-578c-480f-a2f0-68bc4b7a1142'),
+	contractID: '@arantius.com/kabl-policy;1',
+
+	QueryInterface: XPCOMUtils.generateQI(
+		[Ci.nsIContentPolicy, Ci.nsIFactory, Ci.nsISupportsWeakReference]),
+
+	// nsIFactory
+	createInstance: function(outer, iid) {
+		if (outer) throw Cr.NS_ERROR_NO_AGGREGATION;
+		return this.QueryInterface(iid);
+	},
+
+	// \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ //
+
+	startup: function(outer, iid) {
+		if (startupDone) return;
+		startupDone=true;
+
+		try {
+			var registrar = Components.manager.QueryInterface(
+				Ci.nsIComponentRegistrar);
+			registrar.registerFactory(
+				gKablPolicy.classID, gKablPolicy.classDescription,
+				gKablPolicy.contractID, gKablPolicy);
+		} catch (e) {
+			dump('KABL registration error: '+e+'\n');
+		}
+
+		var categoryManager = Cc['@mozilla.org/categorymanager;1']
+			.getService(Ci.nsICategoryManager);
+		categoryManager.addCategoryEntry(
+			'content-policy', gKablPolicy.classDescription,
+			gKablPolicy.contractID, false, true);
+	},
 	ACCEPT:Components.interfaces.nsIContentPolicy.ACCEPT,
 	REJECT:Components.interfaces.nsIContentPolicy.REJECT_REQUEST,
 
@@ -326,6 +377,8 @@ var gKablPolicy={
 		}
 	},
 
+	// \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ //
+
 	// nsIContentPolicy
 	shouldLoad:function(
 		contentType, contentLocation, requestOrigin, requestingNode, mimeTypeGuess, extra
@@ -408,69 +461,9 @@ var gKablPolicy={
 		}
 	},
 
-	// nsISupports interface implementation
 	shouldProcess:function(
 		contentType, contentLocation, requestOrigin, requestingNode, mimeType, extra
 	) {
 		return this.ACCEPT;
-	},
-
-	// nsISupports interface implementation
-	QueryInterface:function(iid) {
-		if (!iid.equals(Components.interfaces.nsISupports) &&
-			!iid.equals(Components.interfaces.nsIContentPolicy) &&
-			!iid.equals(Components.interfaces.nsIKablPolicy)
-		) {
-			throw Components.results.NS_ERROR_NO_INTERFACE;
-		}
-
-		return this;
 	}
 };
-
-// \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ //
-
-// Factory object
-var gKablFactory={
-	// nsIFactory interface implementation
-	createInstance:function(outer, iid) {
-		if (outer!=null) throw Components.results.NS_ERROR_NO_AGGREGATION;
-		return gKablPolicy;
-	},
-
-	// nsISupports interface implementation
-	QueryInterface:function(iid) {
-		if (!iid.equals(Components.interfaces.nsISupports) &&
-			!iid.equals(Components.interfaces.nsISupportsWeakReference) &&
-			!iid.equals(Components.interfaces.nsIFactory) &&
-			!iid.equals(Components.interfaces.nsIObserver) &&
-			!iid.equals(Components.interfaces.nsIKablPolicy)
-		) {
-			throw Components.results.NS_ERROR_NO_INTERFACE;
-		}
-
-		return this;
-	}
-};
-
-// \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ //
-
-// Initialization and registration
-if ('undefined'==typeof(Components.classes[KABL_CONTRACTID])) {
-	(function() { // to keep from munging with scope
-		const CONTENTPOLICY_CONTRACTID="@mozilla.org/layout/content-policy;1";
-		const CONTENTPOLICY_DESCRIPTION="Content policy service";
-
-		// Component registration
-		var compMgr=Components.manager
-			.QueryInterface(Components.interfaces.nsIComponentRegistrar);
-		var cid=compMgr.contractIDToCID(CONTENTPOLICY_CONTRACTID);
-
-		compMgr.registerFactory(
-			cid, CONTENTPOLICY_DESCRIPTION, CONTENTPOLICY_CONTRACTID, gKablFactory
-		);
-		compMgr.registerFactory(
-			KABL_CID, CONTENTPOLICY_DESCRIPTION, KABL_CONTRACTID, gKablFactory
-		);
-	})();
-}

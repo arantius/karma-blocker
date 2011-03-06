@@ -33,6 +33,8 @@
 //
 // ***** END LICENSE BLOCK *****
 
+Components.utils.import('chrome://kabl/content/kabl-parse.js');
+
 ////////////////////////////////////////////////////////////////////////////////
 
 // This file is derived from the 'firebug.js' file from Firebug version 0.4.1.

@@ -4,11 +4,11 @@
 <dialog title='Karma Blocker - Monitor'
 	xmlns='http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul'
 	buttons='accept,extra2'
-	
+
 	buttonlabelaccept='Close'
 	buttonlabelextra2='Clear'
 
-	ondialogaccept='gKablMonitor.close();'
+	ondialogaccept='gKablPolicy.closeMonitorWindow();'
 	ondialogextra2='gKablMonitor.clear();'
 
 	id='kabl-monitor-dialog'

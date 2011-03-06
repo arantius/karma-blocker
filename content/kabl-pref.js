@@ -30,6 +30,12 @@
 //
 // ***** END LICENSE BLOCK *****
 
+var EXPORTED_SYMBOLS=[
+	'gKablDebug', 'gKablEnabled', 'gKablLoad', 'gKablPref',
+	'gKablRules', 'gKablSave'];
+
+// \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ //
+
 var gKablPref=Components.classes['@mozilla.org/preferences-service;1']
 	.getService(Components.interfaces.nsIPrefService)
 	.getBranch('extensions.kabl.');

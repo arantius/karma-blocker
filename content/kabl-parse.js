@@ -30,6 +30,11 @@
 //
 // ***** END LICENSE BLOCK *****
 
+var EXPORTED_SYMBOLS = ['gKablRulesObj'];
+Components.utils.import('chrome://kabl/content/kabl-pref.js');
+
+// \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ //
+
 var gKablTokens=[];
 // settings section
 gKablTokens['settings']='\\[Settings\\]';

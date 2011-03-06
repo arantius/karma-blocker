@@ -30,6 +30,11 @@
 //
 // ***** END LICENSE BLOCK *****
 
+Components.utils.import('chrome://kabl/content/kabl-policy.js');
+Components.utils.import('chrome://kabl/content/kabl-pref.js');
+
+// \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ //
+
 var gKabl={
 	openConfig:function() {
 		var windowWatcher=Components
@@ -60,12 +65,7 @@ var gKabl={
 	onLoad:function() {
 		window.removeEventListener('DOMContentLoaded', gKabl.onLoad, false);
 		gKabl.setDisabled();
-
-		var kablService=Components.classes['@arantius.com/kabl-policy;1']
-			.createInstance(Components.interfaces.nsIKablPolicy);
-
-		document.getElementById('appcontent')
-			.addEventListener('DOMContentLoaded', kablService.collapse, false);
+		gKablPolicy.startup();
 	}
 };
 

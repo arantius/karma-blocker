@@ -56,20 +56,6 @@ var gKablMonitor={
 		gKablMonitor.treeScore=document.getElementById('treeScore');
 	},
 
-	open:function() {
-		Components
-			.classes['@arantius.com/kabl-policy;1']
-			.createInstance(Components.interfaces.nsIKablPolicy)
-			.openMonitorWindow(window);
-	},
-
-	close:function() {
-		Components
-			.classes['@arantius.com/kabl-policy;1']
-			.createInstance(Components.interfaces.nsIKablPolicy)
-			.closeMonitorWindow(window);
-	},
-
 	clear:function() {
 		gKablMonitor.changing=true;
 		while (gKablMonitor.treeScore.firstChild) {
