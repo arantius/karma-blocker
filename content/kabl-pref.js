@@ -106,23 +106,14 @@ var gKablPrefObserver={
 		if('nsPref:changed'!=aTopic) return;
 		// aSubject is the nsIPrefBranch we're observing (after appropriate QI)
 		// aData is the name of the pref that's been changed (relative to aSubject)
+		gKablLoad();
 		switch (aData) {
 		case 'enabled':
-			// load the new value
-			gKablPrefs.enabled=prefBranch.getBoolPref('enabled');
-			withAllChrome(function(win) {
-				win.gKabl.setDisabled();
-			});
+			withAllChrome(function(win) { win.gKabl.setDisabled(); });
 			break;
 		case 'rules':
-			// load the new value
-			gKablPrefs.rules=prefBranch.getCharPref('rules');
-			// save it in global component context, for future policy checks
-			gKablRulesObj.parse(gKablPrefs.rules);
+			gKablRulesObj.parse(prefStore.rules);
 			break;
-		case 'debug':
-			// load the new value
-			gKablPrefs.debug=prefBranch.getIntPref('debug');
 		}
 	}
 };
