@@ -142,25 +142,33 @@ function evalGroup(group, fields) {
 		flag=false;
 
 		if (!(rule.field in fields)) continue;
+		var fieldVal=fields[rule.field];
 		switch (rule.op) {
 			case '==':
-				flag=fields[rule.field]==rule.val;
+				flag=fieldVal==rule.val;
 				break;
 			case '!=':
-				flag=fields[rule.field]!=rule.val;
+				flag=fieldVal!=rule.val;
 				break;
 			case '=~':
-				flag=(new RegExp(rule.val)).test(fields[rule.field]);
+				flag=(new RegExp(rule.val)).test(fieldVal);
 				break;
 			case '!~':
-				flag=!(new RegExp(rule.val)).test(fields[rule.field]);
+				flag=!(new RegExp(rule.val)).test(fieldVal);
 				break;
 			case '^=':
-				flag=fields[rule.field].substr(0, rule.val.length)==rule.val;
+				flag=fieldVal.substr(0, rule.val.length)==rule.val;
 				break;
 			case '$=':
-				flag=fields[rule.field]
-					.substr(fields[rule.field].length-rule.val.length)==rule.val;
+				flag=fieldVal.substr(fieldVal.length-rule.val.length)==rule.val;
+				break;
+			case '<':
+				fieldVal=parseFloat(fieldVal);
+				flag=(!isNaN(fieldVal)) && fieldVal<rule.val;
+				break;
+			case '>':
+				fieldVal=parseFloat(fieldVal);
+				flag=(!isNaN(fieldVal)) && fieldVal>rule.val;
 				break;
 		}
 

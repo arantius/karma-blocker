@@ -64,7 +64,7 @@ gKablTokens['number']='-?\\d+(?:\\.\\d+)?';
 gKablTokens['string']='(?:\'.*\'|".*")';
 
 // operators
-gKablTokens['field_op']='(?:==|!=|=~|!~|\\^=|\\$=)';
+gKablTokens['field_op']='(?:==|!=|=~|!~|\\^=|\\$=|<|>)';
 gKablTokens['inieq']='=';
 
 // etc
@@ -352,9 +352,14 @@ var gKablRulesObj={
 			break;
 		case '$origin'==fieldTok.val.substring(0, 7):
 		case '$url'==fieldTok.val.substring(0, 4):
-			valTok=this.expect('string', 'Unexpected "%%" expected: string');
-			val=valTok.val.toLowerCase(); // ensure type, case insensitivity
-			val=val.substr(0, val.length-1).substr(1); // strip off the quote marks
+			if ('<'==opTok.val || '>'==opTok.val) {
+				valTok=this.expect('number', 'Unexpected "%%" expected: number');
+				val=parseFloat(valTok.val); // ensure type
+			} else {
+				valTok=this.expect('string', 'Unexpected "%%" expected: string');
+				val=valTok.val.toLowerCase(); // ensure type, case insensitivity
+				val=val.substr(0, val.length-1).substr(1); // strip off the quote marks
+			}
 			break;
 		default:
 			throw new KablParseException(
