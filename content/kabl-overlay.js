@@ -64,7 +64,9 @@ var gKabl={
 		window.removeEventListener('DOMContentLoaded', gKabl.onLoad, false);
 		gKabl.setDisabled();
 		gKablPolicy.startup();
-	}
+		document.getElementById('appcontent')
+			.addEventListener('DOMContentLoaded', gKablPolicy.collapse, false);
+    }
 };
 
 window.addEventListener('DOMContentLoaded', gKabl.onLoad, false);
