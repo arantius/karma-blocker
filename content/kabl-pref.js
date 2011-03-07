@@ -42,23 +42,41 @@ var prefBranch=Components.classes['@mozilla.org/preferences-service;1']
 
 // globals that hold the settings
 var gKablPrefs={
+	'debug':null,
 	'enabled':null,
 	'rules':null,
-	'debug':null};
+	'sync_enabled':null,
+	'sync_check_interval':null,
+	'sync_last_rules':null,
+	'sync_last_time':null,
+	'sync_update_interval':null,
+	'sync_url':null};
 
 // load 'em up!
 gKablLoad();
 
 function gKablLoad() {
+	gKablPrefs.debug=prefBranch.getIntPref('debug');
 	gKablPrefs.enabled=prefBranch.getBoolPref('enabled');
 	gKablPrefs.rules=prefBranch.getCharPref('rules');
-	gKablPrefs.debug=prefBranch.getIntPref('debug');
+	gKablPrefs.sync_enabled=prefBranch.getBoolPref('sync_enabled');
+	gKablPrefs.sync_check_interval=prefBranch.getIntPref('sync_check_interval');
+	gKablPrefs.sync_last_rules=prefBranch.getCharPref('sync_last_rules');
+	gKablPrefs.sync_last_time=parseFloat(prefBranch.getCharPref('sync_last_time'));
+	gKablPrefs.sync_update_interval=prefBranch.getIntPref('sync_update_interval');
+	gKablPrefs.sync_url=prefBranch.getCharPref('sync_url');
 }
 
 function gKablSave() {
+	prefBranch.setIntPref('debug', gKablPrefs.debug);
 	prefBranch.setBoolPref('enabled', gKablPrefs.enabled);
 	prefBranch.setCharPref('rules', gKablPrefs.rules);
-	prefBranch.setIntPref('debug', gKablPrefs.debug);
+	prefBranch.setBoolPref('sync_enabled', gKablPrefs.sync_enabled);
+	prefBranch.setIntPref('sync_check_interval', gKablPrefs.sync_check_interval);
+	prefBranch.setCharPref('sync_last_rules', gKablPrefs.sync_last_rules);
+	prefBranch.setCharPref('sync_last_time', String(gKablPrefs.sync_last_time));
+	prefBranch.setIntPref('sync_update_interval', gKablPrefs.sync_update_interval);
+	prefBranch.setCharPref('sync_url', gKablPrefs.sync_url);
 }
 
 function gKablSet(name, value) {

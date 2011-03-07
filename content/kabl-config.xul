@@ -4,7 +4,7 @@
 <dialog title='Karma Blocker - Configuration'
 	xmlns='http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul'
 	buttons='accept,cancel,extra2,extra1'
-	
+
 	buttonlabelaccept='Save'
 	buttonlabelcancel='Cancel'
 	buttonlabelextra2='Help'
@@ -23,10 +23,27 @@
 <script type='application/javascript' src='chrome://kabl/content/kabl-pref.js'></script>
 <script type='application/javascript' src='chrome://kabl/content/kabl-parse.js'></script>
 
-<dialogheader title='Karma Blocker' description='Configuration'/>
+<dialogheader title='Karma Blocker' description='Configuration' />
 
-<checkbox id='enabled' label='Enabled' />
-<textbox id='rules' cols='80' rows='15' multiline='true' flex='1' wrap='off' />
+<groupbox>
+	<caption label='Sync' />
+	<hbox align='center'>
+		<checkbox id='sync_enabled' label='Enabled' />
+		<hbox flex='1' pack='center'><label id='sync_time' value='...'/></hbox>
+		<button label='Sync now' oncommand='gKablSyncNow();'/>
+	</hbox>
+	<hbox align='center'>
+		<label value='URL'/>
+		<textbox id='sync_url' flex='10'/>
+	</hbox>
+</groupbox>
+
+<groupbox flex='1'>
+	<caption label="Rules"/>
+	<checkbox id='enabled' label='Enabled' />
+	<textbox id='rules' cols='80' rows='15' multiline='true' flex='1' wrap='off' />
+</groupbox>
+
 
 <hbox id='status_box' align='center'>
 	<button oncommand='gKablCheckConfig();' label='Status' accesskey='S' />

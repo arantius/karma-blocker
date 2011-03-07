@@ -32,28 +32,39 @@
 // ***** END LICENSE BLOCK *****
 
 Components.utils.import('chrome://kabl/content/kabl-parse.js');
+Components.utils.import('chrome://kabl/content/kabl-pref.js');
+Components.utils.import('chrome://kabl/content/kabl-sync.js');
 
 // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ //
 
 function gKablConfigOpen() {
-	document.getElementById('enabled').setAttribute('checked', gKablPrefs.enabled);
+	document.getElementById('enabled')
+		.setAttribute('checked', gKablPrefs.enabled);
+	document.getElementById('sync_enabled')
+		.setAttribute('checked', gKablPrefs.sync_enabled);
+	document.getElementById('sync_url')
+		.setAttribute('value', gKablPrefs.sync_url);
 
-	var textbox=document.getElementById('rules');
-	textbox.value=gKablPrefs.rules;
-	textbox.selectionStart=0;
-	textbox.selectionEnd=0;
-	textbox.focus();
+	var rules=document.getElementById('rules');
+	rules.value=gKablPrefs.rules;
+	rules.selectionStart=0;
+	rules.selectionEnd=0;
+	rules.focus();
+
+	gKablSetSyncTime();
 }
 
 function gKablConfigAccept() {
 	var parseOk=gKablCheckConfig();
 	if (!parseOk) {
-		return confirm('Parse error.\nReally save rules?');
+		if (!confirm('Parse error.\nReally save rules?')) return;
 	}
 
 	// extract pref vals
 	gKablPrefs.enabled=document.getElementById('enabled').checked;
 	gKablPrefs.rules=document.getElementById('rules').value;
+	gKablPrefs.sync_enabled=document.getElementById('sync_enabled').checked;
+	gKablPrefs.sync_url=document.getElementById('sync_url').value;
 
 	gKablSave();
 
@@ -128,4 +139,19 @@ function gKablResetConfig() {
 
 	var textbox=document.getElementById('rules');
 	textbox.value=defaultPref.getCharPref('rules');
+}
+
+function gKablSyncNow() {
+	gKablRuleSync(gKablSyncNowCallback);
+}
+
+function gKablSyncNowCallback() {
+	var rules=document.getElementById('rules');
+	rules.value=gKablPrefs.rules;
+	gKablSetSyncTime();
+}
+
+function gKablSetSyncTime() {
+	var dt=new Date(gKablPrefs.sync_last_time);
+	document.getElementById('sync_time').value='Last sync: '+dt.toLocaleString();
 }

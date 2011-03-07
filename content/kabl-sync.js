@@ -30,44 +30,54 @@
 //
 // ***** END LICENSE BLOCK *****
 
-Components.utils.import('chrome://kabl/content/kabl-policy.js');
-Components.utils.import('chrome://kabl/content/kabl-pref.js');
-Components.utils.import('chrome://kabl/content/kabl-sync.js');
+var EXPORTED_SYMBOLS=['gKablRuleSync'];
+
+const Cc = Components.classes;
+const Ci = Components.interfaces;
+const Cu = Components.utils;
+
+Cu.import('chrome://kabl/content/kabl-pref.js');
 
 // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ //
 
-var gKabl={
-	openConfig:function() {
-		var windowWatcher=Components
-			.classes["@mozilla.org/embedcomp/window-watcher;1"]
-			.getService(Components.interfaces.nsIWindowWatcher);
-		windowWatcher.openWindow(
-			window, 'chrome://kabl/content/kabl-config.xul', null,
-			'chrome,dependent,centerscreen,resizable,dialog', null
-		);
-	},
+function gKablRuleSync(callback) {
+	if (!gKablPrefs.sync_enabled) return;
 
-	toggle:function() {
-		gKablSet('enabled', !gKablPrefs.enabled);
-	},
+	gKablSet('sync_last_time', new Date().valueOf());
 
-	setDisabled:function() {
-		var tb=document.getElementById('tb-kabl');
-		if (tb) {
-			// Standard is disabled=true -- but that disables the button, so
-			// clicking it fires no command and won't re-enable us.  Use our
-			// own yes/no styled to be similar.
-			tb.setAttribute('disabled', gKablPrefs.enabled ? 'no' : 'yes');
+	var xhr=Cc["@mozilla.org/xmlextras/xmlhttprequest;1"]
+		.createInstance(Ci.nsIXMLHttpRequest);
+	xhr.open('GET', gKablPrefs.sync_url, true);
+	xhr.onreadystatechange = function() {
+		gKablRuleSyncCallback(xhr, callback);
+	};
+	xhr.send(null);
+}
+
+function gKablRuleSyncCallback(xhr, callback) {
+	if (4!=xhr.readyState) return;
+	if (200!=xhr.status) return;
+
+	var newRules=xhr.responseText;
+	gKablSet('sync_last_rules', newRules);
+	gKablSet('rules', newRules);
+
+	callback && callback();
+}
+
+var timerCallback={
+	notify:function(timer) {
+		var now=new Date().valueOf();
+		if (now < gKablPrefs.sync_last_time+gKablPrefs.sync_update_interval) {
+			return;
 		}
-	},
-
-	onLoad:function() {
-		window.removeEventListener('DOMContentLoaded', gKabl.onLoad, false);
-		gKabl.setDisabled();
-		gKablPolicy.startup();
-		document.getElementById('appcontent')
-			.addEventListener('DOMContentLoaded', gKablPolicy.collapse, false);
-    }
+		gKablRuleSync();
+	}
 };
 
-window.addEventListener('DOMContentLoaded', gKabl.onLoad, false);
+// Now, and ..
+timerCallback.notify();
+// .. once every hour.
+var timer = Cc["@mozilla.org/timer;1"].createInstance(Ci.nsITimer);
+timer.initWithCallback(timerCallback, gKablPrefs.sync_check_interval,
+	Ci.nsITimer.TYPE_REPEATING_SLACK);
