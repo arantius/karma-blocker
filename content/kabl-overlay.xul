@@ -21,6 +21,7 @@ first content window begins to open, ensuring it always works.
 		class='toolbarbutton-1 chromeclass-toolbar-additional'
 		oncommand='gKabl.toggle();'
 		label='Karma Blocker'
+		tooltiptext='Toggle Karma Blocker'
 	>
 		<menupopup>
 			<menuitem label='Toggle' accesskey='T'
