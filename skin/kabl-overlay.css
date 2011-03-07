@@ -11,3 +11,7 @@ toolbar[iconsize="small"] #tb-kabl {
 #tb-kabl[disabled="yes"] .toolbarbutton-icon {
   opacity: 0.5;
 }
+
+.popup-notification-icon[popupid="kabl-update-conflict"] {
+	list-style-image: url("chrome://kabl/skin/icon.png");
+}

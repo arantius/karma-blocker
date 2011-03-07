@@ -31,6 +31,7 @@
 //
 // ***** END LICENSE BLOCK *****
 
+Components.utils.import('chrome://kabl/content/kabl-lib.js');
 Components.utils.import('chrome://kabl/content/kabl-parse.js');
 Components.utils.import('chrome://kabl/content/kabl-pref.js');
 Components.utils.import('chrome://kabl/content/kabl-sync.js');
@@ -52,6 +53,12 @@ function gKablConfigOpen() {
 	rules.focus();
 
 	gKablSetSyncTime();
+
+	document.getElementById('sync_enabled').addEventListener(
+		'click', gKablSyncEnabledChange, true);
+	document.getElementById('sync_enabled').addEventListener(
+		'keypress', gKablSyncEnabledChange, true);
+	gKablSyncEnabledChange();
 }
 
 function gKablConfigAccept() {
@@ -109,10 +116,7 @@ function gKablSetStatusLabel(type, msg) {
 
 // This function originates from AdBlock Plus, reused under MPL.
 function gKablLoadInBrowser(url) {
-	var windowMediator=Components
-		.classes["@mozilla.org/appshell/window-mediator;1"]
-		.getService(Components.interfaces.nsIWindowMediator);
-	var currentWindow=windowMediator.getMostRecentWindow("navigator:browser");
+	var currentWindow=gKablBrowserWin();
 	if (currentWindow) {
 		try {
 			currentWindow.delayedOpenTab(url);
@@ -139,6 +143,12 @@ function gKablResetConfig() {
 
 	var textbox=document.getElementById('rules');
 	textbox.value=defaultPref.getCharPref('rules');
+}
+
+function gKablSyncEnabledChange(aEvent) {
+	var syncEnabled=document.getElementById('sync_enabled').checked;
+	document.getElementById('sync_now').disabled=!syncEnabled;
+	document.getElementById('sync_url').disabled=!syncEnabled;
 }
 
 function gKablSyncNow() {

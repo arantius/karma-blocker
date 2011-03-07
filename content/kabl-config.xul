@@ -30,7 +30,7 @@
 	<hbox align='center'>
 		<checkbox id='sync_enabled' label='Enabled' />
 		<hbox flex='1' pack='center'><label id='sync_time' value='...'/></hbox>
-		<button label='Sync now' oncommand='gKablSyncNow();'/>
+		<button label='Sync now' id='sync_now' oncommand='gKablSyncNow();'/>
 	</hbox>
 	<hbox align='center'>
 		<label value='URL'/>
@@ -54,7 +54,6 @@
 		<label id='status_err' value='Error' hidden='true' style='color: red;' />
 		<label id='status_errmsg' value='' hidden='true' />
 	</textbox>
-
 </hbox>
 
 </dialog>

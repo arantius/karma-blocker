@@ -52,9 +52,6 @@ var gKablPrefs={
 	'sync_update_interval':null,
 	'sync_url':null};
 
-// load 'em up!
-gKablLoad();
-
 function gKablLoad() {
 	gKablPrefs.debug=prefBranch.getIntPref('debug');
 	gKablPrefs.enabled=prefBranch.getBoolPref('enabled');
@@ -117,4 +114,6 @@ var gKablPrefObserver={
 		}
 	}
 };
+
 gKablPrefObserver.register();
+gKablLoad();

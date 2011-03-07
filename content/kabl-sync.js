@@ -36,7 +36,10 @@ const Cc = Components.classes;
 const Ci = Components.interfaces;
 const Cu = Components.utils;
 
+Cu.import('chrome://kabl/content/kabl-lib.js');
 Cu.import('chrome://kabl/content/kabl-pref.js');
+Cu.import("resource://gre/modules/Services.jsm");
+Cu.import("resource://gre/modules/PopupNotifications.jsm");
 
 // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ //
 
@@ -44,6 +47,31 @@ function gKablRuleSync(callback, force) {
 	if (!force && !gKablPrefs.sync_enabled) return;
 
 	gKablSet('sync_last_time', new Date().valueOf());
+
+	if (!force && gKablPrefs.rules!=gKablPrefs.sync_last_rules) {
+		var line1='Karma Blocker Sync Confirmation';
+		var line2='The local ruleset has changed since the last sync.\n'
+			+'Destroy changes and apply update?';
+		var win=gKablActiveWin();
+		dump('update prompt found win: '+win+'\n');
+		if (win) {
+			win.PopupNotifications.show(
+				win.gBrowser.selectedBrowser,
+				'kabl-update-conflict',
+				line1+'.  '+line2,
+				'tb-kabl',
+				{
+					label: 'Apply update',
+					accessKey: 'a',
+					callback: function() { gKablRuleSync(callback, true); }
+				},
+				null);
+			return;
+		} else {
+			var doSync=Services.prompt.confirm(null, line1, line2);
+			if (!doSync) return;
+		}
+	}
 
 	var xhr=Cc["@mozilla.org/xmlextras/xmlhttprequest;1"]
 		.createInstance(Ci.nsIXMLHttpRequest);
@@ -75,9 +103,9 @@ var timerCallback={
 	}
 };
 
-// Now, and ..
-timerCallback.notify();
-// .. once every hour.
 var timer = Cc["@mozilla.org/timer;1"].createInstance(Ci.nsITimer);
+// Once in a few seconds (after load), and ..
+timer.initWithCallback(timerCallback, 10000, Ci.nsITimer.TYPE_ONE_shot);
+// .. once every hour (check_interval).
 timer.initWithCallback(timerCallback, gKablPrefs.sync_check_interval,
 	Ci.nsITimer.TYPE_REPEATING_SLACK);
