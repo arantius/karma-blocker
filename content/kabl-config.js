@@ -142,7 +142,8 @@ function gKablResetConfig() {
 }
 
 function gKablSyncNow() {
-	gKablRuleSync(gKablSyncNowCallback);
+	gKablRuleSync(gKablSyncNowCallback,
+		document.getElementById('sync_enabled').checked);
 }
 
 function gKablSyncNowCallback() {

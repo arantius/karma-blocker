@@ -40,8 +40,8 @@ Cu.import('chrome://kabl/content/kabl-pref.js');
 
 // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ //
 
-function gKablRuleSync(callback) {
-	if (!gKablPrefs.sync_enabled) return;
+function gKablRuleSync(callback, force) {
+	if (!force && !gKablPrefs.sync_enabled) return;
 
 	gKablSet('sync_last_time', new Date().valueOf());
 
