@@ -53,7 +53,6 @@ function gKablRuleSync(callback, force) {
 		var line2='The local ruleset has changed since the last sync.\n'
 			+'Destroy changes and apply update?';
 		var win=gKablActiveWin();
-		dump('update prompt found win: '+win+'\n');
 		if (win) {
 			win.PopupNotifications.show(
 				win.gBrowser.selectedBrowser,

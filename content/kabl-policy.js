@@ -106,10 +106,7 @@ function Fields(type, loc, org, node) {
 		break;
 	default:
 		if (gKablPrefs.debug) {
-			dump(
-				'kabl error condition, unknown origin scheme for\n    '+
-				org.spec+'\n'
-			);
+			dump('kabl error condition, unknown origin scheme for\n\t'+org.spec+'\n');
 		}
 		break;
 	}
