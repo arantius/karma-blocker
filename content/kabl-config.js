@@ -165,6 +165,9 @@ function gKablSyncNowCallback() {
 }
 
 function gKablSetSyncTime() {
-	var dt=new Date(gKablPrefs.sync_last_time);
-	document.getElementById('sync_time').value='Last sync: '+dt.toLocaleString();
+	var lastSync='Never';
+	if (gKablPrefs.sync_last_time) {
+		lastSync=new Date(gKablPrefs.sync_last_time).toLocaleString();
+	}
+	document.getElementById('sync_time').value='Last sync: '+lastSync;
 }
