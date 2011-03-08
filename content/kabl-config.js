@@ -141,8 +141,10 @@ function gKablResetConfig() {
 		.getService(Components.interfaces.nsIPrefService)
 		.getDefaultBranch('extensions.kabl.');
 
-	var textbox=document.getElementById('rules');
-	textbox.value=defaultPref.getCharPref('rules');
+	document.getElementById('enabled').checked=defaultPref.getBoolPref('enabled');;
+	document.getElementById('rules').value=defaultPref.getCharPref('rules');
+	document.getElementById('sync_enabled').value=defaultPref.getBoolPref('sync_enabled');
+	document.getElementById('sync_url').value=defaultPref.getCharPref('sync_url');
 }
 
 function gKablSyncEnabledChange(aEvent) {
