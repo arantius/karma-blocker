@@ -10,7 +10,7 @@ first content window begins to open, ensuring it always works.
 -->
 <vbox id='appcontent'>
 	<box >
-		<browser id='kablInserterBrowser'
+		<browser id='kablInserterBrowser' type='content-targetable'
 			style='-moz-binding: url("chrome://kabl/content/kabl-inserter-bindings.xml#content");'
 		/>
 	</box>
