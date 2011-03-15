@@ -128,7 +128,9 @@ var gKablRulesObj={
 	expect:function(expectTok, errMsg) {
 		var tok=this.rulesTok.shift();
 
-		if (expectTok!=tok.type) {
+		if (!tok) {
+			throw new KablParseException(0, 0, 'Unexpected end of file');
+		} else if (expectTok!=tok.type) {
 			throw new KablParseException(tok.cstart, tok.cend, errMsg, tok);
 		}
 
@@ -363,9 +365,20 @@ var gKablRulesObj={
 			break;
 		default:
 			throw new KablParseException(
-				field.cstart, field.cend,
+				fieldTok.cstart, fieldTok.cend,
 				'Unexpected "%%", expected: field', field
 			);
+		}
+
+		if ('=~' == opTok.val) {
+			try {
+				new RegExp(val)
+			} catch (e) {
+				throw new KablParseException(
+					valTok.cstart, valTok.cend,
+					'Invalid regular expression: %%', {val: e}
+				);
+			}
 		}
 
 		if (val) {
