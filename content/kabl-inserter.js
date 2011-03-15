@@ -45,21 +45,6 @@ Components.utils.import('chrome://kabl/content/kabl-parse.js');
 
 var gKablInserter={};
 
-gKablInserter.initialize=function() {
-	this.browser=document.getElementById('kablInserterBrowser');
-	this.browser.addEventListener('load', gKablInserter.setup, true);
-};
-
-gKablInserter.setup=function(event) {
-	gKablInserter.addObserver();
-};
-
-gKablInserter.shutdown=function() {
-	try {
-		this.removeObserver();
-	} catch (exc) {}
-};
-
 ////////////////////////////////////////////////////////////////////////////////
 
 gKablInserter.addObserver=function() {

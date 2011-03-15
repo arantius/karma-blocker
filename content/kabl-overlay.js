@@ -62,12 +62,14 @@ var gKabl={
 	},
 
 	onLoad:function() {
-		window.removeEventListener('DOMContentLoaded', gKabl.onLoad, false);
+		window.removeEventListener('load', gKabl.onLoad, false);
 		gKabl.setDisabled();
 		gKablPolicy.startup();
 		document.getElementById('appcontent')
 			.addEventListener('DOMContentLoaded', gKablPolicy.collapse, false);
-    }
+		gKablInserter.addObserver();
+		window.addEventListener('unload', gKablInserter.removeObserver, false);
+	}
 };
 
-window.addEventListener('DOMContentLoaded', gKabl.onLoad, false);
+window.addEventListener('load', gKabl.onLoad, false);
