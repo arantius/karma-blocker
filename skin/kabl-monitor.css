@@ -4,5 +4,5 @@ dialog {
 }
 
 treechildren:-moz-tree-cell(blocked) {
-	background: url('chrome://kabl/skin/toolbar.png') 50% 50% no-repeat;
+	background: url('chrome://kabl/skin/blocked.png') 50% 50% no-repeat;
 }
