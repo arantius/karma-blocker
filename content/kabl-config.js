@@ -39,135 +39,135 @@ Components.utils.import('chrome://kabl/content/kabl-sync.js');
 // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ //
 
 function gKablConfigOpen() {
-	document.getElementById('enabled')
-		.setAttribute('checked', gKablPrefs.enabled);
-	document.getElementById('sync_enabled')
-		.setAttribute('checked', gKablPrefs.sync_enabled);
-	document.getElementById('sync_url')
-		.setAttribute('value', gKablPrefs.sync_url);
+  document.getElementById('enabled')
+      .setAttribute('checked', gKablPrefs.enabled);
+  document.getElementById('sync_enabled')
+      .setAttribute('checked', gKablPrefs.sync_enabled);
+  document.getElementById('sync_url')
+      .setAttribute('value', gKablPrefs.sync_url);
 
-	var rules=document.getElementById('rules');
-	rules.value=gKablPrefs.rules;
-	rules.selectionStart=0;
-	rules.selectionEnd=0;
-	rules.focus();
+  var rules=document.getElementById('rules');
+  rules.value=gKablPrefs.rules;
+  rules.selectionStart=0;
+  rules.selectionEnd=0;
+  rules.focus();
 
-	gKablSetSyncTime();
+  gKablSetSyncTime();
 
-	document.getElementById('sync_enabled').addEventListener(
-		'click', gKablSyncEnabledChange, true);
-	document.getElementById('sync_enabled').addEventListener(
-		'keypress', gKablSyncEnabledChange, true);
-	gKablSyncEnabledChange();
+  document.getElementById('sync_enabled').addEventListener(
+      'click', gKablSyncEnabledChange, true);
+  document.getElementById('sync_enabled').addEventListener(
+      'keypress', gKablSyncEnabledChange, true);
+  gKablSyncEnabledChange();
 }
 
 function gKablConfigAccept() {
-	var parseOk=gKablCheckConfig();
-	if (!parseOk) {
-		if (!confirm('Parse error.\nReally save rules?')) return;
-	}
+  var parseOk=gKablCheckConfig();
+  if (!parseOk) {
+    if (!confirm('Parse error.\nReally save rules?')) return;
+  }
 
-	// extract pref vals
-	gKablPrefs.enabled=document.getElementById('enabled').checked;
-	gKablPrefs.rules=document.getElementById('rules').value;
-	gKablPrefs.sync_enabled=document.getElementById('sync_enabled').checked;
-	gKablPrefs.sync_url=document.getElementById('sync_url').value;
+  // extract pref vals
+  gKablPrefs.enabled=document.getElementById('enabled').checked;
+  gKablPrefs.rules=document.getElementById('rules').value;
+  gKablPrefs.sync_enabled=document.getElementById('sync_enabled').checked;
+  gKablPrefs.sync_url=document.getElementById('sync_url').value;
 
-	gKablSave();
+  gKablSave();
 
-	return true;
+  return true;
 }
 
 function gKablCheckConfig() {
-	var textbox=document.getElementById('rules');
+  var textbox=document.getElementById('rules');
 
-	var parsed=gKablRulesObj.parse(textbox.value);
+  var parsed=gKablRulesObj.parse(textbox.value);
 
-	if (parsed instanceof Array) {
-		textbox.selectionStart=parseInt(parsed[0]);
-		textbox.selectionEnd=parseInt(parsed[1]);
+  if (parsed instanceof Array) {
+    textbox.selectionStart=parseInt(parsed[0]);
+    textbox.selectionEnd=parseInt(parsed[1]);
 
-		gKablSetStatusLabel('err', parsed[2]);
-	} else {
-		gKablSetStatusLabel('ok');
-	}
+    gKablSetStatusLabel('err', parsed[2]);
+  } else {
+    gKablSetStatusLabel('ok');
+  }
 
-	// return the focus here for continued editing
-	textbox.focus();
+  // return the focus here for continued editing
+  textbox.focus();
 
-	return !(parsed instanceof Array);
+  return !(parsed instanceof Array);
 }
 
 function gKablSetStatusLabel(type, msg) {
-	for (label in {'unk':1, 'ok':1, 'err':1}) {
-		document.getElementById('status_'+label).setAttribute(
-			'hidden', (label!=type)
-		);
-	}
+  for (label in {'unk':1, 'ok':1, 'err':1}) {
+    document.getElementById('status_'+label).setAttribute(
+      'hidden', (label!=type)
+    );
+  }
 
-	var errmsg=document.getElementById('status_errmsg');
-	if ('err'==type) {
-		errmsg.setAttribute('value', msg);
-		errmsg.setAttribute('hidden', false);
-	} else {
-		errmsg.setAttribute('hidden', true);
-	}
+  var errmsg=document.getElementById('status_errmsg');
+  if ('err'==type) {
+    errmsg.setAttribute('value', msg);
+    errmsg.setAttribute('hidden', false);
+  } else {
+    errmsg.setAttribute('hidden', true);
+  }
 }
 
 // This function originates from AdBlock Plus, reused under MPL.
 function gKablLoadInBrowser(url) {
-	var currentWindow=gKablBrowserWin();
-	if (currentWindow) {
-		try {
-			currentWindow.delayedOpenTab(url);
-		}
-		catch(e) {
-			currentWindow.loadURI(url);
-		}
-	} else {
-		var protocolService=Components
-			.classes['@mozilla.org/uriloader/external-protocol-service;1']
-			.getService(Components.interfaces.nsIExternalProtocolService);
-		protocolService.loadUrl(url);
-	}
+  var currentWindow=gKablBrowserWin();
+  if (currentWindow) {
+    try {
+      currentWindow.delayedOpenTab(url);
+    }
+    catch(e) {
+      currentWindow.loadURI(url);
+    }
+  } else {
+    var protocolService=Components
+        .classes['@mozilla.org/uriloader/external-protocol-service;1']
+        .getService(Components.interfaces.nsIExternalProtocolService);
+    protocolService.loadUrl(url);
+  }
 }
 
 function gKablResetConfig() {
-	if (!confirm('Really throw away current rules and reset to defaults?')) {
-		return;
-	}
+  if (!confirm('Really throw away current rules and reset to defaults?')) {
+    return;
+  }
 
-	var defaultPref=Components.classes['@mozilla.org/preferences-service;1']
-		.getService(Components.interfaces.nsIPrefService)
-		.getDefaultBranch('extensions.kabl.');
+  var defaultPref=Components.classes['@mozilla.org/preferences-service;1']
+      .getService(Components.interfaces.nsIPrefService)
+      .getDefaultBranch('extensions.kabl.');
 
-	document.getElementById('enabled').checked=defaultPref.getBoolPref('enabled');;
-	document.getElementById('rules').value=defaultPref.getCharPref('rules');
-	document.getElementById('sync_enabled').value=defaultPref.getBoolPref('sync_enabled');
-	document.getElementById('sync_url').value=defaultPref.getCharPref('sync_url');
+  document.getElementById('enabled').checked=defaultPref.getBoolPref('enabled');;
+  document.getElementById('rules').value=defaultPref.getCharPref('rules');
+  document.getElementById('sync_enabled').value=defaultPref.getBoolPref('sync_enabled');
+  document.getElementById('sync_url').value=defaultPref.getCharPref('sync_url');
 }
 
 function gKablSyncEnabledChange(aEvent) {
-	var syncEnabled=document.getElementById('sync_enabled').checked;
-	document.getElementById('sync_now').disabled=!syncEnabled;
-	document.getElementById('sync_url').disabled=!syncEnabled;
+  var syncEnabled=document.getElementById('sync_enabled').checked;
+  document.getElementById('sync_now').disabled=!syncEnabled;
+  document.getElementById('sync_url').disabled=!syncEnabled;
 }
 
 function gKablSyncNow() {
-	gKablRuleSync(gKablSyncNowCallback,
-		document.getElementById('sync_enabled').checked);
+  gKablRuleSync(gKablSyncNowCallback,
+      document.getElementById('sync_enabled').checked);
 }
 
 function gKablSyncNowCallback() {
-	var rules=document.getElementById('rules');
-	rules.value=gKablPrefs.rules;
-	gKablSetSyncTime();
+  var rules=document.getElementById('rules');
+  rules.value=gKablPrefs.rules;
+  gKablSetSyncTime();
 }
 
 function gKablSetSyncTime() {
-	var lastSync='Never';
-	if (gKablPrefs.sync_last_time) {
-		lastSync=new Date(gKablPrefs.sync_last_time).toLocaleString();
-	}
-	document.getElementById('sync_time').value='Last sync: '+lastSync;
+  var lastSync='Never';
+  if (gKablPrefs.sync_last_time) {
+    lastSync=new Date(gKablPrefs.sync_last_time).toLocaleString();
+  }
+  document.getElementById('sync_time').value='Last sync: '+lastSync;
 }

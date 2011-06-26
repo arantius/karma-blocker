@@ -37,39 +37,38 @@ Components.utils.import('chrome://kabl/content/kabl-sync.js');
 // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ //
 
 var gKabl={
-	openConfig:function() {
-		var windowWatcher=Components
-			.classes["@mozilla.org/embedcomp/window-watcher;1"]
-			.getService(Components.interfaces.nsIWindowWatcher);
-		windowWatcher.openWindow(
-			window, 'chrome://kabl/content/kabl-config.xul', null,
-			'chrome,dependent,centerscreen,resizable,dialog', null
-		);
-	},
+  openConfig:function() {
+    var windowWatcher=Components
+        .classes["@mozilla.org/embedcomp/window-watcher;1"]
+        .getService(Components.interfaces.nsIWindowWatcher);
+    windowWatcher.openWindow(
+        window, 'chrome://kabl/content/kabl-config.xul', null,
+        'chrome,dependent,centerscreen,resizable,dialog', null);
+  },
 
-	toggle:function() {
-		gKablSet('enabled', !gKablPrefs.enabled);
-	},
+  toggle:function() {
+    gKablSet('enabled', !gKablPrefs.enabled);
+  },
 
-	setDisabled:function() {
-		var tb=document.getElementById('tb-kabl');
-		if (tb) {
-			// Standard is disabled=true -- but that disables the button, so
-			// clicking it fires no command and won't re-enable us.  Use our
-			// own yes/no styled to be similar.
-			tb.setAttribute('disabled', gKablPrefs.enabled ? 'no' : 'yes');
-		}
-	},
+  setDisabled:function() {
+    var tb=document.getElementById('tb-kabl');
+    if (tb) {
+      // Standard is disabled=true -- but that disables the button, so
+      // clicking it fires no command and won't re-enable us.  Use our
+      // own yes/no styled to be similar.
+      tb.setAttribute('disabled', gKablPrefs.enabled ? 'no' : 'yes');
+    }
+  },
 
-	onLoad:function() {
-		window.removeEventListener('load', gKabl.onLoad, false);
-		gKabl.setDisabled();
-		gKablPolicy.startup();
-		document.getElementById('appcontent')
-			.addEventListener('DOMContentLoaded', gKablPolicy.collapse, false);
-		gKablInserter.addObserver();
-		window.addEventListener('unload', gKablInserter.removeObserver, false);
-	}
+  onLoad:function() {
+    window.removeEventListener('load', gKabl.onLoad, false);
+    gKabl.setDisabled();
+    gKablPolicy.startup();
+    document.getElementById('appcontent')
+        .addEventListener('DOMContentLoaded', gKablPolicy.collapse, false);
+    gKablInserter.addObserver();
+    window.addEventListener('unload', gKablInserter.removeObserver, false);
+  }
 };
 
 window.addEventListener('load', gKabl.onLoad, false);

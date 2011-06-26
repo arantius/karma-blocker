@@ -44,62 +44,62 @@ Cu.import("resource://gre/modules/PopupNotifications.jsm");
 // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ //
 
 function gKablRuleSync(callback, force) {
-	if (!force && !gKablPrefs.sync_enabled) return;
+  if (!force && !gKablPrefs.sync_enabled) return;
 
-	gKablSet('sync_last_time', new Date().valueOf());
+  gKablSet('sync_last_time', new Date().valueOf());
 
-	if (!force && gKablPrefs.rules!=gKablPrefs.sync_last_rules) {
-		var line1='Karma Blocker Sync Confirmation';
-		var line2='The local ruleset has changed since the last sync.\n'
-			+'Destroy changes and apply update?';
-		var win=gKablActiveWin();
-		if (win) {
-			win.PopupNotifications.show(
-				win.gBrowser.selectedBrowser,
-				'kabl-update-conflict',
-				line1+'.  '+line2,
-				'tb-kabl',
-				{
-					label: 'Apply update',
-					accessKey: 'a',
-					callback: function() { gKablRuleSync(callback, true); }
-				},
-				null);
-			return;
-		} else {
-			var doSync=Services.prompt.confirm(null, line1, line2);
-			if (!doSync) return;
-		}
-	}
+  if (!force && gKablPrefs.rules!=gKablPrefs.sync_last_rules) {
+    var line1='Karma Blocker Sync Confirmation';
+    var line2='The local ruleset has changed since the last sync.\n'
+        +'Destroy changes and apply update?';
+    var win=gKablActiveWin();
+    if (win) {
+      win.PopupNotifications.show(
+          win.gBrowser.selectedBrowser,
+          'kabl-update-conflict',
+          line1+'.  '+line2,
+          'tb-kabl',
+          {
+            label: 'Apply update',
+            accessKey: 'a',
+            callback: function() { gKablRuleSync(callback, true); }
+          },
+          null);
+      return;
+    } else {
+      var doSync=Services.prompt.confirm(null, line1, line2);
+      if (!doSync) return;
+    }
+  }
 
-	var xhr=Cc["@mozilla.org/xmlextras/xmlhttprequest;1"]
-		.createInstance(Ci.nsIXMLHttpRequest);
-	xhr.open('GET', gKablPrefs.sync_url, true);
-	xhr.onreadystatechange = function() {
-		gKablRuleSyncCallback(xhr, callback);
-	};
-	xhr.send(null);
+  var xhr=Cc["@mozilla.org/xmlextras/xmlhttprequest;1"]
+      .createInstance(Ci.nsIXMLHttpRequest);
+  xhr.open('GET', gKablPrefs.sync_url, true);
+  xhr.onreadystatechange = function() {
+    gKablRuleSyncCallback(xhr, callback);
+  };
+  xhr.send(null);
 }
 
 function gKablRuleSyncCallback(xhr, callback) {
-	if (4!=xhr.readyState) return;
-	if (200!=xhr.status) return;
+  if (4!=xhr.readyState) return;
+  if (200!=xhr.status) return;
 
-	var newRules=xhr.responseText;
-	gKablSet('sync_last_rules', newRules);
-	gKablSet('rules', newRules);
+  var newRules=xhr.responseText;
+  gKablSet('sync_last_rules', newRules);
+  gKablSet('rules', newRules);
 
-	callback && callback();
+  callback && callback();
 }
 
 var timerCallback={
-	notify:function(timer) {
-		var now=new Date().valueOf();
-		if (now < gKablPrefs.sync_last_time+gKablPrefs.sync_update_interval) {
-			return;
-		}
-		gKablRuleSync();
-	}
+  notify:function(timer) {
+    var now=new Date().valueOf();
+    if (now < gKablPrefs.sync_last_time+gKablPrefs.sync_update_interval) {
+      return;
+    }
+    gKablRuleSync();
+  }
 };
 
 var timer = Cc["@mozilla.org/timer;1"].createInstance(Ci.nsITimer);
@@ -107,4 +107,4 @@ var timer = Cc["@mozilla.org/timer;1"].createInstance(Ci.nsITimer);
 timer.initWithCallback(timerCallback, 10000, Ci.nsITimer.TYPE_ONE_shot);
 // .. once every hour (check_interval).
 timer.initWithCallback(timerCallback, gKablPrefs.sync_check_interval,
-	Ci.nsITimer.TYPE_REPEATING_SLACK);
+    Ci.nsITimer.TYPE_REPEATING_SLACK);

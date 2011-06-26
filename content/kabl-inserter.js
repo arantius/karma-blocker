@@ -48,109 +48,109 @@ var gKablInserter={};
 ////////////////////////////////////////////////////////////////////////////////
 
 gKablInserter.addObserver=function() {
-	var tabBrowser=document.getElementById('content');
-	tabBrowser.addProgressListener(gKablInserterTabProgressListener,
-		Components.interfaces.nsIWebProgress.NOTIFY_STATE_DOCUMENT);
+  var tabBrowser=document.getElementById('content');
+  tabBrowser.addProgressListener(gKablInserterTabProgressListener,
+      Components.interfaces.nsIWebProgress.NOTIFY_STATE_DOCUMENT);
 
-	for (var i=0; i<tabBrowser.browsers.length; ++i) {
-		var browser=tabBrowser.browsers[i];
-		this.attachToWindow(browser.contentWindow);
-	}
+  for (var i=0; i<tabBrowser.browsers.length; ++i) {
+    var browser=tabBrowser.browsers[i];
+    this.attachToWindow(browser.contentWindow);
+  }
 };
 
 gKablInserter.removeObserver=function() {
-	var tabBrowser=document.getElementById('content');
-	tabBrowser.removeProgressListener(gKablInserterTabProgressListener);
+  var tabBrowser=document.getElementById('content');
+  tabBrowser.removeProgressListener(gKablInserterTabProgressListener);
 };
 
 ////////////////////////////////////////////////////////////////////////////////
 
 gKablInserter.attachToWindow=function(win) {
-	if ('about:blank'==win.location.href) return;
+  if ('about:blank'==win.location.href) return;
 
-	var browser=this.getBrowserByWindow(win);
-	if (browser && !browser.attachedKablInserter) {
-		browser.addProgressListener(gKablInserterFrameProgressListener,
-			Components.interfaces.nsIWebProgress.NOTIFY_DOCUMENT);
-		browser.attachedKablInserter=true;
-	}
+  var browser=this.getBrowserByWindow(win);
+  if (browser && !browser.attachedKablInserter) {
+    browser.addProgressListener(gKablInserterFrameProgressListener,
+        Components.interfaces.nsIWebProgress.NOTIFY_DOCUMENT);
+    browser.attachedKablInserter=true;
+  }
 };
 
 gKablInserter.attachToLoadingWindow=function(win) {
-	if (!gKablPrefs.enabled) return;
+  if (!gKablPrefs.enabled) return;
 
-	// xpcnativewrapper = no expando, so unwrap
-	win=win.wrappedJSObject || win;
+  // xpcnativewrapper = no expando, so unwrap
+  win=win.wrappedJSObject || win;
 
-	var obj=function(){return arguments.callee;};
-	obj.__noSuchMethod__=obj;
-	obj.toString=function(){return '';};
+  var obj=function(){return arguments.callee;};
+  obj.__noSuchMethod__=obj;
+  obj.toString=function(){return '';};
 
-	for (var i=0, func=null; func=gKablRulesObj.injectFunctions[i]; i++) {
-		var subObj=obj;
-		var name=func.split('.');
-		var baseName=name.shift(), subName;
+  for (var i=0, func=null; func=gKablRulesObj.injectFunctions[i]; i++) {
+    var subObj=obj;
+    var name=func.split('.');
+    var baseName=name.shift(), subName;
 
-		// Don't overwrite, if the page already has this object.
-		if ('undefined'!=typeof win[baseName]) return;
+    // Don't overwrite, if the page already has this object.
+    if ('undefined'!=typeof win[baseName]) return;
 
-		// Create properties, if necessary.
-		while (subName=name.shift()) {
-			subObj[subName]=obj;
-			subObj=subObj[subName];
-		}
+    // Create properties, if necessary.
+    while (subName=name.shift()) {
+      subObj[subName]=obj;
+      subObj=subObj[subName];
+    }
 
-		win[baseName]=obj;
-	}
+    win[baseName]=obj;
+  }
 };
 
 gKablInserter.getBrowserByWindow=function(win) {
-	var tabBrowser=document.getElementById('content');
-	for (var i=0; i<tabBrowser.browsers.length; ++i) {
-		var browser=tabBrowser.browsers[i];
-		if (browser.contentWindow==win) return browser;
-	}
+  var tabBrowser=document.getElementById('content');
+  for (var i=0; i<tabBrowser.browsers.length; ++i) {
+    var browser=tabBrowser.browsers[i];
+    if (browser.contentWindow==win) return browser;
+  }
 
-	return null;
+  return null;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
 
 function gKablInserterWebProgressListener() {}
 gKablInserterWebProgressListener.prototype={
-	stateIsRequest: false,
+  stateIsRequest: false,
 
-	QueryInterface:function(iid) {
-		if (iid.equals(Components.interfaces.nsIWebProgressListener) ||
-			iid.equals(Components.interfaces.nsISupportsWeakReference) ||
-			iid.equals(Components.interfaces.nsISupports)
-		) {
-			return this;
-		}
+  QueryInterface:function(iid) {
+    if (iid.equals(Components.interfaces.nsIWebProgressListener) ||
+      iid.equals(Components.interfaces.nsISupportsWeakReference) ||
+      iid.equals(Components.interfaces.nsISupports)
+    ) {
+      return this;
+    }
 
-		throw Components.results.NS_NOINTERFACE;
-	},
+    throw Components.results.NS_NOINTERFACE;
+  },
 
-	onLocationChange: function() {},
-	onStateChange:function() {},
-	onProgressChange:function() {},
-	onStatusChange:function() {},
-	onSecurityChange:function() {},
-	onLinkIconAvailable:function() {}
+  onLocationChange: function() {},
+  onStateChange:function() {},
+  onProgressChange:function() {},
+  onStatusChange:function() {},
+  onSecurityChange:function() {},
+  onLinkIconAvailable:function() {}
 };
 
 var gKablInserterTabProgressListener=new gKablInserterWebProgressListener();
 gKablInserterTabProgressListener.onLocationChange=function(progress, request, loc) {
-	// Only attach to windows that are their own parent - e.g. not frames
-	if (progress.DOMWindow.parent==progress.DOMWindow) {
-		gKablInserter.attachToWindow(progress.DOMWindow);
-	}
+  // Only attach to windows that are their own parent - e.g. not frames
+  if (progress.DOMWindow.parent==progress.DOMWindow) {
+    gKablInserter.attachToWindow(progress.DOMWindow);
+  }
 };
 
 var gKablInserterFrameProgressListener=new gKablInserterWebProgressListener();
 gKablInserterFrameProgressListener.onStateChange=function(progress, request, flag, status) {
-	// When the load of the top-level page or a frame within begins
-	if (flag & Components.interfaces.nsIWebProgressListener.STATE_START) {
-		gKablInserter.attachToLoadingWindow(progress.DOMWindow);
-	}
+  // When the load of the top-level page or a frame within begins
+  if (flag & Components.interfaces.nsIWebProgressListener.STATE_START) {
+    gKablInserter.attachToLoadingWindow(progress.DOMWindow);
+  }
 };

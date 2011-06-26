@@ -33,14 +33,14 @@
 var EXPORTED_SYMBOLS=['gKablActiveWin', 'gKablBrowserWin'];
 
 function gKablActiveWin() {
-	var ww=Components.classes["@mozilla.org/embedcomp/window-watcher;1"]
-		.getService(Components.interfaces.nsIWindowWatcher);
-	return ww.activeWindow;
+  var ww=Components.classes["@mozilla.org/embedcomp/window-watcher;1"]
+      .getService(Components.interfaces.nsIWindowWatcher);
+  return ww.activeWindow;
 }
 
 function gKablBrowserWin() {
-	var windowMediator=Components
-		.classes["@mozilla.org/appshell/window-mediator;1"]
-		.getService(Components.interfaces.nsIWindowMediator);
-	return windowMediator.getMostRecentWindow("navigator:browser");
+  var windowMediator=Components
+      .classes["@mozilla.org/appshell/window-mediator;1"]
+      .getService(Components.interfaces.nsIWindowMediator);
+  return windowMediator.getMostRecentWindow("navigator:browser");
 }

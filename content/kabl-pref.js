@@ -31,88 +31,88 @@
 // ***** END LICENSE BLOCK *****
 
 var EXPORTED_SYMBOLS=[
-	'gKablLoad', 'gKablPrefs', 'gKablSet', 'gKablSave'];
+    'gKablLoad', 'gKablPrefs', 'gKablSet', 'gKablSave'];
 Components.utils.import('chrome://kabl/content/kabl-parse.js');
 
 // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ //
 
 var prefBranch=Components.classes['@mozilla.org/preferences-service;1']
-	.getService(Components.interfaces.nsIPrefService)
-	.getBranch('extensions.kabl.');
+    .getService(Components.interfaces.nsIPrefService)
+    .getBranch('extensions.kabl.');
 
 // globals that hold the settings
 var gKablPrefs={
-	'debug':null,
-	'enabled':null,
-	'rules':null,
-	'sync_enabled':null,
-	'sync_check_interval':null,
-	'sync_last_rules':null,
-	'sync_last_time':null,
-	'sync_update_interval':null,
-	'sync_url':null};
+    'debug':null,
+    'enabled':null,
+    'rules':null,
+    'sync_enabled':null,
+    'sync_check_interval':null,
+    'sync_last_rules':null,
+    'sync_last_time':null,
+    'sync_update_interval':null,
+    'sync_url':null};
 
 function gKablLoad() {
-	gKablPrefs.debug=prefBranch.getIntPref('debug');
-	gKablPrefs.enabled=prefBranch.getBoolPref('enabled');
-	gKablPrefs.rules=prefBranch.getCharPref('rules');
-	gKablPrefs.sync_enabled=prefBranch.getBoolPref('sync_enabled');
-	gKablPrefs.sync_check_interval=prefBranch.getIntPref('sync_check_interval');
-	gKablPrefs.sync_last_rules=prefBranch.getCharPref('sync_last_rules');
-	gKablPrefs.sync_last_time=parseFloat(prefBranch.getCharPref('sync_last_time'));
-	gKablPrefs.sync_update_interval=prefBranch.getIntPref('sync_update_interval');
-	gKablPrefs.sync_url=prefBranch.getCharPref('sync_url');
+  gKablPrefs.debug=prefBranch.getIntPref('debug');
+  gKablPrefs.enabled=prefBranch.getBoolPref('enabled');
+  gKablPrefs.rules=prefBranch.getCharPref('rules');
+  gKablPrefs.sync_enabled=prefBranch.getBoolPref('sync_enabled');
+  gKablPrefs.sync_check_interval=prefBranch.getIntPref('sync_check_interval');
+  gKablPrefs.sync_last_rules=prefBranch.getCharPref('sync_last_rules');
+  gKablPrefs.sync_last_time=parseFloat(prefBranch.getCharPref('sync_last_time'));
+  gKablPrefs.sync_update_interval=prefBranch.getIntPref('sync_update_interval');
+  gKablPrefs.sync_url=prefBranch.getCharPref('sync_url');
 }
 
 function gKablSave() {
-	prefBranch.setIntPref('debug', gKablPrefs.debug);
-	prefBranch.setBoolPref('enabled', gKablPrefs.enabled);
-	prefBranch.setCharPref('rules', gKablPrefs.rules);
-	prefBranch.setBoolPref('sync_enabled', gKablPrefs.sync_enabled);
-	prefBranch.setIntPref('sync_check_interval', gKablPrefs.sync_check_interval);
-	prefBranch.setCharPref('sync_last_rules', gKablPrefs.sync_last_rules);
-	prefBranch.setCharPref('sync_last_time', String(gKablPrefs.sync_last_time));
-	prefBranch.setIntPref('sync_update_interval', gKablPrefs.sync_update_interval);
-	prefBranch.setCharPref('sync_url', gKablPrefs.sync_url);
+  prefBranch.setIntPref('debug', gKablPrefs.debug);
+  prefBranch.setBoolPref('enabled', gKablPrefs.enabled);
+  prefBranch.setCharPref('rules', gKablPrefs.rules);
+  prefBranch.setBoolPref('sync_enabled', gKablPrefs.sync_enabled);
+  prefBranch.setIntPref('sync_check_interval', gKablPrefs.sync_check_interval);
+  prefBranch.setCharPref('sync_last_rules', gKablPrefs.sync_last_rules);
+  prefBranch.setCharPref('sync_last_time', String(gKablPrefs.sync_last_time));
+  prefBranch.setIntPref('sync_update_interval', gKablPrefs.sync_update_interval);
+  prefBranch.setCharPref('sync_url', gKablPrefs.sync_url);
 }
 
 function gKablSet(name, value) {
-	gKablPrefs[name]=value;
-	gKablSave();
+  gKablPrefs[name]=value;
+  gKablSave();
 }
 
 // run the passed function on all navigator windows
 function withAllChrome(func) {
-	var mediator=Components.classes['@mozilla.org/appshell/window-mediator;1'].
-		getService(Components.interfaces.nsIWindowMediator);
-	var winEnum=mediator.getEnumerator('navigator:browser');
-	while (winEnum.hasMoreElements()){
-		func(winEnum.getNext());
-	}
+  var mediator=Components.classes['@mozilla.org/appshell/window-mediator;1']
+      .getService(Components.interfaces.nsIWindowMediator);
+  var winEnum=mediator.getEnumerator('navigator:browser');
+  while (winEnum.hasMoreElements()){
+    func(winEnum.getNext());
+  }
 }
 
 var gKablPrefObserver={
-	_branch:null,
+  _branch:null,
 
-	register:function() {
-		prefBranch.QueryInterface(Components.interfaces.nsIPrefBranch2);
-		prefBranch.addObserver('', this, false);
-	},
+  register:function() {
+    prefBranch.QueryInterface(Components.interfaces.nsIPrefBranch2);
+    prefBranch.addObserver('', this, false);
+  },
 
-	observe:function(aSubject, aTopic, aData) {
-		if('nsPref:changed'!=aTopic) return;
-		// aSubject is the nsIPrefBranch we're observing (after appropriate QI)
-		// aData is the name of the pref that's been changed (relative to aSubject)
-		gKablLoad();
-		switch (aData) {
-		case 'enabled':
-			withAllChrome(function(win) { win.gKabl.setDisabled(); });
-			break;
-		case 'rules':
-			gKablRulesObj.parse(prefStore.rules);
-			break;
-		}
-	}
+  observe:function(aSubject, aTopic, aData) {
+    if('nsPref:changed'!=aTopic) return;
+    // aSubject is the nsIPrefBranch we're observing (after appropriate QI)
+    // aData is the name of the pref that's been changed (relative to aSubject)
+    gKablLoad();
+    switch (aData) {
+    case 'enabled':
+      withAllChrome(function(win) { win.gKabl.setDisabled(); });
+      break;
+    case 'rules':
+      gKablRulesObj.parse(prefStore.rules);
+      break;
+    }
+  }
 };
 
 gKablPrefObserver.register();

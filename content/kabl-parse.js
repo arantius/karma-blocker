@@ -50,13 +50,13 @@ gKablTokens['group_match_val']='(?:all|any)';
 
 // fields
 gKablTokens['field']='(?:'+
-	'\\$thirdParty|\\$type'+
-	'|\\$url\\.?(?:host|path|scheme)?'+
-	'|\\$origin\\.tag\\.[a-zA-Z][a-zA-Z0-9]*'+
-	'|\\$origin\\.?(?:host|path|scheme|tag)?'+
-	')';
+    '\\$thirdParty|\\$type'+
+    '|\\$url\\.?(?:host|path|scheme)?'+
+    '|\\$origin\\.tag\\.[a-zA-Z][a-zA-Z0-9]*'+
+    '|\\$origin\\.?(?:host|path|scheme|tag)?'+
+    ')';
 gKablTokens['field_type_val']=
-	'(?:script|image|stylesheet|object_subrequest|object|subdocument|ping|font|media)';
+    '(?:script|image|stylesheet|object_subrequest|object|subdocument|ping|font|media)';
 
 // types
 gKablTokens['bool']='(?:true|false)';
@@ -73,323 +73,314 @@ gKablTokens['whitespace']='[ \t\\n\\r]';
 
 var gKablIdxTokMap=[];
 for (key in gKablTokens) {
-	gKablIdxTokMap[gKablIdxTokMap.length]=key;
+  gKablIdxTokMap[gKablIdxTokMap.length]=key;
 }
 
 // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ //
 
 function KablToken(type, val, cstart, cend) {
-	this.type=type;
-	this.val=val;
-	this.cstart=cstart;
-	this.cend=cend;
+  this.type=type;
+  this.val=val;
+  this.cstart=cstart;
+  this.cend=cend;
 }
 KablToken.prototype.toString = function() {
-	return "{ " + this.type + ", \"" + this.val + "\" }";
+  return "{ " + this.type + ", \"" + this.val + "\" }";
 };
 
 function KablParseException(start, end, errMsg, token) {
-	if (token) {
-		errMsg=errMsg.replace('%%', token.val);
-	}
+  if (token) {
+    errMsg=errMsg.replace('%%', token.val);
+  }
 
-	this.start=start;
-	this.end=end;
-	this.message=errMsg;
+  this.start=start;
+  this.end=end;
+  this.message=errMsg;
 
-	this.toString=function(){ return '[KablParseException '+errMsg+']'; };
+  this.toString=function(){ return '[KablParseException '+errMsg+']'; };
 }
 
 var untitledGroupNum=0;
 function defaultGroup() {
-	this.score=1;
-	this.match='any';
-	this.rules=[];
-	this.name='Untitled Group '+(++untitledGroupNum);
+  this.score=1;
+  this.match='any';
+  this.rules=[];
+  this.name='Untitled Group '+(++untitledGroupNum);
 };
 
 // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ //
 
 var gKablRulesObj={
-	///////////////////////////////// DATA /////////////////////////////////////
+  ///////////////////////////////// DATA /////////////////////////////////////
 
-	// string rules turn into tokens, stored here
-	rulesTok:[],
+  // string rules turn into tokens, stored here
+  rulesTok:[],
 
-	// the actual rules data
-	threshold:null,
-	cutoff:null,
-	collapse:null,
-	groups:null,
-	injectFunctions:null,
+  // the actual rules data
+  threshold:null,
+  cutoff:null,
+  collapse:null,
+  groups:null,
+  injectFunctions:null,
 
-	/////////////////////////////// METHODS ////////////////////////////////////
+  /////////////////////////////// METHODS ////////////////////////////////////
 
-	expect:function(expectTok, errMsg) {
-		var tok=this.rulesTok.shift();
+  expect:function(expectTok, errMsg) {
+    var tok=this.rulesTok.shift();
 
-		if (!tok) {
-			throw new KablParseException(0, 0, 'Unexpected end of file');
-		} else if (expectTok!=tok.type) {
-			throw new KablParseException(tok.cstart, tok.cend, errMsg, tok);
-		}
+    if (!tok) {
+      throw new KablParseException(0, 0, 'Unexpected end of file');
+    } else if (expectTok!=tok.type) {
+      throw new KablParseException(tok.cstart, tok.cend, errMsg, tok);
+    }
 
-		return tok;
-	},
+    return tok;
+  },
 
-	lex:function(rules) {
-		// special case
-		if (rules.match(/^\s*$/)) return true;
+  lex:function(rules) {
+    // special case
+    if (rules.match(/^\s*$/)) return true;
 
-		// collapse defined tokens into a giant regex
-		var tokRegex='', i=0, parens='';
-		for (key in gKablTokens) {
-			tokRegex+=gKablTokens[key]+parens+'|';
-			parens+='()';
-			i++;
-		}
-		tokRegex=tokRegex.substring(0, tokRegex.length-1);
-		tokRegex=new RegExp(tokRegex, 'gim');
+    // collapse defined tokens into a giant regex
+    var tokRegex='', i=0, parens='';
+    for (key in gKablTokens) {
+      tokRegex+=gKablTokens[key]+parens+'|';
+      parens+='()';
+      i++;
+    }
+    tokRegex=tokRegex.substring(0, tokRegex.length-1);
+    tokRegex=new RegExp(tokRegex, 'gim');
 
-		// init empty, in case this isn't the first run
-		this.rulesTok=[];
+    // init empty, in case this isn't the first run
+    this.rulesTok=[];
 
-		// use the giant regex to tokenize the string
-		var prev_lastIndex=0;
-		while (true) {
-			var match=tokRegex.exec(rules);
+    // use the giant regex to tokenize the string
+    var prev_lastIndex=0;
+    while (true) {
+      var match=tokRegex.exec(rules);
 
-			if (null==match) {
-				throw new KablParseException(
-					prev_lastIndex, tokRegex.lastIndex, 'Syntax error'
-				);
-			} else if (match.index!=prev_lastIndex) {
-				// start of this isn't end of last
-				throw new KablParseException(
-					prev_lastIndex, match.index, 'Syntax error: illegal character(s)'
-				);
-			} else {
-				var tokIdx=0;
-				for (var i=0; i<match.length; i++) {
-					if (''==match[i]) tokIdx++;
-				}
+      if (null==match) {
+        throw new KablParseException(
+            prev_lastIndex, tokRegex.lastIndex, 'Syntax error');
+      } else if (match.index!=prev_lastIndex) {
+        // start of this isn't end of last
+        throw new KablParseException(
+            prev_lastIndex, match.index, 'Syntax error: illegal character(s)');
+      } else {
+        var tokIdx=0;
+        for (var i=0; i<match.length; i++) {
+          if (''==match[i]) tokIdx++;
+        }
 
-				var tokType=gKablIdxTokMap[tokIdx];
+        var tokType=gKablIdxTokMap[tokIdx];
 
-				switch (tokType) {
-				case 'whitespace': case 'comment':
-					// ignore
-					break;
-				case undefined:
-					break;
-				default:
-					this.rulesTok.push(new KablToken(
-						tokType, match[0], match.index, tokRegex.lastIndex
-					));
-				}
-			}
+        switch (tokType) {
+        case 'whitespace': case 'comment':
+          // ignore
+          break;
+        case undefined:
+          break;
+        default:
+          this.rulesTok.push(new KablToken(
+              tokType, match[0], match.index, tokRegex.lastIndex));
+        }
+      }
 
-			if (tokRegex.lastIndex>=rules.length) {
-				// lexed the whole string, no errors thrown, we're done!
-				break;
-			} else {
-				prev_lastIndex=tokRegex.lastIndex;
-			}
-		}
+      if (tokRegex.lastIndex>=rules.length) {
+        // lexed the whole string, no errors thrown, we're done!
+        break;
+      } else {
+        prev_lastIndex=tokRegex.lastIndex;
+      }
+    }
 
-	},
+  },
 
-	parse:function(rules) {
-		// this giant try lets us more cleanly terminate parsing at any point
-		// by throwing a custom exception, even from subroutines
-		try {
-			this.lex(rules);
+  parse:function(rules) {
+    // this giant try lets us more cleanly terminate parsing at any point
+    // by throwing a custom exception, even from subroutines
+    try {
+      this.lex(rules);
 
-			// init default values
-			this.threshold=10;
-			this.cutoff=Number.MAX_VALUE;
-			this.collapse=false;
-			this.groups=[];
-			this.injectFunctions=[];
+      // init default values
+      this.threshold=10;
+      this.cutoff=Number.MAX_VALUE;
+      this.collapse=false;
+      this.groups=[];
+      this.injectFunctions=[];
 
-			untitledGroupNum=0;
+      untitledGroupNum=0;
 
-			// State:
-			// 00 - started
-			// 10 - in settings section
-			// 20 - in group section
-			// 30 - in inject section
-			var tok=null, tok2=null, state=0, group=null;
+      // State:
+      // 00 - started
+      // 10 - in settings section
+      // 20 - in group section
+      // 30 - in inject section
+      var tok=null, tok2=null, state=0, group=null;
 
-			// parse the rules, by examining the tokens in order
-			while (this.rulesTok.length>0) {
-				tok=this.rulesTok.shift();
+      // parse the rules, by examining the tokens in order
+      while (this.rulesTok.length>0) {
+        tok=this.rulesTok.shift();
 
-				switch (tok.type) {
-				////////////////////////////////////////////////////////////////
-				case 'settings':
-					state=10;
-					break;
-				case 'settings_cmd':
-					if (10!=state) {
-						throw new KablParseException(
-							tok.cstart, tok.cend,
-							'Unexpected '+tok.type+' outside of [Settings] section'
-						);
-					}
+        switch (tok.type) {
+        ////////////////////////////////////////////////////////////////
+        case 'settings':
+          state=10;
+          break;
+        case 'settings_cmd':
+          if (10!=state) {
+            throw new KablParseException(
+                tok.cstart, tok.cend,
+                'Unexpected '+tok.type+' outside of [Settings] section');
+          }
 
-					switch (tok.val) {
-					case 'threshold':
-					case 'cutoff':
-						this.expect('inieq', 'Unexpected "%%" expected: "="');
-						tok2=this.expect('number', 'Unexpected "%%" expected: number');
-						this[tok.val]=parseFloat(tok2.val);
-						break;
-					case 'collapse':
-						this.expect('inieq', 'Unexpected "%%" expected: "="');
-						tok2=this.expect('bool', 'Unexpected "%%" expected: bool');
-						this.collapse='true'==tok2.val;
-						break;
-					}
-					break;
-				////////////////////////////////////////////////////////////////
-				case 'inject':
-					state=30;
-					break;
-				case 'inject_cmd':
-					if (30!=state) {
-						throw new KablParseException(
-							tok.cstart, tok.cend,
-							'Unexpected '+tok.type+' outside of [Inject] section'
-						);
-					}
+          switch (tok.val) {
+          case 'threshold':
+          case 'cutoff':
+            this.expect('inieq', 'Unexpected "%%" expected: "="');
+            tok2=this.expect('number', 'Unexpected "%%" expected: number');
+            this[tok.val]=parseFloat(tok2.val);
+            break;
+          case 'collapse':
+            this.expect('inieq', 'Unexpected "%%" expected: "="');
+            tok2=this.expect('bool', 'Unexpected "%%" expected: bool');
+            this.collapse='true'==tok2.val;
+            break;
+          }
+          break;
+        ////////////////////////////////////////////////////////////////
+        case 'inject':
+          state=30;
+          break;
+        case 'inject_cmd':
+          if (30!=state) {
+            throw new KablParseException(
+                tok.cstart, tok.cend,
+                'Unexpected '+tok.type+' outside of [Inject] section');
+          }
 
-					switch (tok.val) {
-					case 'function':
-						this.expect('inieq', 'Unexpected "%%" expected: "="');
-						tok2=this.expect('string', 'Unexpected "%%" expected: string');
-						this.injectFunctions.push(
-							// strip off the quote marks
-							tok2.val.substr(0, tok2.val.length-1).substr(1)
-						);
-						break;
-					}
-					break;
-				////////////////////////////////////////////////////////////////
-				case 'group':
-					state=20;
-					if (group) this.groups.push(group);
-					group=new defaultGroup;
-					break;
-				case 'group_cmd':
-					if (20!=state) {
-						throw new KablParseException(
-							tok.cstart, tok.cend,
-							'Unexpected "%%" outside of [Group] section', tok
-						);
-					}
+          switch (tok.val) {
+          case 'function':
+            this.expect('inieq', 'Unexpected "%%" expected: "="');
+            tok2=this.expect('string', 'Unexpected "%%" expected: string');
+            this.injectFunctions.push(
+                // strip off the quote marks
+                tok2.val.substr(0, tok2.val.length-1).substr(1));
+            break;
+          }
+          break;
+        ////////////////////////////////////////////////////////////////
+        case 'group':
+          state=20;
+          if (group) this.groups.push(group);
+          group=new defaultGroup;
+          break;
+        case 'group_cmd':
+          if (20!=state) {
+            throw new KablParseException(
+                tok.cstart, tok.cend,
+                'Unexpected "%%" outside of [Group] section', tok);
+          }
 
-					switch (tok.val) {
-					case 'match':
-						this.expect('inieq', 'Unexpected "%%" expected: "="');
-						tok2=this.expect('group_match_val', 'Unexpected "%%" expected: "any", "all"');
-						group.match=tok2.val;
-						break;
-					case 'score':
-						this.expect('inieq', 'Unexpected "%%" expected: "="');
-						tok2=this.expect('number', 'Unexpected "%%" expected: number');
-						group.score=parseFloat(tok2.val);
-						break;
-					case 'rule':
-						this.expect('inieq', 'Unexpected "%%" expected: "="');
-						group.rules.push(this.parseRule());
-						break;
-					case 'name':
-						this.expect('inieq', 'Unexpected "%%" expected: "="');
-						tok2=this.expect('string', 'Unexpected "%%" expected: string');
-						group.name=tok2.val.substring(1, tok2.val.length-1);
-						untitledGroupNum--;
-						break;
-					}
-					break;
-				////////////////////////////////////////////////////////////////
-				default:
-					throw new KablParseException(
-						tok.cstart, tok.cend,
-						'Unexpected "%%"', tok
-					);
-				}
-			}
-		} catch (e) {
-			if (e instanceof KablParseException) {
-				return [e.start, e.end, e.message];
-			} else {
-				throw e;
-			}
-		}
+          switch (tok.val) {
+          case 'match':
+            this.expect('inieq', 'Unexpected "%%" expected: "="');
+            tok2=this.expect('group_match_val', 'Unexpected "%%" expected: "any", "all"');
+            group.match=tok2.val;
+            break;
+          case 'score':
+            this.expect('inieq', 'Unexpected "%%" expected: "="');
+            tok2=this.expect('number', 'Unexpected "%%" expected: number');
+            group.score=parseFloat(tok2.val);
+            break;
+          case 'rule':
+            this.expect('inieq', 'Unexpected "%%" expected: "="');
+            group.rules.push(this.parseRule());
+            break;
+          case 'name':
+            this.expect('inieq', 'Unexpected "%%" expected: "="');
+            tok2=this.expect('string', 'Unexpected "%%" expected: string');
+            group.name=tok2.val.substring(1, tok2.val.length-1);
+            untitledGroupNum--;
+            break;
+          }
+          break;
+        ////////////////////////////////////////////////////////////////
+        default:
+          throw new KablParseException(
+              tok.cstart, tok.cend, 'Unexpected "%%"', tok);
+        }
+      }
+    } catch (e) {
+      if (e instanceof KablParseException) {
+        return [e.start, e.end, e.message];
+      } else {
+        throw e;
+      }
+    }
 
-		// if the last parsed section was a group with rules, add it
-		if (group && group.rules.length) this.groups.push(group);
+    // if the last parsed section was a group with rules, add it
+    if (group && group.rules.length) this.groups.push(group);
 
-		return true;
-	},
+    return true;
+  },
 
-	parseRule:function() {
-		var fieldTok=this.expect('field', 'Unexpected "%%" expected: field');
-		var opTok=this.expect('field_op', 'Unexpected "%%" expected: field operator');
+  parseRule:function() {
+    var fieldTok=this.expect('field', 'Unexpected "%%" expected: field');
+    var opTok=this.expect('field_op', 'Unexpected "%%" expected: field operator');
 
-		var valTok=null, val=null;
+    var valTok=null, val=null;
 
-		switch (true) {
-		case '$thirdParty'==fieldTok.val:
-			valTok=this.expect('bool', 'Unexpected "%%" expected: true, false');
-			val='true'===valTok.val?true:false;
-			break;
-		case '$type'==fieldTok.val:
-			valTok=this.expect('field_type_val', 'Unexpected "%%" expected: type');
-			// ensure type
-			val=Components.interfaces.nsIContentPolicy[
-				'TYPE_'+valTok.val.toUpperCase()
-			];
-			break;
-		case '$origin'==fieldTok.val.substring(0, 7):
-		case '$url'==fieldTok.val.substring(0, 4):
-			if ('<'==opTok.val || '>'==opTok.val) {
-				valTok=this.expect('number', 'Unexpected "%%" expected: number');
-				val=parseFloat(valTok.val); // ensure type
-			} else {
-				valTok=this.expect('string', 'Unexpected "%%" expected: string');
-				val=valTok.val.toLowerCase(); // ensure type, case insensitivity
-				val=val.substr(0, val.length-1).substr(1); // strip off the quote marks
-			}
-			break;
-		default:
-			throw new KablParseException(
-				fieldTok.cstart, fieldTok.cend,
-				'Unexpected "%%", expected: field', field
-			);
-		}
+    switch (true) {
+    case '$thirdParty'==fieldTok.val:
+      valTok=this.expect('bool', 'Unexpected "%%" expected: true, false');
+      val='true'===valTok.val?true:false;
+      break;
+    case '$type'==fieldTok.val:
+      valTok=this.expect('field_type_val', 'Unexpected "%%" expected: type');
+      // ensure type
+      val=Components.interfaces.nsIContentPolicy[
+        'TYPE_'+valTok.val.toUpperCase()
+      ];
+      break;
+    case '$origin'==fieldTok.val.substring(0, 7):
+    case '$url'==fieldTok.val.substring(0, 4):
+      if ('<'==opTok.val || '>'==opTok.val) {
+        valTok=this.expect('number', 'Unexpected "%%" expected: number');
+        val=parseFloat(valTok.val); // ensure type
+      } else {
+        valTok=this.expect('string', 'Unexpected "%%" expected: string');
+        val=valTok.val.toLowerCase(); // ensure type, case insensitivity
+        val=val.substr(0, val.length-1).substr(1); // strip off the quote marks
+      }
+      break;
+    default:
+      throw new KablParseException(
+        fieldTok.cstart, fieldTok.cend,
+        'Unexpected "%%", expected: field', field
+      );
+    }
 
-		if ('=~' == opTok.val) {
-			try {
-				new RegExp(val)
-			} catch (e) {
-				throw new KablParseException(
-					valTok.cstart, valTok.cend,
-					'Invalid regular expression: %%', {val: e}
-				);
-			}
-		}
+    if ('=~' == opTok.val) {
+      try {
+        new RegExp(val);
+      } catch (e) {
+        throw new KablParseException(
+          valTok.cstart, valTok.cend,
+          'Invalid regular expression: %%', {val: e}
+        );
+      }
+    }
 
-		if (val) {
-			return {
-				field:fieldTok.val,
-				op:opTok.val,
-				val:val,
-				match:null
-			};
-		} else {
-			return null;
-		}
-	}
+    if (val) {
+      return {
+        field:fieldTok.val,
+        op:opTok.val,
+        val:val,
+        match:null
+      };
+    } else {
+      return null;
+    }
+  }
 };
