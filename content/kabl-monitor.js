@@ -203,7 +203,6 @@ var gKablMonitor={
   },
 
   withSelectedResources:function(callbackRow, callbackDetail) {
-    var items=gKablMonitor.treeRes.getElementsByTagName('treeitem');
     var treeView=gKablMonitor.treeRes.parentNode.view;
     var start=new Object(), end=new Object();
     for (var i=0; i<treeView.selection.getRangeCount(); i++) {

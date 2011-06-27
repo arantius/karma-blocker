@@ -32,9 +32,9 @@
 
 var EXPORTED_SYMBOLS=['gKablRuleSync'];
 
-const Cc = Components.classes;
-const Ci = Components.interfaces;
-const Cu = Components.utils;
+var Cc = Components.classes;
+var Ci = Components.interfaces;
+var Cu = Components.utils;
 
 Cu.import('chrome://kabl/content/kabl-lib.js');
 Cu.import('chrome://kabl/content/kabl-pref.js');

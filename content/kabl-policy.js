@@ -32,17 +32,17 @@
 
 var EXPORTED_SYMBOLS = ['gKablPolicy'];
 
-const Cc = Components.classes;
-const Ci = Components.interfaces;
-const Cu = Components.utils;
+var Cc = Components.classes;
+var Ci = Components.interfaces;
+var Cu = Components.utils;
 
 Cu.import('chrome://kabl/content/kabl-parse.js');
 Cu.import('chrome://kabl/content/kabl-pref.js');
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 
-const gKablCollapseMarker=String(Math.floor(Math.random()*100000));
-const UNORDERED_NODE_SNAPSHOT_TYPE=6;
-const COLLAPSE_TEXT_LENGTH=25;
+var gKablCollapseMarker=String(Math.floor(Math.random()*100000));
+var UNORDERED_NODE_SNAPSHOT_TYPE=6;
+var COLLAPSE_TEXT_LENGTH=25;
 
 //\\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ //
 
@@ -133,7 +133,7 @@ function cloneObject(obj) {
 
 // true if group matches
 function evalGroup(group, fields) {
-  var flag;
+  var flag=null;
 
   for (var j=0, rule=null; rule=group.rules[j]; j++) {
     flag=false;
@@ -279,10 +279,10 @@ function windowForNode(node) {
 
 //\\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ //
 
-const ACCEPT=Components.interfaces.nsIContentPolicy.ACCEPT;
-const REJECT=Components.interfaces.nsIContentPolicy.REJECT_REQUEST;
+var ACCEPT=Components.interfaces.nsIContentPolicy.ACCEPT;
+var REJECT=Components.interfaces.nsIContentPolicy.REJECT_REQUEST;
 
-const fieldNames=['$type', '$thirdParty',
+var fieldNames=['$type', '$thirdParty',
     '$url', '$url.host', '$url.path', '$url.scheme',
     '$origin', '$origin.host', '$origin.path', '$origin.scheme', '$origin.tag'];
 
@@ -441,7 +441,7 @@ var gKablPolicy={
         contentType, contentLocation, requestOrigin, requestingNode);
     var monitorGroups=[];
 
-    var score=0, flag=false, group;
+    var score=0, flag=false;
     for (var i=0, group=null; group=gKablRulesObj.groups[i]; i++) {
       group=new cloneObject(group);
       monitorGroups.push(group);
@@ -471,7 +471,7 @@ var gKablPolicy={
 
     } catch (e) {
       dump('ERROR IN kabl:\n');
-      for (i in e) dump(i+'	'+e[i]+'\n');
+      for (var i in e) dump(i+'	'+e[i]+'\n');
       return ACCEPT;
     }
   },
