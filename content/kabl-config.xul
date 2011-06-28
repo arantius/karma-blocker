@@ -28,7 +28,8 @@
   <hbox align='center'>
     <checkbox id='sync_enabled' label='Enabled' />
     <hbox flex='1' pack='center'><label id='sync_time' value='...'/></hbox>
-    <button label='Sync now' id='sync_now' oncommand='gKablSyncNow();'/>
+    <button label='Sync now' id='sync_now' oncommand='gKablSyncNow();'
+      image='chrome://kabl/skin/spinner16.gif'/>
   </hbox>
   <hbox align='center'>
     <label value='URL'/>

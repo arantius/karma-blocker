@@ -22,3 +22,6 @@ textbox#status_line label {
 button[dlgtype='extra1'] {
   float: left;
 }
+
+button#sync_now         image { display: none; }
+button#sync_now.loading image { display: block; } /* why not -moz-box ? */

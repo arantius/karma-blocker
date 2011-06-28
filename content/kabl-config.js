@@ -154,11 +154,19 @@ function gKablSyncEnabledChange(aEvent) {
 }
 
 function gKablSyncNow() {
+  var btn = document.getElementById('sync_now');
+  btn.className += ' loading';
+  btn.disabled = true;
+
   gKablRuleSync(gKablSyncNowCallback,
       document.getElementById('sync_enabled').checked);
 }
 
 function gKablSyncNowCallback() {
+  var btn = document.getElementById('sync_now');
+  btn.className = btn.className.replace(' loading', '');
+  btn.disabled = false;
+
   var rules=document.getElementById('rules');
   rules.value=gKablPrefs.rules;
   gKablSetSyncTime();
