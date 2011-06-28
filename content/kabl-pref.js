@@ -32,6 +32,7 @@
 
 var EXPORTED_SYMBOLS=[
     'gKablLoad', 'gKablPrefs', 'gKablSet', 'gKablSave'];
+
 Components.utils.import('chrome://kabl/content/kabl-parse.js');
 
 // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ //
