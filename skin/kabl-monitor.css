@@ -1,8 +1,8 @@
 dialog {
-	min-height: 40em;
-	min-width: 50em;
+  min-height: 40em;
+  min-width: 50em;
 }
 
 treechildren:-moz-tree-cell(blocked) {
-	background: url('chrome://kabl/skin/blocked.png') 50% 50% no-repeat;
+  background: url('chrome://kabl/skin/blocked.png') 50% 50% no-repeat;
 }

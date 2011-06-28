@@ -6,12 +6,12 @@ toolbar[iconsize="small"] #tb-kabl {
 }
 
 #tb-kabl[disabled="yes"] {
-	opacity: 0.8;
+  opacity: 0.8;
 }
 #tb-kabl[disabled="yes"] .toolbarbutton-icon {
   opacity: 0.5;
 }
 
 .popup-notification-icon[popupid="kabl-update-conflict"] {
-	list-style-image: url("chrome://kabl/skin/icon.png");
+  list-style-image: url("chrome://kabl/skin/icon.png");
 }

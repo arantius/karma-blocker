@@ -1,24 +1,24 @@
 #status_box {
-	padding-top: 7px;
+  padding-top: 7px;
 }
 
 textbox#rules {
-	margin: 0px 5px;
-	font-family: monospace;
+  margin: 0px 5px;
+  font-family: monospace;
 }
 
 textbox#status_line {
-	margin-right: 5px;
-	padding-left: 8px;
-	cursor: default;
+  margin-right: 5px;
+  padding-left: 8px;
+  cursor: default;
 }
 textbox#status_line input {
-	display: none;
+  display: none;
 }
 textbox#status_line label {
-	margin-left: 0;
+  margin-left: 0;
 }
 
 button[dlgtype='extra1'] {
-	float: left;
+  float: left;
 }
