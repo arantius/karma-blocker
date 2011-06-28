@@ -2,64 +2,64 @@
 <?xml-stylesheet href='chrome://global/skin/global.css' type='text/css'?>
 <?xml-stylesheet href='chrome://kabl/skin/kabl-monitor.css' type='text/css'?>
 <dialog title='Karma Blocker - Monitor'
-	xmlns='http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul'
-	buttons='accept,extra2'
+  xmlns='http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul'
+  buttons='accept,extra2'
 
-	buttonlabelaccept='Close'
-	buttonlabelextra2='Clear'
+  buttonlabelaccept='Close'
+  buttonlabelextra2='Clear'
 
-	ondialogaccept='gKablPolicy.closeMonitorWindow();'
-	ondialogextra2='gKablMonitor.clear();'
+  ondialogaccept='gKablPolicy.closeMonitorWindow();'
+  ondialogextra2='gKablMonitor.clear();'
 
-	id='kabl-monitor-dialog'
-	persist='screenX screenY width height sizemode'
+  id='kabl-monitor-dialog'
+  persist='screenX screenY width height sizemode'
 >
 <script type='application/javascript' src='chrome://kabl/content/kabl-monitor.js'></script>
 <dialogheader title='Karma Blocker' description='Monitor'/>
 
 <vbox flex='1'>
-	<radiogroup orient='horizontal'>
-		<!-- Extra wrapping boxes here make the label center vertically. -->
-		<vbox>
-			<box flex='1'/>
-			<label valign='baseline'>Resources:</label>
-			<box flex='1'/>
-		</vbox>
-		<radio id='showAll'     label='Show All' selected='selected' />
-		<radio id='showBlocked' label='Show Blocked' />
-	</radiogroup>
+  <radiogroup orient='horizontal'>
+    <!-- Extra wrapping boxes here make the label center vertically. -->
+    <vbox>
+      <box flex='1'/>
+      <label valign='baseline'>Resources:</label>
+      <box flex='1'/>
+    </vbox>
+    <radio id='showAll'     label='Show All' selected='selected' />
+    <radio id='showBlocked' label='Show Blocked' />
+  </radiogroup>
 
-	<tree flex='2' onselect='gKablMonitor.resSelect(event);'>
-		<treecols>
-			<treecol label='Field' flex='20' primary='true' />
-			<splitter class='tree-splitter'/>
-			<treecol label='Score' flex='1'/>
-			<splitter class='tree-splitter'/>
-			<treecol label='Blocked' flex='1'/>
-		</treecols>
-		<treechildren id='treeRes' context='resource-context'/>
-	</tree>
+  <tree flex='2' onselect='gKablMonitor.resSelect(event);'>
+    <treecols>
+      <treecol label='Field' flex='20' primary='true' />
+      <splitter class='tree-splitter'/>
+      <treecol label='Score' flex='1'/>
+      <splitter class='tree-splitter'/>
+      <treecol label='Blocked' flex='1'/>
+    </treecols>
+    <treechildren id='treeRes' context='resource-context'/>
+  </tree>
 
-	<menupopup id='resource-context'
-		onpopupshowing='gKablMonitor.onResourceContextShowing(event);'
-	>
-		<menuitem label='Copy' accesskey='C' oncommand='gKablMonitor.resourceContextCopy();'/>
-		<menuitem label='Delete' accesskey='D' oncommand='gKablMonitor.resourceContextDelete();'/>
-		<menuitem label='Open URL' accesskey='O' oncommand='gKablMonitor.resourceContextOpen();'/>
-		<menuseparator/>
-		<menuitem label='Expand' accesskey='' oncommand='gKablMonitor.resourceContextExpand(false);'/>
-		<menuitem label='Collapse' accesskey='' oncommand='gKablMonitor.resourceContextExpand(true);'/>
-	</menupopup>
+  <menupopup id='resource-context'
+    onpopupshowing='gKablMonitor.onResourceContextShowing(event);'
+  >
+    <menuitem label='Copy' accesskey='C' oncommand='gKablMonitor.resourceContextCopy();'/>
+    <menuitem label='Delete' accesskey='D' oncommand='gKablMonitor.resourceContextDelete();'/>
+    <menuitem label='Open URL' accesskey='O' oncommand='gKablMonitor.resourceContextOpen();'/>
+    <menuseparator/>
+    <menuitem label='Expand' accesskey='' oncommand='gKablMonitor.resourceContextExpand(false);'/>
+    <menuitem label='Collapse' accesskey='' oncommand='gKablMonitor.resourceContextExpand(true);'/>
+  </menupopup>
 
-	<label>Scores:</label>
-	<tree flex='1'>
-		<treecols>
-			<treecol label='Group' flex='20' primary='true' />
-			<splitter class='tree-splitter'/>
-			<treecol label='Score/Match' flex='1'/>
-		</treecols>
-		<treechildren id='treeScore'/>
-	</tree>
+  <label>Scores:</label>
+  <tree flex='1'>
+    <treecols>
+      <treecol label='Group' flex='20' primary='true' />
+      <splitter class='tree-splitter'/>
+      <treecol label='Score/Match' flex='1'/>
+    </treecols>
+    <treechildren id='treeScore'/>
+  </tree>
 </vbox>
 
 </dialog>

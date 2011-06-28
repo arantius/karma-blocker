@@ -2,22 +2,22 @@
 <?xml-stylesheet href='chrome://global/skin/global.css' type='text/css'?>
 <?xml-stylesheet href='chrome://kabl/skin/kabl-config.css' type='text/css'?>
 <dialog title='Karma Blocker - Configuration'
-	xmlns='http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul'
-	buttons='accept,cancel,extra2,extra1'
+  xmlns='http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul'
+  buttons='accept,cancel,extra2,extra1'
 
-	buttonlabelaccept='Save'
-	buttonlabelcancel='Cancel'
-	buttonlabelextra2='Help'
-	buttonlabelextra1='Defaults'
+  buttonlabelaccept='Save'
+  buttonlabelcancel='Cancel'
+  buttonlabelextra2='Help'
+  buttonlabelextra1='Defaults'
 
-	onload='return gKablConfigOpen();'
-	ondialogaccept='return gKablConfigAccept();'
-	ondialogcancel='return true;'
-	ondialogextra2='gKablLoadInBrowser("http://trac.arantius.com/wiki/Support/KarmaBlocker/Configuration");'
-	ondialogextra1='gKablResetConfig();'
+  onload='return gKablConfigOpen();'
+  ondialogaccept='return gKablConfigAccept();'
+  ondialogcancel='return true;'
+  ondialogextra2='gKablLoadInBrowser("http://trac.arantius.com/wiki/Support/KarmaBlocker/Configuration");'
+  ondialogextra1='gKablResetConfig();'
 
-	id='kabl-config-dialog'
-	persist="screenX screenY width height sizemode"
+  id='kabl-config-dialog'
+  persist="screenX screenY width height sizemode"
 >
 <script type='application/javascript' src='chrome://kabl/content/kabl-config.js'></script>
 <script type='application/javascript' src='chrome://kabl/content/kabl-pref.js'></script>
@@ -26,34 +26,34 @@
 <dialogheader title='Karma Blocker' description='Configuration' />
 
 <groupbox>
-	<caption label='Sync' />
-	<hbox align='center'>
-		<checkbox id='sync_enabled' label='Enabled' />
-		<hbox flex='1' pack='center'><label id='sync_time' value='...'/></hbox>
-		<button label='Sync now' id='sync_now' oncommand='gKablSyncNow();'/>
-	</hbox>
-	<hbox align='center'>
-		<label value='URL'/>
-		<textbox id='sync_url' flex='10'/>
-	</hbox>
+  <caption label='Sync' />
+  <hbox align='center'>
+    <checkbox id='sync_enabled' label='Enabled' />
+    <hbox flex='1' pack='center'><label id='sync_time' value='...'/></hbox>
+    <button label='Sync now' id='sync_now' oncommand='gKablSyncNow();'/>
+  </hbox>
+  <hbox align='center'>
+    <label value='URL'/>
+    <textbox id='sync_url' flex='10'/>
+  </hbox>
 </groupbox>
 
 <groupbox flex='1'>
-	<caption label="Rules"/>
-	<checkbox id='enabled' label='Enabled' />
-	<textbox id='rules' cols='80' rows='15' multiline='true' flex='1' wrap='off' />
+  <caption label="Rules"/>
+  <checkbox id='enabled' label='Enabled' />
+  <textbox id='rules' cols='80' rows='15' multiline='true' flex='1' wrap='off' />
 </groupbox>
 
 
 <hbox id='status_box' align='center'>
-	<button oncommand='gKablCheckConfig();' label='Status' accesskey='S' />
+  <button oncommand='gKablCheckConfig();' label='Status' accesskey='S' />
 
-	<textbox id='status_line' readonly='readonly' flex='1'>
-		<label id='status_unk' value='Click button to check...' hidden='false' />
-		<label id='status_ok' value='OK' hidden='true' style='color: green;'/>
-		<label id='status_err' value='Error' hidden='true' style='color: red;' />
-		<label id='status_errmsg' value='' hidden='true' />
-	</textbox>
+  <textbox id='status_line' readonly='readonly' flex='1'>
+    <label id='status_unk' value='Click button to check...' hidden='false' />
+    <label id='status_ok' value='OK' hidden='true' style='color: green;'/>
+    <label id='status_err' value='Error' hidden='true' style='color: red;' />
+    <label id='status_errmsg' value='' hidden='true' />
+  </textbox>
 </hbox>
 
 </dialog>

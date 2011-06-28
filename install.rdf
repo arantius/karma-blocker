@@ -1,24 +1,24 @@
 <?xml version="1.0"?>
 <RDF xmlns="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:em="http://www.mozilla.org/2004/em-rdf#">
-	<Description about="urn:mozilla:install-manifest">
-		<em:id>kabl@trac.arantius.com</em:id>
-		<em:name>Karma Blocker</em:name>
-		<em:version>0.4.5</em:version>
-		<em:description>Block resources based on their karma.</em:description>
-		<em:type>2</em:type>
+  <Description about="urn:mozilla:install-manifest">
+    <em:id>kabl@trac.arantius.com</em:id>
+    <em:name>Karma Blocker</em:name>
+    <em:version>0.4.5</em:version>
+    <em:description>Block resources based on their karma.</em:description>
+    <em:type>2</em:type>
 
-		<em:creator>Anthony Lieuallen</em:creator>
+    <em:creator>Anthony Lieuallen</em:creator>
 
-		<em:iconURL>chrome://kabl/skin/icon.png</em:iconURL>
-		<em:homepageURL>http://trac.arantius.com/wiki/Extensions/KarmaBlocker</em:homepageURL>
-		<em:optionsURL>chrome://kabl/content/kabl-config.xul</em:optionsURL>
+    <em:iconURL>chrome://kabl/skin/icon.png</em:iconURL>
+    <em:homepageURL>http://trac.arantius.com/wiki/Extensions/KarmaBlocker</em:homepageURL>
+    <em:optionsURL>chrome://kabl/content/kabl-config.xul</em:optionsURL>
 
-		<em:targetApplication>
-			<Description>
-				<em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id>
-				<em:minVersion>4.0b12</em:minVersion>
-				<em:maxVersion>5.*</em:maxVersion>
-			</Description>
-		</em:targetApplication>
-	</Description>
+    <em:targetApplication>
+      <Description>
+        <em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id>
+        <em:minVersion>4.0b12</em:minVersion>
+        <em:maxVersion>5.*</em:maxVersion>
+      </Description>
+    </em:targetApplication>
+  </Description>
 </RDF>

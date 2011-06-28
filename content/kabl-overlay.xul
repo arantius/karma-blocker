@@ -5,33 +5,33 @@
 <script	type='application/x-javascript'	src='chrome://kabl/content/kabl-inserter.js'></script>
 
 <toolbarpalette id='BrowserToolbarPalette'>
-	<toolbarbutton id='tb-kabl' type='menu-button'
-		class='toolbarbutton-1 chromeclass-toolbar-additional'
-		oncommand='gKabl.toggle();'
-		label='Karma Blocker'
-		tooltiptext='Toggle Karma Blocker'
-	>
-		<menupopup>
-			<menuitem label='Toggle' accesskey='T'
-				oncommand='gKabl.toggle(); event.stopPropagation()'
-				style='font-weight: bold;'
-			/>
-			<menuitem label='Configure...' accesskey='C'
-				oncommand='gKabl.openConfig(); event.stopPropagation()'
-			/>
-			<menuitem label='Monitor...' accesskey='M'
-				oncommand='gKablPolicy.openMonitorWindow(window); event.stopPropagation()'
-			/>
-		</menupopup>
-	</toolbarbutton>
+  <toolbarbutton id='tb-kabl' type='menu-button'
+    class='toolbarbutton-1 chromeclass-toolbar-additional'
+    oncommand='gKabl.toggle();'
+    label='Karma Blocker'
+    tooltiptext='Toggle Karma Blocker'
+  >
+    <menupopup>
+      <menuitem label='Toggle' accesskey='T'
+        oncommand='gKabl.toggle(); event.stopPropagation()'
+        style='font-weight: bold;'
+      />
+      <menuitem label='Configure...' accesskey='C'
+        oncommand='gKabl.openConfig(); event.stopPropagation()'
+      />
+      <menuitem label='Monitor...' accesskey='M'
+        oncommand='gKablPolicy.openMonitorWindow(window); event.stopPropagation()'
+      />
+    </menupopup>
+  </toolbarbutton>
 </toolbarpalette>
 
 <keyset id="mainKeyset">
-	<key id='kabl-key-toggle'
-		modifiers='control,alt'
-		key='K'
-		oncommand='gKabl.toggle();'
-	/>
+  <key id='kabl-key-toggle'
+    modifiers='control,alt'
+    key='K'
+    oncommand='gKabl.toggle();'
+  />
 </keyset>
 
 </overlay>
