@@ -48,12 +48,26 @@ function gKablRuleSync(callback, force) {
 
   gKablSet('sync_last_time', new Date().valueOf());
 
-  if (!force && gKablPrefs.rules!=gKablPrefs.sync_last_rules) {
+  var xhr=Cc["@mozilla.org/xmlextras/xmlhttprequest;1"]
+      .createInstance(Ci.nsIXMLHttpRequest);
+  xhr.open('GET', gKablPrefs.sync_url, true);
+  xhr.onreadystatechange = function() {
+    if (4!=xhr.readyState) return;
+    if (200!=xhr.status) return;
+    gKablRuleSyncApply(force, callback, xhr.responseText);
+  };
+  xhr.send(null);
+}
+
+function gKablRuleSyncApply(force, callback, newRules) {
+  if (!force
+      && gKablPrefs.rules!=gKablPrefs.sync_last_rules
+      && gKablPrefs.rules!=newRules) {
     var line1='Karma Blocker Sync Confirmation';
     var line2='The local ruleset has changed since the last sync.\n'
         +'Destroy changes and apply update?';
     var win=gKablActiveWin();
-    if (win) {
+    if (win && win == gKablBrowserWin()) {
       win.PopupNotifications.show(
           win.gBrowser.selectedBrowser,
           'kabl-update-conflict',
@@ -62,33 +76,20 @@ function gKablRuleSync(callback, force) {
           {
             label: 'Apply update',
             accessKey: 'a',
-            callback: function() { gKablRuleSync(callback, true); }
+            callback: function() {
+              gKablRuleSyncApply(true, callback, newRules);
+            }
           },
           null);
-      return;
     } else {
       var doSync=Services.prompt.confirm(null, line1, line2);
-      if (!doSync) return;
+      if (doSync) gKablRuleSyncApply(true, callback, newRules);
     }
+    return;
   }
 
-  var xhr=Cc["@mozilla.org/xmlextras/xmlhttprequest;1"]
-      .createInstance(Ci.nsIXMLHttpRequest);
-  xhr.open('GET', gKablPrefs.sync_url, true);
-  xhr.onreadystatechange = function() {
-    gKablRuleSyncCallback(xhr, callback);
-  };
-  xhr.send(null);
-}
-
-function gKablRuleSyncCallback(xhr, callback) {
-  if (4!=xhr.readyState) return;
-  if (200!=xhr.status) return;
-
-  var newRules=xhr.responseText;
   gKablSet('sync_last_rules', newRules);
   gKablSet('rules', newRules);
-
   callback && callback();
 }
 
