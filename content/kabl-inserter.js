@@ -49,8 +49,7 @@ var gKablInserter={};
 
 gKablInserter.addObserver=function() {
   var tabBrowser=document.getElementById('content');
-  tabBrowser.addProgressListener(gKablInserterTabProgressListener,
-      Components.interfaces.nsIWebProgress.NOTIFY_STATE_DOCUMENT);
+  tabBrowser.addProgressListener(gKablInserterTabProgressListener);
 
   for (var i=0; i<tabBrowser.browsers.length; ++i) {
     var browser=tabBrowser.browsers[i];
@@ -78,6 +77,7 @@ gKablInserter.attachToWindow=function(win) {
 
 gKablInserter.attachToLoadingWindow=function(win) {
   if (!gKablPrefs.enabled) return;
+  dump('>>> attachToLoadingWindow() '+win.location.href+'\n');
 
   // xpcnativewrapper = no expando, so unwrap
   win=win.wrappedJSObject || win;
@@ -140,7 +140,8 @@ gKablInserterWebProgressListener.prototype={
 };
 
 var gKablInserterTabProgressListener=new gKablInserterWebProgressListener();
-gKablInserterTabProgressListener.onLocationChange=function(progress, request, loc) {
+gKablInserterTabProgressListener.onLocationChange=
+function(progress, request, loc) {
   // Only attach to windows that are their own parent - e.g. not frames
   if (progress.DOMWindow.parent==progress.DOMWindow) {
     gKablInserter.attachToWindow(progress.DOMWindow);
@@ -148,9 +149,13 @@ gKablInserterTabProgressListener.onLocationChange=function(progress, request, lo
 };
 
 var gKablInserterFrameProgressListener=new gKablInserterWebProgressListener();
-gKablInserterFrameProgressListener.onStateChange=function(progress, request, flag, status) {
-  // When the load of the top-level page or a frame within begins
-  if (flag & Components.interfaces.nsIWebProgressListener.STATE_START) {
+gKablInserterFrameProgressListener.onStateChange=
+function(progress, request, flag, status) {
+  var wpl = Components.interfaces.nsIWebProgressListener;
+  // When the load of the top-level page or a frame within begins.
+  if (flag & wpl.STATE_IS_DOCUMENT
+      && flag & wpl.STATE_IS_NETWORK
+      && flag & wpl.STATE_START) {
     gKablInserter.attachToLoadingWindow(progress.DOMWindow);
   }
 };
