@@ -3,7 +3,7 @@
   <Description about="urn:mozilla:install-manifest">
     <em:id>kabl@trac.arantius.com</em:id>
     <em:name>Karma Blocker</em:name>
-    <em:version>0.4.6</em:version>
+    <em:version>0.4.7</em:version>
     <em:description>Block resources based on their karma.</em:description>
     <em:type>2</em:type>
 
@@ -16,8 +16,8 @@
     <em:targetApplication>
       <Description>
         <em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id>
-        <em:minVersion>4.0b12</em:minVersion>
-        <em:maxVersion>7.*</em:maxVersion>
+        <em:minVersion>20.0</em:minVersion>
+        <em:maxVersion>25.*</em:maxVersion>
       </Description>
     </em:targetApplication>
   </Description>
