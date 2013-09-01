@@ -56,7 +56,7 @@ var gKabl={
       // Standard is disabled=true -- but that disables the button, so
       // clicking it fires no command and won't re-enable us.  Use our
       // own yes/no styled to be similar.
-      tb.setAttribute('disabled', gKablPrefs.enabled ? 'no' : 'yes');
+      tb.setAttribute('kabl_disabled', gKablPrefs.enabled ? 'no' : 'yes');
     }
   },
 

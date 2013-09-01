@@ -5,10 +5,10 @@ toolbar[iconsize="small"] #tb-kabl {
   list-style-image: url("chrome://kabl/skin/toolbar.png");
 }
 
-#tb-kabl[disabled="yes"] {
+#tb-kabl[kabl_disabled="yes"] {
   opacity: 0.8;
 }
-#tb-kabl[disabled="yes"] .toolbarbutton-icon {
+#tb-kabl[kabl_disabled="yes"] .toolbarbutton-icon {
   opacity: 0.5;
 }
 
