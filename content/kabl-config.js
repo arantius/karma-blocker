@@ -81,21 +81,25 @@ function gKablConfigAccept() {
 function gKablCheckConfig() {
   var textbox=document.getElementById('rules');
 
-  var parsed=gKablRulesObj.parse(textbox.value);
-
-  if (parsed instanceof Array) {
-    textbox.selectionStart=parseInt(parsed[0]);
-    textbox.selectionEnd=parseInt(parsed[1]);
-
-    gKablSetStatusLabel('err', parsed[2]);
-  } else {
-    gKablSetStatusLabel('ok');
+  try {
+    gKablRulesObj.parse(textbox.value);
+  } catch (e) {
+    if (e instanceof KablParseException) {
+      gKablSetStatusLabel('err', e.message);
+      textbox.selectionStart=parseInt(e.start);
+      textbox.selectionEnd=parseInt(e.end);
+      textbox.focus();
+      return false;
+    }
+    dump("ERROR in gKablCheckConfig():\n");
+    for (var i in e) dump(i+' '+e[i]+'\n');
+    return false;
   }
 
-  // return the focus here for continued editing
-  textbox.focus();
+  gKablSetStatusLabel('ok');
 
-  return !(parsed instanceof Array);
+  textbox.focus();
+  return true;
 }
 
 function gKablSetStatusLabel(type, msg) {

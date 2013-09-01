@@ -30,7 +30,7 @@
 //
 // ***** END LICENSE BLOCK *****
 
-var EXPORTED_SYMBOLS = ['gKablRulesObj'];
+var EXPORTED_SYMBOLS = ['gKablRulesObj', 'KablParseException'];
 
 // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ //
 
@@ -97,7 +97,9 @@ function KablParseException(start, end, errMsg, token) {
   this.end=end;
   this.message=errMsg;
 
-  this.toString=function(){ return '[KablParseException '+errMsg+']'; };
+  this.toString=function() {
+    return '[KablParseException '+start+';'+end+' '+errMsg+']';
+  };
 }
 
 var untitledGroupNum=0;
@@ -193,21 +195,20 @@ var gKablRulesObj={
         prev_lastIndex=tokRegex.lastIndex;
       }
     }
-
   },
 
   parse:function(rules) {
     // this giant try lets us more cleanly terminate parsing at any point
     // by throwing a custom exception, even from subroutines
     try {
-      this.lex(rules);
-
       // init default values
       this.threshold=10;
       this.cutoff=Number.MAX_VALUE;
       this.collapse=false;
       this.groups=[];
       this.injectFunctions=[];
+
+      this.lex(rules);
 
       untitledGroupNum=0;
 
@@ -312,17 +313,13 @@ var gKablRulesObj={
         }
       }
     } catch (e) {
-      if (e instanceof KablParseException) {
-        return [e.start, e.end, e.message];
-      } else {
-        throw e;
-      }
+      // Used to do special handling here.  Now just re-raise, so as to not
+      // cause a whitespace diff for the whole body of the try.
+      throw e;
     }
 
     // if the last parsed section was a group with rules, add it
     if (group && group.rules.length) this.groups.push(group);
-
-    return true;
   },
 
   parseRule:function() {
