@@ -154,10 +154,10 @@ function evalGroup(group, fields, monitor) {
         flag=fieldVal!=rule.val;
         break;
       case '=~':
-        flag=(new RegExp(rule.val)).test(fieldVal);
+        flag=rule.rval.test(fieldVal);
         break;
       case '!~':
-        flag=!(new RegExp(rule.val)).test(fieldVal);
+        flag=!rule.rval.test(fieldVal);
         break;
       case '^=':
         flag=fieldVal.substr(0, rule.val.length)==rule.val;
