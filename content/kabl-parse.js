@@ -358,7 +358,7 @@ var gKablRulesObj={
       );
     }
 
-    if ('=~' == opTok.val) {
+    if ('=~' == opTok.val || '!~' == opTok.val) {
       try {
         new RegExp(val);
       } catch (e) {
