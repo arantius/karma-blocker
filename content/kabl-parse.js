@@ -358,9 +358,10 @@ var gKablRulesObj={
       );
     }
 
+    var rval;
     if ('=~' == opTok.val || '!~' == opTok.val) {
       try {
-        new RegExp(val);
+        rval=new RegExp(val);
       } catch (e) {
         throw new KablParseException(
           valTok.cstart, valTok.cend,
@@ -374,6 +375,7 @@ var gKablRulesObj={
         field:fieldTok.val,
         op:opTok.val,
         val:val,
+        rval:rval,
         match:null
       };
     } else {
