@@ -125,7 +125,13 @@ function cloneObject(obj) {
 
   var out=new obj.constructor();
   for (var key in obj) {
-    out[key]=cloneObject(obj[key]);
+    if(key=="rval") {
+      // would have preferred to check "instanceof RegExp", but it fails when called from extensions
+      //special case to avoid destroying the cached regex
+      out[key]=obj[key];
+    } else {
+      out[key]=cloneObject(obj[key]);
+    }
   }
 
   return out;
