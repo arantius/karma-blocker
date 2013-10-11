@@ -125,7 +125,7 @@ function cloneObject(obj) {
 
   var out=new obj.constructor();
   for (var key in obj) {
-    if(key=="rval") {
+    if (key=="regexVal") {
       // would have preferred to check "instanceof RegExp", but it fails when called from extensions
       //special case to avoid destroying the cached regex
       out[key]=obj[key];
@@ -154,10 +154,10 @@ function evalGroup(group, fields, monitor) {
         flag=fieldVal!=rule.val;
         break;
       case '=~':
-        flag=rule.rval.test(fieldVal);
+        flag=rule.regexVal.test(fieldVal);
         break;
       case '!~':
-        flag=!rule.rval.test(fieldVal);
+        flag=!rule.regexVal.test(fieldVal);
         break;
       case '^=':
         flag=fieldVal.substr(0, rule.val.length)==rule.val;
@@ -175,7 +175,7 @@ function evalGroup(group, fields, monitor) {
         break;
     }
 
-    if(monitor) rule.match=flag;
+    if (monitor) rule.match=flag;
 
     if (flag && 'any'==group.match) {
       return true;
@@ -454,7 +454,7 @@ var gKablPolicy={
 
     var score=0, flag=false;
     for (var i=0, group=null; group=gKablRulesObj.groups[i]; i++) {
-      if(monitor) {
+      if (monitor) {
         group=cloneObject(group);
         monitorGroups.push(group);
       }
@@ -463,13 +463,15 @@ var gKablPolicy={
         score+=group.score;
         flag=evalScore('cutoff', score, fields);
         if (flag) {
-          if(monitor) monitorGroups.push({
-            'name': 'Cutoff score reached, processing halted.',
-            'score': null, 'match': null, 'rules': null});
+          if (monitor) {
+            monitorGroups.push({
+              'name': 'Cutoff score reached, processing halted.',
+              'score': null, 'match': null, 'rules': null});
+          }
           break;
         }
       } else {
-        if(monitor) group.score=0;
+        if (monitor) group.score=0;
       }
     }
 
@@ -479,7 +481,7 @@ var gKablPolicy={
 
     if (!flag) flag=ACCEPT;
 
-    if(monitor) monitorAdd(fields, monitorGroups, score, flag);
+    if (monitor) monitorAdd(fields, monitorGroups, score, flag);
     return flag;
 
     } catch (e) {
