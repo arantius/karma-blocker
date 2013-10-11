@@ -125,14 +125,20 @@ function cloneObject(obj) {
 
   var out=new obj.constructor();
   for (var key in obj) {
-    out[key]=cloneObject(obj[key]);
+    if(key=="rval") {
+      // would have preferred to check "instanceof RegExp", but it fails when called from extensions
+      //special case to avoid destroying the cached regex
+      out[key]=obj[key];
+    } else {
+      out[key]=cloneObject(obj[key]);
+    }
   }
 
   return out;
 }
 
 // true if group matches
-function evalGroup(group, fields) {
+function evalGroup(group, fields, monitor) {
   var flag=null;
 
   for (var j=0, rule=null; rule=group.rules[j]; j++) {
@@ -148,10 +154,10 @@ function evalGroup(group, fields) {
         flag=fieldVal!=rule.val;
         break;
       case '=~':
-        flag=(new RegExp(rule.val)).test(fieldVal);
+        flag=rule.rval.test(fieldVal);
         break;
       case '!~':
-        flag=!(new RegExp(rule.val)).test(fieldVal);
+        flag=!rule.rval.test(fieldVal);
         break;
       case '^=':
         flag=fieldVal.substr(0, rule.val.length)==rule.val;
@@ -169,7 +175,7 @@ function evalGroup(group, fields) {
         break;
     }
 
-    rule.match=flag;
+    if(monitor) rule.match=flag;
 
     if (flag && 'any'==group.match) {
       return true;
@@ -228,8 +234,12 @@ function evalScore(type, score, fields) {
   }
 }
 
+function monitoring() {
+    return !(!monitorWin || monitorWin.closed);
+}
+
 function monitorAdd(fields, groups, score, flag) {
-  if (!monitorWin || monitorWin.closed) return;
+  if (!monitoring()) return;
 
   var blocked=REJECT==flag;
   monitorWin.gKablMonitor.add(fields, groups, score, blocked);
@@ -439,24 +449,27 @@ var gKablPolicy={
     // Start checking for whether we should block!
     var fields=new Fields(
         contentType, contentLocation, requestOrigin, requestingNode);
+    var monitor=monitoring();
     var monitorGroups=[];
 
     var score=0, flag=false;
     for (var i=0, group=null; group=gKablRulesObj.groups[i]; i++) {
-      group=new cloneObject(group);
-      monitorGroups.push(group);
+      if(monitor) {
+        group=cloneObject(group);
+        monitorGroups.push(group);
+      }
 
-      if (evalGroup(group, fields)) {
+      if (evalGroup(group, fields, monitor)) {
         score+=group.score;
         flag=evalScore('cutoff', score, fields);
         if (flag) {
-          monitorGroups.push({
+          if(monitor) monitorGroups.push({
             'name': 'Cutoff score reached, processing halted.',
             'score': null, 'match': null, 'rules': null});
           break;
         }
       } else {
-        group.score=0;
+        if(monitor) group.score=0;
       }
     }
 
@@ -466,7 +479,7 @@ var gKablPolicy={
 
     if (!flag) flag=ACCEPT;
 
-    monitorAdd(fields, monitorGroups, score, flag);
+    if(monitor) monitorAdd(fields, monitorGroups, score, flag);
     return flag;
 
     } catch (e) {
