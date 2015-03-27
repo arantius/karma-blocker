@@ -27,6 +27,10 @@ See [Configuration wiki page](https://github.com/arantius/karma-blocker/wiki/Con
 
 # Changelog
 
+ * Version 0.4.8 (October 17, 2013)
+   * Performance Enhancements
+ * Version 0.4.7 (September 1, 2013)
+   * Small bug fixes for compatibility with modern Firefox versions.
  * Version 0.4.6 (August 16, 2011)
    * Do not warn when local and to-sync rules match. (#529)
    * Fix warning about internal Firefox API change. (#530)
