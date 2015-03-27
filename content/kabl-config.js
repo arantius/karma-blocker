@@ -163,7 +163,8 @@ function gKablSyncNow() {
   btn.disabled = true;
 
   gKablRuleSync(gKablSyncNowCallback,
-      document.getElementById('sync_enabled').checked);
+      document.getElementById('sync_enabled').checked,
+      document.getElementById('sync_url').value);
 }
 
 function gKablSyncNowCallback() {

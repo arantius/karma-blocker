@@ -43,14 +43,14 @@ Cu.import("resource://gre/modules/PopupNotifications.jsm");
 
 // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ //
 
-function gKablRuleSync(callback, force) {
+function gKablRuleSync(callback, force, url) {
   if (!force && !gKablPrefs.sync_enabled) return;
 
   gKablSet('sync_last_time', new Date().valueOf());
 
   var xhr=Cc["@mozilla.org/xmlextras/xmlhttprequest;1"]
       .createInstance(Ci.nsIXMLHttpRequest);
-  xhr.open('GET', gKablPrefs.sync_url, true);
+  xhr.open('GET', url || gKablPrefs.sync_url, true);
   xhr.onreadystatechange = function() {
     if (4!=xhr.readyState) return;
     if (200!=xhr.status) return;
