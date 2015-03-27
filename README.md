@@ -53,7 +53,7 @@ See [Configuration wiki page](https://github.com/arantius/karma-blocker/wiki/Con
    * When a rule was not checked, display 'Skipped' for match rather than 'No'. (#417)
    * Do not reset the 'Scores' box of the monitor window when resources are added. (#419)
    * Add less than and greater than operators. (#421)
- * Version 0.4.2 (Jan 11, 2009)
+ * Version 0.4.2 (Jan 11, 2010)
    * Fix typo in default preferences, causing the rules to be just "undefined". (#392)
    * New button in configuration dialog, to reset to default rules. (#389)
  * Version 0.4.1 (Dec 31, 2009)
