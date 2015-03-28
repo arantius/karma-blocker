@@ -34,6 +34,10 @@ Components.utils.import('chrome://kabl/content/kabl-policy.js');
 
 //\\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ //
 
+var Cc = Components.classes;
+var Ci = Components.interfaces;
+var Cu = Components.utils;
+
 var lastSelectedItem=null;
 
 var gKablMonitor={
@@ -60,6 +64,19 @@ var gKablMonitor={
     window.removeEventListener('DOMContentLoaded', gKablMonitor.onLoad, false);
     gKablMonitor.treeRes=document.getElementById('treeRes');
     gKablMonitor.treeScore=document.getElementById('treeScore');
+
+    Cc['@mozilla.org/parentprocessmessagemanager;1']
+        .getService(Ci.nsIMessageBroadcaster)
+        .broadcastAsyncMessage('kabl:monitor-opened');
+    Cc['@mozilla.org/parentprocessmessagemanager;1']
+        .getService(Ci.nsIMessageListenerManager)
+        .addMessageListener('kabl:monitor', gKablMonitor.add);
+  },
+
+  onUnload:function() {
+    Cc['@mozilla.org/parentprocessmessagemanager;1']
+        .getService(Ci.nsIMessageBroadcaster)
+        .broadcastAsyncMessage('kabl:monitor-closed');
   },
 
   clear:function() {
@@ -94,7 +111,12 @@ var gKablMonitor={
     }
   },
 
-  add:function(fields, groups, score, blocked) {
+  add:function(message) {
+    fields = message.data.fields;
+    groups = message.data.groups;
+    score = message.data.score;
+    blocked = message.data.blocked;
+
     if (!blocked && document.getElementById('showBlocked').selected) {
       return;
     }
@@ -300,3 +322,4 @@ var gKablMonitor={
 };
 
 window.addEventListener('DOMContentLoaded', gKablMonitor.onLoad, false);
+window.addEventListener('unload', gKablMonitor.onUnload, false);

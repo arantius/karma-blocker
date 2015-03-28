@@ -110,7 +110,7 @@ var gKablPrefObserver={
       withAllChrome(function(win) { win.gKabl.setDisabled(); });
       break;
     case 'rules':
-      gKablRulesObj.parse(prefStore.rules);
+      gKablRulesObj.parse(prefBranch.getCharPref('rules'));
       break;
     }
   }

@@ -2,7 +2,6 @@
 <overlay id='kabl-overlay' xmlns='http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul'>
 
 <script type='application/x-javascript' src='chrome://kabl/content/kabl-overlay.js'></script>
-<script	type='application/x-javascript'	src='chrome://kabl/content/kabl-inserter.js'></script>
 
 <toolbarpalette id='BrowserToolbarPalette'>
   <toolbarbutton id='tb-kabl' type='menu-button'
@@ -20,7 +19,7 @@
         oncommand='gKabl.openConfig(); event.stopPropagation()'
       />
       <menuitem label='Monitor...' accesskey='M'
-        oncommand='gKablPolicy.openMonitorWindow(window); event.stopPropagation()'
+        oncommand='gKabl.openMonitorWindow(window); event.stopPropagation()'
       />
     </menupopup>
   </toolbarbutton>

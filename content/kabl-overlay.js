@@ -30,20 +30,27 @@
 //
 // ***** END LICENSE BLOCK *****
 
-Components.utils.import('chrome://kabl/content/kabl-policy.js');
 Components.utils.import('chrome://kabl/content/kabl-pref.js');
-Components.utils.import('chrome://kabl/content/kabl-sync.js');
-
-// \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ //
 
 var gKabl={
   openConfig:function() {
     var windowWatcher=Components
-        .classes["@mozilla.org/embedcomp/window-watcher;1"]
+        .classes['@mozilla.org/embedcomp/window-watcher;1']
         .getService(Components.interfaces.nsIWindowWatcher);
     windowWatcher.openWindow(
         window, 'chrome://kabl/content/kabl-config.xul', null,
         'chrome,dependent,centerscreen,resizable,dialog', null);
+  },
+
+  openMonitorWindow:function(parentWin) {
+    if (gKabl.monitorWin && false===gKabl.monitorWin.closed) {
+      return gKabl.monitorWin;
+    }
+
+    return gKabl.monitorWin=parentWin.open(
+      'chrome://kabl/content/kabl-monitor.xul', null,
+      'chrome,close=no,dependent,dialog,resizable'
+    );
   },
 
   toggle:function() {
@@ -61,13 +68,12 @@ var gKabl={
   },
 
   onLoad:function() {
-    window.removeEventListener('load', gKabl.onLoad, false);
     gKabl.setDisabled();
-    gKablPolicy.startup();
-    document.getElementById('appcontent')
-        .addEventListener('DOMContentLoaded', gKablPolicy.collapse, false);
-    gKablInserter.addObserver();
-    window.addEventListener('unload', gKablInserter.removeObserver, false);
+    window.removeEventListener('load', gKabl.onLoad, false);
+    Components
+        .classes['@mozilla.org/globalmessagemanager;1']
+        .getService(Ci.nsIMessageListenerManager)
+        .loadFrameScript('chrome://kabl/content/kabl-frame.js', true);
   }
 };
 

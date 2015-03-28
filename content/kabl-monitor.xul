@@ -8,7 +8,6 @@
   buttonlabelaccept='Close'
   buttonlabelextra2='Clear'
 
-  ondialogaccept='gKablPolicy.closeMonitorWindow();'
   ondialogextra2='gKablMonitor.clear();'
 
   id='kabl-monitor-dialog'

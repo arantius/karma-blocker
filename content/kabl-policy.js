@@ -44,6 +44,9 @@ var gKablCollapseMarker=String(Math.floor(Math.random()*100000));
 var UNORDERED_NODE_SNAPSHOT_TYPE=6;
 var COLLAPSE_TEXT_LENGTH=25;
 
+var gMessageSender = Cc['@mozilla.org/childprocessmessagemanager;1']
+    .getService(Ci.nsIMessageSender);
+
 //\\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ //
 
 // constructor for details of the request
@@ -138,7 +141,7 @@ function cloneObject(obj) {
 }
 
 // true if group matches
-function evalGroup(group, fields, monitor) {
+function evalGroup(group, fields) {
   var flag=null;
 
   for (var j=0, rule=null; rule=group.rules[j]; j++) {
@@ -175,7 +178,7 @@ function evalGroup(group, fields, monitor) {
         break;
     }
 
-    if (monitor) rule.match=flag;
+    if (monitoring) rule.match=flag;
 
     if (flag && 'any'==group.match) {
       return true;
@@ -234,15 +237,21 @@ function evalScore(type, score, fields) {
   }
 }
 
-function monitoring() {
-    return !(!monitorWin || monitorWin.closed);
-}
-
 function monitorAdd(fields, groups, score, flag) {
-  if (!monitoring()) return;
+  if (!monitoring) return;
 
   var blocked=REJECT==flag;
-  monitorWin.gKablMonitor.add(fields, groups, score, blocked);
+
+  try {
+  gMessageSender.sendAsyncMessage('kabl:monitor', {
+      'fields': fields,
+      'groups': groups,
+      'score': score,
+      'blocked': blocked,
+      });
+  } catch (e) {
+    dump('ERROR in monitorAdd: ' + e + '\n\n');
+  }
 }
 
 function setOriginTag(obj, node) {
@@ -296,7 +305,7 @@ var fieldNames=['$type', '$thirdParty',
     '$url', '$url.host', '$url.path', '$url.scheme',
     '$origin', '$origin.host', '$origin.path', '$origin.scheme', '$origin.tag'];
 
-var monitorWin=null;
+var monitoring=false;
 
 //\\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ //
 
@@ -311,14 +320,14 @@ var gKablPolicy={
       [Ci.nsIContentPolicy, Ci.nsIFactory, Ci.nsISupportsWeakReference]),
 
   // nsIFactory
-  createInstance: function(outer, iid) {
+  createInstance:function(outer, iid) {
     if (outer) throw Cr.NS_ERROR_NO_AGGREGATION;
     return this.QueryInterface(iid);
   },
 
   // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ //
 
-  startup: function(outer, iid) {
+  startup:function(outer, iid) {
     if (startupDone) return;
     startupDone=true;
 
@@ -340,22 +349,15 @@ var gKablPolicy={
     categoryManager.addCategoryEntry(
         'content-policy', gKablPolicy.classDescription,
         gKablPolicy.contractID, false, true);
-  },
 
-  openMonitorWindow:function(parentWin) {
-    if (monitorWin && false===monitorWin.closed) {
-      return monitorWin;
-    }
-
-    return monitorWin=parentWin.open(
-      'chrome://kabl/content/kabl-monitor.xul', null,
-      'chrome,close=no,dependent,dialog,resizable'
-    );
-  },
-
-  closeMonitorWindow:function() {
-    monitorWin.close();
-    monitorWin=null;
+    var cpmm = Cc['@mozilla.org/childprocessmessagemanager;1']
+        .getService(Ci.nsIMessageListenerManager);
+    cpmm.addMessageListener('kabl:monitor-opened', function() {
+      monitoring=true;
+    });
+    cpmm.addMessageListener('kabl:monitor-closed', function() {
+      monitoring=false;
+    });
   },
 
   collapse:function(event) {
@@ -449,21 +451,20 @@ var gKablPolicy={
     // Start checking for whether we should block!
     var fields=new Fields(
         contentType, contentLocation, requestOrigin, requestingNode);
-    var monitor=monitoring();
     var monitorGroups=[];
 
     var score=0, flag=false;
     for (var i=0, group=null; group=gKablRulesObj.groups[i]; i++) {
-      if (monitor) {
+      if (monitoring) {
         group=cloneObject(group);
         monitorGroups.push(group);
       }
 
-      if (evalGroup(group, fields, monitor)) {
+      if (evalGroup(group, fields, monitoring)) {
         score+=group.score;
         flag=evalScore('cutoff', score, fields);
         if (flag) {
-          if (monitor) {
+          if (monitoring) {
             monitorGroups.push({
               'name': 'Cutoff score reached, processing halted.',
               'score': null, 'match': null, 'rules': null});
@@ -471,7 +472,7 @@ var gKablPolicy={
           break;
         }
       } else {
-        if (monitor) group.score=0;
+        if (monitoring) group.score=0;
       }
     }
 
@@ -481,11 +482,11 @@ var gKablPolicy={
 
     if (!flag) flag=ACCEPT;
 
-    if (monitor) monitorAdd(fields, monitorGroups, score, flag);
+    if (monitoring) monitorAdd(fields, monitorGroups, score, flag);
     return flag;
 
     } catch (e) {
-      dump('ERROR IN kabl:\n');
+      dump('ERROR IN kabl policy: ' + e + '\n');
       for (var i in e) dump(i+'	'+e[i]+'\n');
       return ACCEPT;
     }

@@ -33,51 +33,31 @@
 //
 // ***** END LICENSE BLOCK *****
 
+var EXPORTED_SYMBOLS=['gKablInserter'];
+
+Components.utils.import('resource://gre/modules/Services.jsm');
+
 Components.utils.import('chrome://kabl/content/kabl-parse.js');
-
-////////////////////////////////////////////////////////////////////////////////
-
-// This file is derived from the 'firebug.js' file from Firebug version 0.4.1.
-// All sections related to the injection of the console api into the content
-// window have been kept and/or adapted, and all other sections removed.
-
-////////////////////////////////////////////////////////////////////////////////
+Components.utils.import('chrome://kabl/content/kabl-pref.js');
 
 var gKablInserter={};
 
-////////////////////////////////////////////////////////////////////////////////
-
 gKablInserter.addObserver=function() {
-  var tabBrowser=document.getElementById('content');
-  tabBrowser.addProgressListener(gKablInserterTabProgressListener);
-
-  for (var i=0; i<tabBrowser.browsers.length; ++i) {
-    var browser=tabBrowser.browsers[i];
-    this.attachToWindow(browser.contentWindow);
-  }
+  Services.obs.addObserver(
+      gKablInserter, 'content-document-global-created', false);
 };
 
 gKablInserter.removeObserver=function() {
-  var tabBrowser=document.getElementById('content');
-  tabBrowser.removeProgressListener(gKablInserterTabProgressListener);
+  Services.obs.removeObserver(
+      gKablInserter, 'content-document-global-created', false);
 };
 
-////////////////////////////////////////////////////////////////////////////////
-
-gKablInserter.attachToWindow=function(win) {
-  if ('about:blank'==win.location.href) return;
-
-  var browser=this.getBrowserByWindow(win);
-  if (browser && !browser.attachedKablInserter) {
-    browser.addProgressListener(gKablInserterFrameProgressListener,
-        Components.interfaces.nsIWebProgress.NOTIFY_DOCUMENT);
-    browser.attachedKablInserter=true;
-  }
-};
-
-gKablInserter.attachToLoadingWindow=function(win) {
+gKablInserter.observe=function(aSubject, aTopic, aData) {
+  if ('content-document-global-created' != aTopic) return;
   if (!gKablPrefs.enabled) return;
+  if (0 == gKablRulesObj.injectFunctions.length) return;
 
+  var win = aSubject;
   // xpcnativewrapper = no expando, so unwrap
   win=win.wrappedJSObject || win;
 
@@ -93,68 +73,12 @@ gKablInserter.attachToLoadingWindow=function(win) {
     // Don't overwrite, if the page already has this object.
     if ('undefined'!=typeof win[baseName]) return;
 
-    // Create properties, if necessary.
+    // Create properties, as necessary.
     while (subName=name.shift()) {
       subObj[subName]=obj;
       subObj=subObj[subName];
     }
 
     win[baseName]=obj;
-  }
-};
-
-gKablInserter.getBrowserByWindow=function(win) {
-  var tabBrowser=document.getElementById('content');
-  for (var i=0; i<tabBrowser.browsers.length; ++i) {
-    var browser=tabBrowser.browsers[i];
-    if (browser.contentWindow==win) return browser;
-  }
-
-  return null;
-};
-
-////////////////////////////////////////////////////////////////////////////////
-
-function gKablInserterWebProgressListener() {}
-gKablInserterWebProgressListener.prototype={
-  stateIsRequest: false,
-
-  QueryInterface:function(iid) {
-    if (iid.equals(Components.interfaces.nsIWebProgressListener) ||
-      iid.equals(Components.interfaces.nsISupportsWeakReference) ||
-      iid.equals(Components.interfaces.nsISupports)
-    ) {
-      return this;
-    }
-
-    throw Components.results.NS_NOINTERFACE;
-  },
-
-  onLocationChange: function() {},
-  onStateChange:function() {},
-  onProgressChange:function() {},
-  onStatusChange:function() {},
-  onSecurityChange:function() {},
-  onLinkIconAvailable:function() {}
-};
-
-var gKablInserterTabProgressListener=new gKablInserterWebProgressListener();
-gKablInserterTabProgressListener.onLocationChange=
-function(progress, request, loc) {
-  // Only attach to windows that are their own parent - e.g. not frames
-  if (progress.DOMWindow.parent==progress.DOMWindow) {
-    gKablInserter.attachToWindow(progress.DOMWindow);
-  }
-};
-
-var gKablInserterFrameProgressListener=new gKablInserterWebProgressListener();
-gKablInserterFrameProgressListener.onStateChange=
-function(progress, request, flag, status) {
-  var wpl = Components.interfaces.nsIWebProgressListener;
-  // When the load of the top-level page or a frame within begins.
-  if (flag & wpl.STATE_IS_DOCUMENT
-      && flag & wpl.STATE_IS_NETWORK
-      && flag & wpl.STATE_START) {
-    gKablInserter.attachToLoadingWindow(progress.DOMWindow);
   }
 };
