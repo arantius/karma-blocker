@@ -27,6 +27,8 @@ See [Configuration wiki page](https://github.com/arantius/karma-blocker/wiki/Con
 
 # Changelog
 
+ * Version 0.5 (March 27, 2015)
+   * Compatibility with multi-process Firefox.
  * Version 0.4.8 (October 17, 2013)
    * Performance Enhancements
  * Version 0.4.7 (September 1, 2013)
