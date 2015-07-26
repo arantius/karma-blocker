@@ -370,7 +370,7 @@ var gKablRulesObj={
       }
     }
 
-    if (val) {
+    if (typeof val != 'null') {
       return {
         field:fieldTok.val,
         op:opTok.val,
