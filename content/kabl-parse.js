@@ -56,7 +56,7 @@ gKablTokens['field']='(?:'+
     '|\\$origin\\.?(?:host|path|scheme|tag)?'+
     ')';
 gKablTokens['field_type_val']=
-    '(?:script|image|stylesheet|object_subrequest|object|subdocument|ping|font|media)';
+    '(?:script|image|stylesheet|object_subrequest|object|subdocument|ping|font|media|xmlhttprequest)';
 
 // types
 gKablTokens['bool']='(?:true|false)';
@@ -68,7 +68,7 @@ gKablTokens['field_op']='(?:==|!=|=~|!~|\\^=|\\$=|<|>)';
 gKablTokens['inieq']='=';
 
 // etc
-gKablTokens['comment']='^#.*';
+gKablTokens['comment']='^[;#].*';
 gKablTokens['whitespace']='[ \t\\n\\r]';
 
 var gKablIdxTokMap=[];
