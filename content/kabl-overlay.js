@@ -33,6 +33,23 @@
 Components.utils.import('chrome://kabl/content/kabl-pref.js');
 
 var gKabl={
+  menuitemToggle: null,
+  menuitemReload: null,
+
+  isReloading: false,
+  reloadTimer: null,
+
+  finishReload:function() {
+    if (!gKabl.isReloading) return;
+    dump("Finishing disabled reload ...\n");
+    gKabl.isReloading = false;
+    if (gKabl.reloadTimer) {
+      clearTimeout(gKabl.reloadTimer);
+      gKabl.reloadTimer = null;
+    }
+    gKablSet('enabled', true);
+  },
+
   openConfig:function() {
     var windowWatcher=Components
         .classes['@mozilla.org/embedcomp/window-watcher;1']
@@ -53,11 +70,35 @@ var gKabl={
     );
   },
 
+  popupshowing:function() {
+    gKabl.menuitemToggle.style.fontWeight
+        = gKablPrefs.enabled ? 'normal' : 'bold';
+    gKabl.menuitemReload.style.fontWeight
+        = gKablPrefs.enabled ? 'bold' : 'normal';
+  },
+
   toggle:function() {
     gKablSet('enabled', !gKablPrefs.enabled);
   },
 
-  setDisabled:function() {
+  toolbarButtonDefault:function() {
+    dump('>>> toolbarButtonDefault ...\n');
+    if (gKablPrefs.enabled) {
+      dump("Reloading, disabled ...\n");
+      gKabl.isReloading = true;
+      gKablSet('enabled', false);
+      gKabl.reloadTimer = setTimeout(gKabl.finishReload, 30000);
+      try {
+        gBrowser.reloadTab(gBrowser.mCurrentTab);
+      } catch (e) {
+        dump('could not reload tab!\n'+e+'\n');
+      }
+    } else {
+      gKablSet('enabled', true);
+    }
+  },
+
+  setToolbarButtonState:function() {
     var tb=document.getElementById('tb-kabl');
     if (tb) {
       // Standard is disabled=true -- but that disables the button, so
@@ -67,9 +108,21 @@ var gKabl={
     }
   },
 
-  onLoad:function() {
-    gKabl.setDisabled();
+  onContentLoad:function(event) {
+    gKabl.finishReload();
+  },
+
+  onChromeLoad:function() {
+    gKabl.setToolbarButtonState();
+
+    gKabl.menuitemToggle
+        = document.querySelector('#tb-kabl menuitem[label=Toggle]');
+    gKabl.menuitemReload
+    = document.querySelector('#tb-kabl menuitem[label=Reload]');
+
     window.removeEventListener('load', gKabl.onLoad, false);
+    gBrowser.addEventListener('load', gKabl.onContentLoad, true);
+
     Components
         .classes['@mozilla.org/globalmessagemanager;1']
         .getService(Ci.nsIMessageListenerManager)
@@ -77,4 +130,4 @@ var gKabl={
   }
 };
 
-window.addEventListener('load', gKabl.onLoad, false);
+window.addEventListener('load', gKabl.onChromeLoad, false);

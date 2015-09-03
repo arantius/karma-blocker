@@ -6,14 +6,16 @@
 <toolbarpalette id='BrowserToolbarPalette'>
   <toolbarbutton id='tb-kabl' type='menu-button'
     class='toolbarbutton-1 chromeclass-toolbar-additional'
-    oncommand='gKabl.toggle();'
+    oncommand='gKabl.toolbarButtonDefault();'
     label='Karma Blocker'
-    tooltiptext='Toggle Karma Blocker'
+    tooltiptext='Karma Blocker'
   >
-    <menupopup>
-      <menuitem label='Toggle' accesskey='T'
+    <menupopup onpopupshowing='gKabl.popupshowing();'>
+      <menuitem label='Reload' accesskey='R'
+        oncommand='gKabl.toolbarButtonDefault(); event.stopPropagation()'
+      />
+      <menuitem label='Toggle' accesskey='T' acceltext='Ctrl+Alt+K'
         oncommand='gKabl.toggle(); event.stopPropagation()'
-        style='font-weight: bold;'
       />
       <menuitem label='Configure...' accesskey='C'
         oncommand='gKabl.openConfig(); event.stopPropagation()'

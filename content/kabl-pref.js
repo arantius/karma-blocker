@@ -107,7 +107,7 @@ var gKablPrefObserver={
     gKablLoad();
     switch (aData) {
     case 'enabled':
-      withAllChrome(function(win) { win.gKabl.setDisabled(); });
+      withAllChrome(function(win) { win.gKabl.setToolbarButtonState(); });
       break;
     case 'rules':
       gKablRulesObj.parse(prefBranch.getCharPref('rules'));
