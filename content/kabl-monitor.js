@@ -38,7 +38,10 @@ var Cc = Components.classes;
 var Ci = Components.interfaces;
 var Cu = Components.utils;
 
+var LENGTH_LIMIT = 4000;
+
 var lastSelectedItem=null;
+var $=function(x){ return document.getElementById(x); }
 
 var gKablMonitor={
   typeMap:{
@@ -62,8 +65,8 @@ var gKablMonitor={
 
   onLoad:function() {
     window.removeEventListener('DOMContentLoaded', gKablMonitor.onLoad, false);
-    gKablMonitor.treeRes=document.getElementById('treeRes');
-    gKablMonitor.treeScore=document.getElementById('treeScore');
+    gKablMonitor.treeRes=$('treeRes');
+    gKablMonitor.treeScore=$('treeScore');
 
     Cc['@mozilla.org/parentprocessmessagemanager;1']
         .getService(Ci.nsIMessageBroadcaster)
@@ -71,12 +74,47 @@ var gKablMonitor={
     Cc['@mozilla.org/parentprocessmessagemanager;1']
         .getService(Ci.nsIMessageListenerManager)
         .addMessageListener('kabl:monitor', gKablMonitor.add);
+
+    $('filterForm').addEventListener('click', function(event) {
+      // After timeout so that .checked/.selected matches new state.
+      setTimeout(gKablMonitor.changeShowing, 0, event);
+    }, true);
   },
 
   onUnload:function() {
     Cc['@mozilla.org/parentprocessmessagemanager;1']
         .getService(Ci.nsIMessageBroadcaster)
         .broadcastAsyncMessage('kabl:monitor-closed');
+    Cc['@mozilla.org/parentprocessmessagemanager;1']
+        .getService(Ci.nsIMessageListenerManager)
+        .removeMessageListener('kabl:monitor', gKablMonitor.add);
+  },
+
+  changeShowing:function(event) {
+    var checkedShowAll = $('showTypeAll').checked;
+    var checkedAllOther =
+        $('showTypeXhr').checked &&
+        $('showTypeCss').checked &&
+        $('showTypeImg').checked &&
+        $('showTypeScr').checked &&
+        $('showTypeOth').checked;
+
+    if ('showTypeAll' == event.target.id) {
+      $('showTypeXhr').checked =
+          $('showTypeCss').checked =
+          $('showTypeImg').checked =
+          $('showTypeScr').checked =
+          $('showTypeOth').checked =
+          $('showTypeAll').checked;
+    } else if (checkedAllOther) {
+      $('showTypeAll').checked = true;
+    } else {
+      $('showTypeAll').checked = false;
+    }
+
+    for (var i = 0, row = null; row = gKablMonitor.treeRes.childNodes[i]; i++) {
+      row.hidden = !gKablMonitor.showRow(row);
+    }
   },
 
   clear:function() {
@@ -111,18 +149,31 @@ var gKablMonitor={
     }
   },
 
+  showRow:function(row) {
+    if ($('showBlockedNo').selected && row.blocked) return false;
+    if ($('showBlockedYes').selected && !row.blocked) return false;
+
+    if ($('showTypeAll').checked) return true;
+
+    if (row.fields.$type == 2) return $('showTypeScr').checked;
+    else if (row.fields.$type == 3) return $('showTypeImg').checked;
+    else if (row.fields.$type == 4) return $('showTypeCss').checked;
+    else if (row.fields.$type == 11) return $('showTypeXhr').checked;
+    else return $('showTypeOth').checked;
+  },
+
   add:function(message) {
     fields = message.data.fields;
     groups = message.data.groups;
     score = message.data.score;
     blocked = message.data.blocked;
 
-    if (!blocked && document.getElementById('showBlocked').selected) {
-      return;
-    }
-
     var item=gKablMonitor.fieldItem('$url', fields.$url, score, blocked);
+    item.blocked=blocked;
+    item.fields=fields;
     item.groups=groups;
+
+    item.hidden = !gKablMonitor.showRow(item);
 
     var children=document.createElement('treechildren');
     item.appendChild(children);
@@ -138,6 +189,9 @@ var gKablMonitor={
     }
 
     gKablMonitor.treeRes.insertBefore(item, gKablMonitor.treeRes.firstChild);
+    while (gKablMonitor.treeRes.childNodes.length > LENGTH_LIMIT) {
+      gKablMonitor.treeRes.removeChild(gKablMonitor.treeRes.lastChild);
+    }
   },
 
   fieldItem:function(name, value, score, blocked) {
@@ -258,7 +312,7 @@ var gKablMonitor={
     );
 
     // Set appropriate enabled/disabled statuses based on selection
-    var context=document.getElementById('resource-context');
+    var context=$('resource-context');
     context.childNodes[0].disabled=(0==selectedRow+selectedDetail);
     context.childNodes[1].disabled=(0==selectedRow || 0!=selectedDetail);
     context.childNodes[2].disabled=(1!=selectedRow || 0!=selectedDetail);

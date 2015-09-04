@@ -17,16 +17,33 @@
 <dialogheader title='Karma Blocker' description='Monitor'/>
 
 <vbox flex='1'>
-  <radiogroup orient='horizontal'>
-    <!-- Extra wrapping boxes here make the label center vertically. -->
-    <vbox>
-      <box flex='1'/>
-      <label valign='baseline'>Resources:</label>
-      <box flex='1'/>
-    </vbox>
-    <radio id='showAll'     label='Show All' selected='selected' />
-    <radio id='showBlocked' label='Show Blocked' />
-  </radiogroup>
+  <vbox id='filterForm'>
+    <radiogroup orient='horizontal'>
+      <!-- Extra wrapping boxes here make the label center vertically. -->
+      <vbox>
+        <box flex='1'/>
+        <label valign='baseline'>Show:</label>
+        <box flex='1'/>
+      </vbox>
+      <radio id='showBlockedAll' label='Both' selected='selected' />
+      <radio id='showBlockedNo' label='Allowed' />
+      <radio id='showBlockedYes' label='Blocked' />
+    </radiogroup>
+    <radiogroup orient='horizontal'>
+      <!-- Extra wrapping boxes here make the label center vertically. -->
+      <vbox>
+        <box flex='1'/>
+        <label valign='baseline'>Show:</label>
+        <box flex='1'/>
+      </vbox>
+      <checkbox id='showTypeAll' label='All' checked='true' />
+      <checkbox id='showTypeXhr' label='Ajax' checked='true' />
+      <checkbox id='showTypeCss' label='CSS' checked='true' />
+      <checkbox id='showTypeImg' label='Images' checked='true' />
+      <checkbox id='showTypeScr' label='Scripts' checked='true' />
+      <checkbox id='showTypeOth' label='Other' checked='true' />
+    </radiogroup>
+  </vbox>
 
   <tree flex='2' onselect='gKablMonitor.resSelect(event);'>
     <treecols>
