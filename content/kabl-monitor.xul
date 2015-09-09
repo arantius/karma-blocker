@@ -45,7 +45,7 @@
     </radiogroup>
   </vbox>
 
-  <tree flex='2' onselect='gKablMonitor.resSelect(event);'>
+  <tree flex='2' seltype='single' onselect='gKablMonitor.resSelect(event);'>
     <treecols>
       <treecol label='Field' flex='20' primary='true' />
       <splitter class='tree-splitter'/>

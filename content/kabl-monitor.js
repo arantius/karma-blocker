@@ -40,7 +40,7 @@ var Cu = Components.utils;
 
 var LENGTH_LIMIT = 4000;
 
-var lastSelectedItem=null;
+var gPreviousSelectedItem=null;
 var $=function(x){ return document.getElementById(x); }
 
 var gKablMonitor={
@@ -112,9 +112,11 @@ var gKablMonitor={
       $('showTypeAll').checked = false;
     }
 
+    gKablMonitor.changing = true;
     for (var i = 0, row = null; row = gKablMonitor.treeRes.childNodes[i]; i++) {
       row.hidden = !gKablMonitor.showRow(row);
     }
+    gKablMonitor.changing = false;
   },
 
   clear:function() {
@@ -131,21 +133,19 @@ var gKablMonitor={
   resSelect:function(event) {
     if (gKablMonitor.changing) return;
 
-    var item=gKablMonitor.treeRes.childNodes[
-        gKablMonitor.treeRes.parentNode.currentIndex];
-     if (item && item==lastSelectedItem) return;
-     lastSelectedItem=item;
-
     while (gKablMonitor.treeScore.firstChild) {
       gKablMonitor.treeScore.removeChild(gKablMonitor.treeScore.firstChild);
     }
 
-     if (!item) return;
+    var tree = event.target;
+    var item = tree.contentView.getItemAtIndex(tree.currentIndex);
+    if (!item) return;
+    if (item && item==gPreviousSelectedItem) return;
+    gPreviousSelectedItem=item;
 
-    var group;
     for (i in item.groups) {
-      group=item.groups[i];
-      gKablMonitor.treeScore.appendChild(gKablMonitor.groupItem(group));
+      gKablMonitor.treeScore.appendChild(
+          gKablMonitor.groupItem(item.groups[i]));
     }
   },
 
