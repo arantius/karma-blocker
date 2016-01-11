@@ -124,6 +124,7 @@ var gKablRulesObj={
   collapse:null,
   groups:null,
   injectFunctions:null,
+  injectFunctionsStr:'[]',
 
   /////////////////////////////// METHODS ////////////////////////////////////
 
@@ -267,6 +268,7 @@ var gKablRulesObj={
             this.injectFunctions.push(
                 // strip off the quote marks
                 tok2.val.substr(0, tok2.val.length-1).substr(1));
+            this.injectFunctionsStr=JSON.stringify(this.injectFunctions);
             break;
           }
           break;

@@ -57,21 +57,30 @@ gKablInserter.observe=function(aSubject, aTopic, aData) {
   if (!gKablPrefs.enabled) return;
   if (0 == gKablRulesObj.injectFunctions.length) return;
 
-  var win = aSubject;
-  // xpcnativewrapper = no expando, so unwrap
-  win=win.wrappedJSObject || win;
+  var sandbox = Components.utils.Sandbox(aSubject, {
+    'sameZoneAs': aSubject,
+    'sandboxPrototype': aSubject,
+    'wantXrays': false,
+  });
+  Components.utils.evalInSandbox(
+      gKablInserter.insertStr
+          + ';insert('+gKablRulesObj.injectFunctionsStr+');',
+      sandbox);
+};
 
+(function() {
+function insert(aFuncs) {
   var obj=function(){return arguments.callee;};
   obj.__noSuchMethod__=obj;
   obj.toString=function(){return '';};
 
-  for (var i=0, func=null; func=gKablRulesObj.injectFunctions[i]; i++) {
+  for (var i=0, func=null; func=aFuncs[i]; i++) {
     var subObj=obj;
     var name=func.split('.');
     var baseName=name.shift(), subName;
 
     // Don't overwrite, if the page already has this object.
-    if ('undefined'!=typeof win[baseName]) return;
+    if ('undefined'!=typeof window[baseName]) continue;
 
     // Create properties, as necessary.
     while (subName=name.shift()) {
@@ -79,6 +88,8 @@ gKablInserter.observe=function(aSubject, aTopic, aData) {
       subObj=subObj[subName];
     }
 
-    win[baseName]=obj;
+    window[baseName]=obj;
   }
 };
+gKablInserter.insertStr=uneval(insert);
+})();
