@@ -27,6 +27,16 @@ See [Configuration wiki page](https://github.com/arantius/karma-blocker/wiki/Con
 
 # Changelog
 
+ * Version 0.6.2 (Pending)
+   * Inject functions which do not break the page when called.
+ * Version 0.6.1 (September 8, 2015)
+   * Minor bug fix to new monitor window.
+ * Version 0.6 (September 3, 2015)
+   * Bug fix: Allow literal 'false' values.
+   * Toolbar button's default click action is to disable only while reloading the page.
+   * Add request type 'xmlhttprequest'.
+   * Allow semicolon for comments.
+   * Richer options in the monitor window.
  * Version 0.5 (March 27, 2015)
    * Compatibility with multi-process Firefox.
  * Version 0.4.8 (October 17, 2013)
