@@ -243,12 +243,17 @@ function monitorAdd(fields, groups, score, flag) {
   var blocked=REJECT==flag;
 
   try {
-  gMessageSender.sendAsyncMessage('kabl:monitor', {
-      'fields': fields,
-      'groups': groups,
-      'score': score,
-      'blocked': blocked,
-      });
+    var filteredFields = {};
+    for (i in fields) {
+      var t = typeof fields[i];
+      if (t == 'string' || t == 'number') filteredFields[i] = fields[i]
+    }
+    gMessageSender.sendAsyncMessage('kabl:monitor', {
+        'fields': filteredFields,
+        'groups': groups,
+        'score': score,
+        'blocked': blocked,
+        });
   } catch (e) {
     dump('ERROR in monitorAdd: ' + e + '\n\n');
   }
